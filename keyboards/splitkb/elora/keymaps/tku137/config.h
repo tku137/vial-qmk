@@ -35,5 +35,5 @@
 
 
 // Fix idle right half
-#define SPLIT_USB_TIMEOUT 10000
-#define SPLIT_USB_TIMEOUT_POLL 10
+// #define SPLIT_USB_TIMEOUT 10000
+// #define SPLIT_USB_TIMEOUT_POLL 10

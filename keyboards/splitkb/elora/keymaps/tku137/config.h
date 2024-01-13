@@ -32,3 +32,8 @@
 
 #define VIAL_UNLOCK_COMBO_ROWS { 3, 9 }
 #define VIAL_UNLOCK_COMBO_COLS { 2, 5 }
+
+
+// Fix idle right half
+#define SPLIT_USB_TIMEOUT 10000
+#define SPLIT_USB_TIMEOUT_POLL 10

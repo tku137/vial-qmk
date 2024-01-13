@@ -425,3 +425,66 @@ void keyboard_post_init_user(void) {
 }
 #endif
 
+
+// render lazer and modifier status
+static void render_status(void) {
+     // Host Keyboard Layer Status
+     oled_write_P(PSTR("Layer:\n"), false);
+     switch (get_highest_layer(layer_state  | default_layer_state)) {
+         case _QWERTY:
+             oled_write_P(PSTR("QWERTY    "), false);
+             break;
+         case _DVORAK:
+             oled_write_P(PSTR("DVORAK    "), false);
+             break;
+         case _COLEMAK_DH:
+             oled_write_P(PSTR("COLEMAK DH"), false);
+             break;
+         case _NAV:
+             oled_write_P(PSTR("Navigation"), false);
+             break;
+         case _SYM:
+             oled_write_P(PSTR("Symbols   "), false);
+             break;
+         case _FUNCTION:
+             oled_write_P(PSTR("F-Keys    "), false);
+             break;
+         case _ADJUST:
+             oled_write_P(PSTR("Adjust    "), false);
+             break;
+         default:
+             oled_write_P(PSTR("Undefined "), false);
+     }
+
+     //Host Keyboard LED Status
+     led_t led_usb_state = host_keyboard_led_state();
+     oled_write_P(led_usb_state.num_lock ? PSTR(" NUM") : PSTR("    "), false);
+     oled_write_P(led_usb_state.caps_lock ? PSTR("CAP") : PSTR("   "), false);
+     oled_write_P(led_usb_state.scroll_lock ? PSTR("SCR") : PSTR("   "), false);
+ }
+
+
+#ifdef OLED_ENABLE
+bool oled_task_user(void) {
+    if (is_keyboard_master()) {
+        oled_write_P(PSTR("1234567890"), false);
+        oled_set_cursor(0, oled_max_lines()-5);
+        render_status();
+    } else {
+        // Elora sigil
+        // clang-format off
+        static const char PROGMEM elora_logo[] = {
+            0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,128,128,192,224,224,240,248,120, 56, 60,188,158,158,222,206,207,207,207,239,239,239,239,239,239,207,207,207,206,222,158,158,188, 60, 56,120,248,240,224,224,192,128,128,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,192,224,248,252,126, 31,143,199,227,243,249,124, 60, 30, 31, 15,  7,  7,  3,  3,  3,131,193,225,241,249,253,255,255,255,255,127, 63, 31, 15,  7,  7,  7,143,223,254,252,252,249,243,227,199,143, 31,126,252,248,224,192,  0,  0,  0,  0,  0,
+            0,192,240,254,255, 63,  7,227,248,252,127, 31, 15,  3,  1,  0,  0,  0,128,192,224,240,248,252,254,255,255,255,127, 63, 31, 15,  7,  3,  1,128,192,224,240,248,252,254,255,255,255,255,127, 63, 31, 15,  7, 15, 31,255,252,248,227,  7, 63,255,254,240,192,  0,252,255,255,255,  1,224,255,255,255,  7,  0,  0,  0,  0,  0,  0,  0,  0, 31, 31, 31, 31, 31, 15,  7,  3,  1,  0,  0,  0,240,248,252,254,255,255,255,255,127, 63, 31, 15,  7,  3,  1,128,192,224,240,248,252,254,255,255,255,255,255,255,224,  1,255,255,255,252,
+            63,255,255,255,128,  7,255,255,255,224,  0,  0,  0,  0,  0,  0,  0,  0,  0,128,192,224,240,248,248,248,248,248,248,  0,  3,  3,  3,  3,  3,  3,  1,128,192,224,240,248,252,254,255,255,255,127, 63, 31, 15,  7,  3,  1,224,255,255,255,  7,128,255,255,255, 63,  0,  3, 15,127,255,252,224,199, 31, 63,254,248,240,192,128,  0,  0,  0,  0, 31, 31, 31, 31, 31, 31, 15,  7,  3,  1,  0,  0,  0,  0,  0,  0, 62, 63, 63, 63, 63, 63, 31, 15,  7,  3,  1,  0,  0,  0,128,192,240,248,254, 63, 31,199,224,252,255,127, 15,  3,  0,
+            0,  0,  0,  0,  0,  3,  7, 31, 63,126,248,241,227,199,207,159, 62, 60,120,248,240,224,224,192,192,192,192,128,128,128,128,128,128,128,128,128,128,192,192,192,192,224,224,240,248,120, 60, 62,159,207,199,227,241,248,126, 63, 31,  7,  3,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  3,  7,  7, 15, 31, 30, 28, 60, 61,121,121,123,115,243,243,243,247,247,247,247,247,247,243,243,243,115,123,121,121, 61, 60, 28, 30, 31, 15,  7,  7,  3,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+        };
+        // clang-format on
+        oled_set_cursor(0, (oled_max_lines()/2)-4); // logo is 8 lines high, so center vertically
+        oled_write_raw_P(elora_logo, sizeof(elora_logo));
+    }
+
+    return false;
+}
+#endif
+

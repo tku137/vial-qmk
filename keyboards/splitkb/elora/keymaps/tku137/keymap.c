@@ -427,15 +427,15 @@ void keyboard_post_init_user(void) {
 
 
 // render lazer and modifier status
-static void render_status(void) {
+static void render_layer_status(void) {
      // Host Keyboard Layer Status
-     oled_write_P(PSTR("Layer:\n"), false);
+     // oled_write_P(PSTR("Layer:\n"), false);
      switch (get_highest_layer(layer_state  | default_layer_state)) {
          case _QWERTY:
              oled_write_P(PSTR("QWERTY    "), false);
              break;
          case _DVORAK:
-             oled_write_P(PSTR("DVORAK    "), false);
+             oled_write_P(PSTR("DVORAK  "), false);
              break;
          case _COLEMAK_DH:
              oled_write_P(PSTR("COLEMAK DH"), false);
@@ -455,7 +455,10 @@ static void render_status(void) {
          default:
              oled_write_P(PSTR("Undefined "), false);
      }
+}
 
+
+static void render_led_status(void) {
      //Host Keyboard LED Status
      led_t led_usb_state = host_keyboard_led_state();
      oled_write_P(led_usb_state.num_lock ? PSTR(" NUM") : PSTR("    "), false);
@@ -464,12 +467,29 @@ static void render_status(void) {
  }
 
 
+void render_mod_status(uint8_t modifiers) {
+    // Modifiers can be displayed with text for simplicity
+    // oled_write_P(PSTR("Mods:\n"), false);
+
+    oled_write_P((modifiers & MOD_MASK_CTRL) ?  PSTR(" CTL ") : PSTR("     "), false);
+    oled_write_P((modifiers & MOD_MASK_SHIFT) ? PSTR(" SFT ") : PSTR("     "), false);
+    oled_write_P(PSTR("\n"), false);
+    oled_write_P((modifiers & MOD_MASK_ALT) ?   PSTR(" OPT ") : PSTR("     "), false);
+    oled_write_P((modifiers & MOD_MASK_GUI) ?   PSTR(" CMD ") : PSTR("     "), false);
+}
+
+
 #ifdef OLED_ENABLE
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
-        oled_write_P(PSTR("1234567890"), false);
-        oled_set_cursor(0, oled_max_lines()-5);
-        render_status();
+        oled_write_P(PSTR("Elora rev1\n"), false);
+        oled_write_P(PSTR("  tku137\n"), false);
+        oled_set_cursor(0, 6);
+        render_layer_status();
+        oled_set_cursor(0, 9);
+        render_mod_status(get_mods() | get_oneshot_mods());
+        oled_set_cursor(0, 14);
+        render_led_status();
     } else {
         // Elora sigil
         // clang-format off

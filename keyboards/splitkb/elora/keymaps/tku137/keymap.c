@@ -534,26 +534,32 @@ void render_modifier_ctl_sft_s(uint8_t mods) {
 }
 
 
-void render_modifiers_l(uint8_t mods, uint8_t start_row) {
+void render_modifiers_l(uint8_t start_row) {
+
+    // Get the current modifiers
+    uint8_t modifiers = get_mods() | get_oneshot_mods();
 
     // render first row of modifiers
     oled_set_cursor(0, start_row);
-    render_modifier_cmd_opt_l(mods);
+    render_modifier_cmd_opt_l(modifiers);
 
     // render second row of modifiers
     oled_set_cursor(0, start_row + 4); // Offset for the second row
-    render_modifier_ctl_sft_l(mods);
+    render_modifier_ctl_sft_l(modifiers);
 }
 
-void render_modifiers_s(uint8_t mods, uint8_t start_row) {
+void render_modifiers_s(uint8_t start_row) {
+
+    // Get the current modifiers
+    uint8_t modifiers = get_mods() | get_oneshot_mods();
 
     // render first row of modifiers
     oled_set_cursor(0, start_row);
-    render_modifier_cmd_opt_s(mods);
+    render_modifier_cmd_opt_s(modifiers);
 
     // render second row of modifiers
     oled_set_cursor(0, start_row + 2); // Offset for the second row
-    render_modifier_ctl_sft_s(mods);
+    render_modifier_ctl_sft_s(modifiers);
 }
 
 
@@ -566,20 +572,11 @@ bool oled_task_user(void) {
         // oled_write_P(PSTR("  tku137\n"), false);
 
         // Layer status
-        oled_set_cursor(0, 1);
+        oled_set_cursor(0, 3);
         render_layer_status();
 
-        // Get the current modifiers
-        uint8_t modifiers = get_mods() | get_oneshot_mods();
-
-        // Render the modifier icons large
-        // oled_set_cursor(0, 3);
-        // render_modifier_cmd_opt(modifiers);
-        // oled_set_cursor(0, 7);
-        // render_modifier_ctl_sft(modifiers);
-
         // Render the modifier icons small
-        render_modifiers_s(modifiers, 9);
+        render_modifiers_s(9);
 
         oled_set_cursor(0, 14);
         render_led_status();

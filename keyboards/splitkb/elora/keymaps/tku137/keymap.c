@@ -534,6 +534,29 @@ void render_modifier_ctl_sft_s(uint8_t mods) {
 }
 
 
+void render_modifiers_l(uint8_t mods, uint8_t start_row) {
+
+    // render first row of modifiers
+    oled_set_cursor(0, start_row);
+    render_modifier_cmd_opt_l(mods);
+
+    // render second row of modifiers
+    oled_set_cursor(0, start_row + 4); // Offset for the second row
+    render_modifier_ctl_sft_l(mods);
+}
+
+void render_modifiers_s(uint8_t mods, uint8_t start_row) {
+
+    // render first row of modifiers
+    oled_set_cursor(0, start_row);
+    render_modifier_cmd_opt_s(mods);
+
+    // render second row of modifiers
+    oled_set_cursor(0, start_row + 2); // Offset for the second row
+    render_modifier_ctl_sft_s(mods);
+}
+
+
 #ifdef OLED_ENABLE
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
@@ -556,10 +579,7 @@ bool oled_task_user(void) {
         // render_modifier_ctl_sft(modifiers);
 
         // Render the modifier icons small
-        oled_set_cursor(0, 9);
-        render_modifier_cmd_opt_s(modifiers);
-        oled_set_cursor(0, 11);
-        render_modifier_ctl_sft_s(modifiers);
+        render_modifiers_s(modifiers, 9);
 
         oled_set_cursor(0, 14);
         render_led_status();

@@ -220,7 +220,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------'      `------'                `---------------------------'      '------'
  */
     [_FUNCTION] = LAYOUT_myr(
-      _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, QK_BOOT,
       _______,  KC_F9 ,  KC_F10,  KC_F11,  KC_F12, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
       _______,  KC_F5 ,  KC_F6 ,  KC_F7 ,  KC_F8 , _______,          _______, _______,          _______, KC_RSFT, KC_RCTL, KC_LALT, KC_RGUI, _______,
       _______,  KC_F1 ,  KC_F2 ,  KC_F3 ,  KC_F4 , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
@@ -337,7 +337,6 @@ DELETE THIS LINE TO UNCOMMENT (2/2) */
 
 // Vial-specific encoder code
 
-#if defined(ENCODER_MAP_ENABLE)
 bool encoder_update_user(uint8_t index, bool clockwise) {
   return false;
 }
@@ -414,18 +413,15 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
       ENCODER_CCW_CW(KC_VOLD, KC_VOLU)
     }
 };
-#endif
 
 
 #define RGBLIGHT_EFFECT_RAINBOW_SWIRL
-#ifdef RGBLIGHT_ENABLE
 void keyboard_post_init_user(void) {
     rgblight_enable_noeeprom(); // Enables RGB, without saving settings
     // rgblight_sethsv_noeeprom(HSV_PURPLE);
     // rgblight_mode_noeeprom(RGBLIGHT_EFFECT_RAINBOW_SWIRL);
     rgblight_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
 }
-#endif
 
 
 // render lazer and modifier status
@@ -563,7 +559,6 @@ void render_modifiers_s(uint8_t start_row) {
 }
 
 
-#ifdef OLED_ENABLE
 bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
@@ -588,5 +583,4 @@ bool oled_task_user(void) {
 
     return false;
 }
-#endif
 

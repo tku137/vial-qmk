@@ -20,8 +20,8 @@
 
 enum layers {
     _QWERTY = 0,
-    _NAV,
     _SYM,
+    _NAV,
     _FUNCTION,
     _ADJUST,
 };
@@ -344,28 +344,28 @@ void keyboard_post_init_user(void) {
 
 
 // render lazer and modifier status
-static void render_layer_status(void) {
-     // Host Keyboard Layer Status
-     // oled_write_P(PSTR("Layer:\n"), false);
-     switch (get_highest_layer(layer_state  | default_layer_state)) {
-         case _QWERTY:
-             oled_write_P(PSTR("QWERTY    "), false);
-             break;
-         case _NAV:
-             oled_write_P(PSTR("Navigation"), false);
-             break;
-         case _SYM:
-             oled_write_P(PSTR("Symbols   "), false);
-             break;
-         case _FUNCTION:
-             oled_write_P(PSTR("F-Keys    "), false);
-             break;
-         case _ADJUST:
-             oled_write_P(PSTR("Adjust    "), false);
-             break;
-         default:
-             oled_write_P(PSTR("Undefined "), false);
-     }
+static void render_layer_status(uint8_t start_row) {
+    // Host Keyboard Layer Status
+    oled_set_cursor(0, start_row);
+    switch (get_highest_layer(layer_state  | default_layer_state)) {
+        case _QWERTY:
+            oled_write_raw_P(base, sizeof(base));
+            break;
+        case _NAV:
+            oled_write_raw_P(nav, sizeof(nav));
+            break;
+        case _SYM:
+            oled_write_raw_P(sym, sizeof(sym));
+            break;
+        case _FUNCTION:
+            oled_write_raw_P(func, sizeof(func));
+            break;
+        case _ADJUST:
+            oled_write_raw_P(adj, sizeof(adj));
+            break;
+        default:
+            oled_write_P(PSTR("Undefined "), false);
+    }
 }
 
 
@@ -481,16 +481,16 @@ bool oled_task_user(void) {
         oled_write_P(PSTR("  tku137\n"), false);
 
         // Layer status
-        oled_set_cursor(0, 5);
-        render_layer_status();
+        render_layer_status(8);
 
     } else {
 
-        // Host Keyboard Modifiers
-        render_modifiers_l(3);
-
-        oled_set_cursor(0, 14);
+        // render LED status
+        oled_set_cursor(0, 3);
         render_led_status();
+
+        // Host Keyboard Modifiers
+        render_modifiers_l(8);
 
     }
 

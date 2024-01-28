@@ -332,7 +332,6 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 };
 
 
-#define RGBLIGHT_EFFECT_RAINBOW_SWIRL
 void keyboard_post_init_user(void) {
     rgblight_enable_noeeprom(); // Enables RGB, without saving settings
     // rgblight_sethsv_noeeprom(HSV_PURPLE);

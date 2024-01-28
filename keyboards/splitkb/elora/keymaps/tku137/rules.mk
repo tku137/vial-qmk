@@ -18,6 +18,8 @@
 
 ## Hardware features
 
+RGBLIGHT_ENABLE = yes
+
 # OLED: optional, can be installed in socket
 OLED_ENABLE = yes          # Enable OLEDs, `yes` or `no`
 

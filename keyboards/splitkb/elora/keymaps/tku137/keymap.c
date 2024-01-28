@@ -21,6 +21,7 @@
 
 #include "layers.h"
 #include "cyberdeck.h"
+// #include "terminal.h"
 
 
 #define CTL_ESC  MT(MOD_LCTL, KC_ESC)

@@ -48,3 +48,4 @@ ENCODER_MAP_ENABLE = yes
 # Define custom OLED visuals
 # possibility to change rendering completely
 SRC += cyberdeck.c
+# SRC += terminal.c

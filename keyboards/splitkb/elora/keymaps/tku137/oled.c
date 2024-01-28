@@ -6,7 +6,7 @@
 
 
 // Host keyboard layer status
-static void render_layer_status(uint8_t start_row) {
+void render_layer_status(uint8_t start_row) {
     oled_set_cursor(0, start_row);
     switch (get_highest_layer(layer_state  | default_layer_state)) {
         case _QWERTY:
@@ -31,7 +31,7 @@ static void render_layer_status(uint8_t start_row) {
 
 
 //Host Keyboard LED Status
-static void render_led_status(uint8_t start_row) {
+void render_led_status(uint8_t start_row) {
     oled_set_cursor(0, start_row);
     led_t led_usb_state = host_keyboard_led_state();
     if (led_usb_state.caps_lock) {
@@ -42,7 +42,7 @@ static void render_led_status(uint8_t start_row) {
 }
 
 
-static void render_modifier_cmd_opt(uint8_t mods) {
+void render_modifier_cmd_opt(uint8_t mods) {
     if (mods & MOD_MASK_GUI) {
         if (mods & MOD_MASK_ALT) {
             oled_write_raw_P(cmd_on_opt_on, sizeof(cmd_on_opt_on));
@@ -58,7 +58,7 @@ static void render_modifier_cmd_opt(uint8_t mods) {
     }
 }
 
-static void render_modifier_ctrl_shift(uint8_t mods) {
+void render_modifier_ctrl_shift(uint8_t mods) {
     if (mods & MOD_MASK_SHIFT) {
         if (mods & MOD_MASK_CTRL) {
             oled_write_raw_P(ctrl_on_shift_on, sizeof(ctrl_on_shift_on));
@@ -74,7 +74,7 @@ static void render_modifier_ctrl_shift(uint8_t mods) {
     }
 }
 
-static void render_modifiers(uint8_t start_row) {
+void render_modifiers(uint8_t start_row) {
 
     // Get the current modifiers
     uint8_t modifiers = get_mods() | get_oneshot_mods();

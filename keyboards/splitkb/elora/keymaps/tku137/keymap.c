@@ -20,7 +20,7 @@
 #include <stdint.h>
 
 #include "layers.h"
-#include "oled.c"
+#include "oled.h"
 
 
 #define CTL_ESC  MT(MOD_LCTL, KC_ESC)

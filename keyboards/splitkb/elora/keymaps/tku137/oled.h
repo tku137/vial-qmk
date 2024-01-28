@@ -10,28 +10,28 @@
 // Render the keyboards currently active layer
 // Use the start_row to render the layer status on a different row
 // Uses custom bitmap in Cyberdeck style
-static void render_layer_status(uint8_t start_row);
+void render_layer_status(uint8_t start_row);
 
 
 // Render the status of the keyboard LEDs
 // On MacOS, only Caps-Lock is supported
 // Uses custom bitmap in Cyberdeck style
-static void render_led_status(uint8_t start_row);
+void render_led_status(uint8_t start_row);
 
 
 // Render Command and Option modifier status
 // Uses custom bitmap in Cyberdeck style
-static void render_modifier_cmd_opt(uint8_t mods);
+void render_modifier_cmd_opt(uint8_t mods);
 
 
 // Render Control and Shift modifier status
 // Uses custom bitmap in Cyberdeck style
-static void render_modifier_ctrl_shift(uint8_t mods);
+void render_modifier_ctrl_shift(uint8_t mods);
 
 
 // Render all modifier states in 2x2 grid
 // Uses custom bitmap in Cyberdeck style
-static void render_modifiers(uint8_t start_row);
+void render_modifiers(uint8_t start_row);
 
 
 

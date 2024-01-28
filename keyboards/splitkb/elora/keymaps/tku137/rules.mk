@@ -42,3 +42,6 @@ VIA_ENABLE = yes
 VIAL_ENABLE = yes
 ENCODER_MAP_ENABLE = yes
 
+
+## Define custom OLED visuals
+SRC += oled.c

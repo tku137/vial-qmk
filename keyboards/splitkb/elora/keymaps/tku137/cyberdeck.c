@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #include "layers.h"
-#include "oled.h"
+#include "cyberdeck.h"
 
 
 // Host keyboard layer status

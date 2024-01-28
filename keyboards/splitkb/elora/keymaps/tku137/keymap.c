@@ -16,23 +16,12 @@
 
 #include QMK_KEYBOARD_H
 
-#include "bitmaps.h"
+#include <stdbool.h>
+#include <stdint.h>
 
-enum layers {
-    _QWERTY = 0,
-    _SYM,
-    _NAV,
-    _FUNCTION,
-    _ADJUST,
-};
+#include "layers.h"
+#include "oled.c"
 
-// Aliases for readability
-#define QWERTY   DF(_QWERTY)
-
-#define SYM      MO(_SYM)
-#define NAV      MO(_NAV)
-#define FKEYS    MO(_FUNCTION)
-#define ADJUST   MO(_ADJUST)
 
 #define CTL_ESC  MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
@@ -352,154 +341,15 @@ void keyboard_post_init_user(void) {
 }
 
 
-// render lazer and modifier status
-static void render_layer_status(uint8_t start_row) {
-    // Host Keyboard Layer Status
-    oled_set_cursor(0, start_row);
-    switch (get_highest_layer(layer_state  | default_layer_state)) {
-        case _QWERTY:
-            oled_write_raw_P(base, sizeof(base));
-            break;
-        case _NAV:
-            oled_write_raw_P(nav, sizeof(nav));
-            break;
-        case _SYM:
-            oled_write_raw_P(sym, sizeof(sym));
-            break;
-        case _FUNCTION:
-            oled_write_raw_P(func, sizeof(func));
-            break;
-        case _ADJUST:
-            oled_write_raw_P(adj, sizeof(adj));
-            break;
-        default:
-            oled_write_P(PSTR("Undefined "), false);
-    }
-}
-
-
-static void render_led_status(void) {
-     //Host Keyboard LED Status
-     led_t led_usb_state = host_keyboard_led_state();
-     oled_write_P(led_usb_state.num_lock ? PSTR(" NUM") : PSTR("    "), false);
-     oled_write_P(led_usb_state.caps_lock ? PSTR("CAP") : PSTR("   "), false);
-     oled_write_P(led_usb_state.scroll_lock ? PSTR("SCR") : PSTR("   "), false);
- }
-
-
-void render_modifier_cmd_opt_l(uint8_t mods) {
-    if (mods & MOD_MASK_GUI) {
-        if (mods & MOD_MASK_ALT) {
-            oled_write_raw_P(cmd_on_opt_on_l, sizeof(cmd_on_opt_on_l));
-        } else {
-            oled_write_raw_P(cmd_on_opt_off_l, sizeof(cmd_on_opt_off_l));
-        }
-    } else {
-        if (mods & MOD_MASK_ALT) {
-            oled_write_raw_P(cmd_off_opt_on_l, sizeof(cmd_off_opt_on_l));
-        } else {
-            oled_write_raw_P(cmd_off_opt_off_l, sizeof(cmd_off_opt_off_l));
-        }
-    }
-}
-
-void render_modifier_ctl_sft_l(uint8_t mods) {
-    if (mods & MOD_MASK_SHIFT) {
-        if (mods & MOD_MASK_CTRL) {
-            oled_write_raw_P(ctl_on_sft_on_l, sizeof(ctl_on_sft_on_l));
-        } else {
-            oled_write_raw_P(ctl_off_sft_on_l, sizeof(ctl_off_sft_on_l));
-        }
-    } else {
-        if (mods & MOD_MASK_CTRL) {
-            oled_write_raw_P(ctl_on_sft_off_l, sizeof(ctl_on_sft_off_l));
-        } else {
-            oled_write_raw_P(ctl_off_sft_off_l, sizeof(ctl_off_sft_off_l));
-        }
-    }
-}
-
-void render_modifier_cmd_opt_s(uint8_t mods) {
-    if (mods & MOD_MASK_GUI) {
-        if (mods & MOD_MASK_ALT) {
-            oled_write_raw_P(cmd_on_opt_on_s, sizeof(cmd_on_opt_on_s));
-        } else {
-            oled_write_raw_P(cmd_on_opt_off_s, sizeof(cmd_on_opt_off_s));
-        }
-    } else {
-        if (mods & MOD_MASK_ALT) {
-            oled_write_raw_P(cmd_off_opt_on_s, sizeof(cmd_off_opt_on_s));
-        } else {
-            oled_write_raw_P(cmd_off_opt_off_s, sizeof(cmd_off_opt_off_s));
-        }
-    }
-}
-
-void render_modifier_ctl_sft_s(uint8_t mods) {
-    if (mods & MOD_MASK_SHIFT) {
-        if (mods & MOD_MASK_CTRL) {
-            oled_write_raw_P(ctl_on_sft_on_s, sizeof(ctl_on_sft_on_s));
-        } else {
-            oled_write_raw_P(ctl_off_sft_on_s, sizeof(ctl_off_sft_on_s));
-        }
-    } else {
-        if (mods & MOD_MASK_CTRL) {
-            oled_write_raw_P(ctl_on_sft_off_s, sizeof(ctl_on_sft_off_s));
-        } else {
-            oled_write_raw_P(ctl_off_sft_off_s, sizeof(ctl_off_sft_off_s));
-        }
-    }
-}
-
-
-void render_modifiers_l(uint8_t start_row) {
-
-    // Get the current modifiers
-    uint8_t modifiers = get_mods() | get_oneshot_mods();
-
-    // render first row of modifiers
-    oled_set_cursor(0, start_row);
-    render_modifier_cmd_opt_l(modifiers);
-
-    // render second row of modifiers
-    oled_set_cursor(0, start_row + 4); // Offset for the second row
-    render_modifier_ctl_sft_l(modifiers);
-}
-
-void render_modifiers_s(uint8_t start_row) {
-
-    // Get the current modifiers
-    uint8_t modifiers = get_mods() | get_oneshot_mods();
-
-    // render first row of modifiers
-    oled_set_cursor(0, start_row);
-    render_modifier_cmd_opt_s(modifiers);
-
-    // render second row of modifiers
-    oled_set_cursor(0, start_row + 2); // Offset for the second row
-    render_modifier_ctl_sft_s(modifiers);
-}
-
-
 bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
 
-        // Top eye-candy
-        oled_write_P(PSTR("Elora rev1\n"), false);
-        oled_write_P(PSTR("  tku137\n"), false);
-
-        // Layer status
-        render_layer_status(8);
+        render_cyberdeck();
 
     } else {
 
-        // render LED status
-        oled_set_cursor(0, 3);
-        render_led_status();
-
-        // Host Keyboard Modifiers
-        render_modifiers_l(8);
+        render_cyberdeck();
 
     }
 

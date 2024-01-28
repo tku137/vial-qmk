@@ -39,7 +39,7 @@
 // #define SPLIT_USB_TIMEOUT_POLL 10
 
 // enable information transmitting
-// #define SPLIT_LAYER_STATE_ENABLE
+#define SPLIT_LAYER_STATE_ENABLE
 #define SPLIT_LED_STATE_ENABLE
 // #define SPLIT_WPM_ENABLE
 #define SPLIT_OLED_ENABLE

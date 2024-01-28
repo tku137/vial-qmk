@@ -116,3 +116,12 @@ void render_cyberdeck(void) {
     oled_write_raw_P(tku137, sizeof(tku137));
 
 }
+
+
+void render_master(void) {
+    render_cyberdeck();
+}
+
+void render_slave(void) {
+    render_cyberdeck();
+}

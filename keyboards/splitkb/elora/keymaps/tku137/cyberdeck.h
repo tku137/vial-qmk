@@ -46,6 +46,9 @@ void render_modifiers(uint8_t start_row);
 // At row 14, display a 1u decorative bottom image
 void render_cyberdeck(void);
 
+// These are the general interfaces. Define them to easily switch between different visuals
+void render_master(void);
+void render_slave(void);
 
 
 // Bitmap Definitions

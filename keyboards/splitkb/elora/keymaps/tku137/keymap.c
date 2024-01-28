@@ -345,11 +345,11 @@ bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
 
-        render_cyberdeck();
+        render_master();
 
     } else {
 
-        render_cyberdeck();
+        render_slave();
 
     }
 

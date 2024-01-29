@@ -40,6 +40,18 @@
 #define DEG     RALT(KC_SCLN)
 #define ESSZ    RALT(KC_S)
 
+//
+// Define custom keycodes
+enum custom_keycodes {
+    NWHT = SAFE_RANGE, // Custom keycode for natural white
+    TRQS,              // Custom keycode for cyberpunk turquoise
+    PRPL,              // Custom keycode for cyberpunk purple
+    ORNG,              // Custom keycode for cyberpunk orange
+    NGRN,              // Custom keycode for cyberpunk green
+    ELBL,              // Custom keycode for cyberpunk blue
+    // Add other custom keycodes here, if any
+};
+
 
 // Note: LAlt/Enter (ALT_ENT) is not the same thing as the keyboard shortcut Alt+Enter.
 // The notation `mod/tap` denotes a key that activates the modifier `mod` when held down, and
@@ -173,11 +185,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
  * |        |      |      |      |      | BOOT |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |      |      |QWERTY|Brite+|      |      |      |  |      |      |      | RGB  | SWIRL|      |      |        |
+ * |        |      |      |QWERTY|Brite+|      |      |      |  |      |      | White| Turq | Purp | Oran | Gree |  Blue  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |      |      |      |Brite-|      |      |      |  |      |      |      | SAI  | HUI  | VAI  | MOD  |        |
+ * |        |      |      |      |Brite-|      |      |      |  |      |      | Rnbw | SAI  | HUI  | VAI  | MOD  |        |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |      |  |      |      |      | SAD  | HUD  | VAD  | RMOD |        |
+ * |        |      |      |      |      |      |      |      |  |      |      | RGB  | SAD  | HUD  | VAD  | RMOD |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -189,9 +201,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_ADJUST] = LAYOUT_myr(
       _______, _______, _______, _______, _______, QK_BOOT,         _______, _______,          _______, _______, _______, _______,  _______, _______,
-      _______, _______, _______, QWERTY , KC_BRIU, _______,         _______, _______,          _______, RGB_TOG,RGB_M_SW, _______,  _______, _______,
-      _______, _______, _______, _______, KC_BRID, _______,         _______, _______,          _______, RGB_SAI, RGB_HUI, RGB_VAI, RGB_SPI , RGB_MOD,
-      _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, _______, RGB_SAD, RGB_HUD, RGB_VAD, RGB_SPD , RGB_RMOD,
+      _______, _______, _______, QWERTY , KC_BRIU, _______,         _______, _______,           NWHT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL  ,
+      _______, _______, _______, _______, KC_BRID, _______,         _______, _______,         RGB_M_SW, RGB_SAI, RGB_HUI, RGB_VAI,  RGB_MOD, _______,
+      _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_TOG, RGB_SAD, RGB_HUD, RGB_VAD, RGB_RMOD, _______,
                                  _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
@@ -334,12 +346,56 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 
 
 void keyboard_post_init_user(void) {
-    rgblight_enable_noeeprom(); // Enables RGB, without saving settings
+    // rgblight_enable_noeeprom(); // Enables RGB, without saving settings
     // rgblight_sethsv_noeeprom(HSV_PURPLE);
     // rgblight_mode_noeeprom(RGBLIGHT_EFFECT_RAINBOW_SWIRL);
-    rgblight_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
+    // rgblight_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
 }
 
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case NWHT:
+            if (record->event.pressed) {
+                rgblight_sethsv(42, 24, 255); // Set all LEDs to natural white
+                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+            }
+            return false; // Skip further processing of this key
+        case TRQS:
+            if (record->event.pressed) {
+                rgblight_sethsv(118, 183, 209); // Set all LEDs to cyberpunk turquoise
+                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+            }
+            return false; // Skip further processing of this key
+        case PRPL:
+            if (record->event.pressed) {
+                rgblight_sethsv(212, 255, 128); // Set all LEDs to cyberpunk purple
+                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+            }
+            return false; // Skip further processing of this key
+        case ORNG:
+            if (record->event.pressed) {
+                rgblight_sethsv(27, 255, 255); // Set all LEDs to cyberpunk orange
+                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+            }
+            return false; // Skip further processing of this key
+        case NGRN:
+            if (record->event.pressed) {
+                rgblight_sethsv(78, 235, 255); // Set all LEDs to cyberpunk green
+                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+            }
+            return false; // Skip further processing of this key
+        case ELBL:
+            if (record->event.pressed) {
+                rgblight_sethsv(146, 255, 255); // Set all LEDs to cyberpunk blue
+                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+            }
+            return false; // Skip further processing of this key
+        default:
+            return true; // Process all other keycodes normally
+    }
+}
+// NWHT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL
 
 bool oled_task_user(void) {
 

@@ -346,9 +346,9 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 
 
 void keyboard_post_init_user(void) {
-    // rgblight_enable_noeeprom(); // Enables RGB, without saving settings
-    // rgblight_sethsv_noeeprom(HSV_PURPLE);
-    // rgblight_mode_noeeprom(RGBLIGHT_EFFECT_RAINBOW_SWIRL);
+    rgblight_enable_noeeprom(); // Enables RGB, without saving settings
+    rgblight_sethsv_noeeprom(42, 24, 255);
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
     // rgblight_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
 }
 
@@ -358,37 +358,37 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case NWHT:
             if (record->event.pressed) {
                 rgblight_sethsv(42, 24, 255); // Set all LEDs to natural white
-                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
             }
             return false; // Skip further processing of this key
         case TRQS:
             if (record->event.pressed) {
                 rgblight_sethsv(118, 183, 209); // Set all LEDs to cyberpunk turquoise
-                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
             }
             return false; // Skip further processing of this key
         case PRPL:
             if (record->event.pressed) {
                 rgblight_sethsv(212, 255, 128); // Set all LEDs to cyberpunk purple
-                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
             }
             return false; // Skip further processing of this key
         case ORNG:
             if (record->event.pressed) {
                 rgblight_sethsv(27, 255, 255); // Set all LEDs to cyberpunk orange
-                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
             }
             return false; // Skip further processing of this key
         case NGRN:
             if (record->event.pressed) {
                 rgblight_sethsv(78, 235, 255); // Set all LEDs to cyberpunk green
-                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
             }
             return false; // Skip further processing of this key
         case ELBL:
             if (record->event.pressed) {
                 rgblight_sethsv(146, 255, 255); // Set all LEDs to cyberpunk blue
-                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
             }
             return false; // Skip further processing of this key
         default:

@@ -371,6 +371,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 rgb_matrix_mode(RGB_MATRIX_RAINBOW_MOVING_CHEVRON); // or RGB_MATRIX_CYCLE_ALL
                 rgb_matrix_set_speed(10); // 0-255
+                rgb_matrix_sethsv(default_color.hue, 255, default_color.val); // Set all LEDs to natural white
             }
             return false; // Skip further processing of this key
         case NWHT:

@@ -44,6 +44,10 @@
 // Potential onboard speaker, not populated by default
 #define AUDIO_PIN GP23
 
+// Transmitting pointing device status to the master side
+#define SPLIT_POINTING_ENABLE
+#define POINTING_DEVICE_COMBINED
+
 // Handedness
 #define SPLIT_HAND_PIN GP14
 

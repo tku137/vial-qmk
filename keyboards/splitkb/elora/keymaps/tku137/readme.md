@@ -1,6 +1,6 @@
 # tku137's keymap for Elora
 
-![kle-render herokuapp com-2](https://github.com/tku137/vial-qmk/assets/3052212/fcf3b045-8f1f-47f0-939a-179f06abf9ca)
+![kle-render herokuapp com](https://github.com/tku137/vial-qmk/assets/3052212/72431286-9a87-456f-892c-8dfa25080f11)
 
 ## Base layer
 
@@ -20,4 +20,4 @@ This also has the modifiers on the right for consistency along the additional Hy
 
 ## Adjust leyer
 
-The adjust layer uses some keyboard specific settings on the right and has been extended by brightness keys on the left.
+The adjust layer uses some keyboard specific settings on the right and has been extended by brightness keys on the left. On the right, there is a RGB underglow toggle, HSV adjustment keys and RGB effect mode cycle. There is a fixed Rainbow Swirl effect key as well as a row of static colors to choose from.

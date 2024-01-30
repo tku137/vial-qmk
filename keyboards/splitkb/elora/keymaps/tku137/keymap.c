@@ -40,7 +40,17 @@
 #define DEG     RALT(KC_SCLN)
 #define ESSZ    RALT(KC_S)
 
-//
+
+// Default natural white color
+typedef struct {
+    uint16_t hue;
+    uint8_t sat;
+    uint8_t val;
+} hsv_color_t;
+
+const hsv_color_t default_color = {32, 102, 255}; // Define default color
+
+
 // Define custom keycodes
 enum custom_keycodes {
     NWHT = SAFE_RANGE, // Custom keycode for natural white
@@ -188,9 +198,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |        |      |      |QWERTY|Brite+|      |      |      |  |      |      | White| Turq | Purp | Oran | Gree |  Blue  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |      |      |      |Brite-|      |      |      |  |      |      | Rnbw | SAI  | HUI  | VAI  | MOD  |        |
+ * |        |      |      |      |Brite-|      |      |      |  |      |      | Rnbw | HUI  | SAI  | VAI  | MOD  |        |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |      |  |      |      | RGB  | SAD  | HUD  | VAD  | RMOD |        |
+ * |        |      |      |      |      |      |      |      |  |      |      | RGB  | HUD  | SAD  | VAD  | RMOD |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -203,8 +213,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_ADJUST] = LAYOUT_myr(
       _______, _______, _______, _______, _______, QK_BOOT,         _______, _______,          _______, _______, _______, _______,  _______, _______,
       _______, _______, _______, QWERTY , KC_BRIU, _______,         _______, _______,           NWHT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL  ,
-      _______, _______, _______, _______, KC_BRID, _______,         _______, _______,           RNBW  , RGB_SAI, RGB_HUI, RGB_VAI,  RGB_MOD, _______,
-      _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_TOG, RGB_SAD, RGB_HUD, RGB_VAD, RGB_RMOD, _______,
+      _______, _______, _______, _______, KC_BRID, _______,         _______, _______,           RNBW  , RGB_HUI, RGB_SAI, RGB_VAI,  RGB_MOD, _______,
+      _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_TOG, RGB_HUD, RGB_SAD, RGB_VAD, RGB_RMOD, _______,
                                  _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
@@ -349,7 +359,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 void keyboard_post_init_user(void) {
     rgb_matrix_enable_noeeprom(); // Enables RGB, without saving settings
     // rgb_matrix_sethsv_noeeprom(42, 24, 255); // Set all LEDs to cold white
-    rgb_matrix_sethsv_noeeprom(32, 153, 255); // Set all LEDs to natural white
+    rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
     rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
     // rgb_matrix_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
 }
@@ -366,7 +376,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case NWHT:
             if (record->event.pressed) {
                 // rgblight_sethsv(42, 24, 255); // Set all LEDs to cold white
-                rgb_matrix_sethsv(32, 102, 255); // Set all LEDs to natural white
+                rgb_matrix_sethsv(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
                 rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key

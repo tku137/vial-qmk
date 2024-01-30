@@ -18,7 +18,7 @@
 
 ## Hardware features
 
-RGBLIGHT_ENABLE = yes
+# RGBLIGHT_ENABLE = yes
 
 # OLED: optional, can be installed in socket
 OLED_ENABLE = yes          # Enable OLEDs, `yes` or `no`
@@ -42,6 +42,7 @@ NKRO_ENABLE = yes          # Enable N-Key Rollover
 
 VIA_ENABLE = yes
 VIAL_ENABLE = yes
+VIALRGB_ENABLE = yes
 ENCODER_MAP_ENABLE = yes
 
 

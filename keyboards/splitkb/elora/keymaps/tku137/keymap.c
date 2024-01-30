@@ -49,6 +49,7 @@ enum custom_keycodes {
     ORNG,              // Custom keycode for cyberpunk orange
     NGRN,              // Custom keycode for cyberpunk green
     ELBL,              // Custom keycode for cyberpunk blue
+    RNBW,              // Custom keycode for rainbow swirl
     // Add other custom keycodes here, if any
 };
 
@@ -202,7 +203,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_ADJUST] = LAYOUT_myr(
       _______, _______, _______, _______, _______, QK_BOOT,         _______, _______,          _______, _______, _______, _______,  _______, _______,
       _______, _______, _______, QWERTY , KC_BRIU, _______,         _______, _______,           NWHT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL  ,
-      _______, _______, _______, _______, KC_BRID, _______,         _______, _______,         RGB_M_SW, RGB_SAI, RGB_HUI, RGB_VAI,  RGB_MOD, _______,
+      _______, _______, _______, _______, KC_BRID, _______,         _______, _______,           RNBW  , RGB_SAI, RGB_HUI, RGB_VAI,  RGB_MOD, _______,
       _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_TOG, RGB_SAD, RGB_HUD, RGB_VAD, RGB_RMOD, _______,
                                  _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
 
@@ -346,51 +347,57 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 
 
 void keyboard_post_init_user(void) {
-    rgblight_enable_noeeprom(); // Enables RGB, without saving settings
-    // rgblight_sethsv_noeeprom(42, 24, 255); // Set all LEDs to cold white
-    rgblight_sethsv_noeeprom(32, 153, 255); // Set all LEDs to natural white
-    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-    // rgblight_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
+    rgb_matrix_enable_noeeprom(); // Enables RGB, without saving settings
+    // rgb_matrix_sethsv_noeeprom(42, 24, 255); // Set all LEDs to cold white
+    rgb_matrix_sethsv_noeeprom(32, 153, 255); // Set all LEDs to natural white
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+    // rgb_matrix_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
 }
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        case RNBW:
+            if (record->event.pressed) {
+                rgb_matrix_mode(RGB_MATRIX_RAINBOW_MOVING_CHEVRON); // or RGB_MATRIX_CYCLE_ALL
+                rgb_matrix_set_speed(10); // 0-255
+            }
+            return false; // Skip further processing of this key
         case NWHT:
             if (record->event.pressed) {
                 // rgblight_sethsv(42, 24, 255); // Set all LEDs to cold white
-                rgblight_sethsv(32, 153, 255); // Set all LEDs to natural white
-                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgb_matrix_sethsv(32, 102, 255); // Set all LEDs to natural white
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case TRQS:
             if (record->event.pressed) {
-                rgblight_sethsv(118, 183, 209); // Set all LEDs to cyberpunk turquoise
-                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgb_matrix_sethsv(118, 183, 209); // Set all LEDs to cyberpunk turquoise
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case PRPL:
             if (record->event.pressed) {
-                rgblight_sethsv(212, 255, 128); // Set all LEDs to cyberpunk purple
-                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgb_matrix_sethsv(212, 255, 128); // Set all LEDs to cyberpunk purple
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case ORNG:
             if (record->event.pressed) {
-                rgblight_sethsv(27, 255, 255); // Set all LEDs to cyberpunk orange
-                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgb_matrix_sethsv(27, 255, 255); // Set all LEDs to cyberpunk orange
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case NGRN:
             if (record->event.pressed) {
-                rgblight_sethsv(78, 235, 255); // Set all LEDs to cyberpunk green
-                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgb_matrix_sethsv(78, 235, 255); // Set all LEDs to cyberpunk green
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case ELBL:
             if (record->event.pressed) {
-                rgblight_sethsv(146, 255, 255); // Set all LEDs to cyberpunk blue
-                rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
+                rgb_matrix_sethsv(146, 255, 255); // Set all LEDs to cyberpunk blue
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         default:

@@ -22,8 +22,13 @@
 // Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed
 #define DEBOUNCE 5
 
-
 /// Vial-specific settings
+
+// Increase the EEPROM size for layout options
+#define VIA_EEPROM_LAYOUT_OPTIONS_SIZE 2
+
+#define RGB_MATRIX_FRAMEBUFFER_EFFECTS
+#define RGB_MATRIX_KEYPRESSES
 
 // Default is 2, needed because keymap has 7 layers
 #define DYNAMIC_KEYMAP_LAYER_COUNT 6
@@ -49,4 +54,4 @@
 
 
 // RGB magic
-#define RGBLIGHT_EFFECT_RAINBOW_SWIRL
+#define ENABLE_RGB_MATRIX_RAINBOW_MOVING_CHEVRON

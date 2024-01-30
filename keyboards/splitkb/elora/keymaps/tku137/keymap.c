@@ -347,7 +347,8 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 
 void keyboard_post_init_user(void) {
     rgblight_enable_noeeprom(); // Enables RGB, without saving settings
-    rgblight_sethsv_noeeprom(42, 24, 255);
+    // rgblight_sethsv_noeeprom(42, 24, 255); // Set all LEDs to cold white
+    rgblight_sethsv_noeeprom(32, 153, 255); // Set all LEDs to natural white
     rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
     // rgblight_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
 }
@@ -357,7 +358,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case NWHT:
             if (record->event.pressed) {
-                rgblight_sethsv(42, 24, 255); // Set all LEDs to natural white
+                // rgblight_sethsv(42, 24, 255); // Set all LEDs to cold white
+                rgblight_sethsv(32, 153, 255); // Set all LEDs to natural white
                 rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
             }
             return false; // Skip further processing of this key

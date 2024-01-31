@@ -20,11 +20,14 @@
 
 #include "spi_master.h"
 #include "matrix.h"
+#include "keyboard.h"
 
 #include "myriad.h"
 
 // Needed for early boot
 #include "hardware/xosc.h"
+
+bool is_oled_enabled = true;
 
 //// Early boot
 
@@ -303,6 +306,13 @@ bool oled_task_kb(void) {
         return false;
     }
 
+    if (!is_oled_enabled) {
+        oled_off();
+        return false;
+    } else  {
+        oled_on();
+    }
+
     if (is_keyboard_master()) {
         oled_write_P(PSTR("Elora rev1\n\n"), false);
 
@@ -346,6 +356,10 @@ bool oled_task_kb(void) {
     }
 
     return false;
+}
+
+void housekeeping_task_kb(void) {
+    is_oled_enabled = last_input_activity_elapsed() < 60000;
 }
 #endif
 

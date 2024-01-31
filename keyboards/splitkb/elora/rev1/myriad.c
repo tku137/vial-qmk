@@ -213,11 +213,11 @@ static void myr_encoder_init(void) {
     setPinInputHigh(MYRIAD_GPIO3); // B
 }
 
-//static uint16_t myr_joystick_timer;
+static uint16_t myr_joystick_timer;
 static void myr_joystick_init(void) {
-    setPinInput(MYRIAD_ADC1); // Y
-    setPinInput(MYRIAD_ADC2); // X
     setPinInputHigh(MYRIAD_GPIO1); // Press
+
+    myr_joystick_timer = timer_read();
 }
 
 // Make sure any card present is ready for use
@@ -243,7 +243,6 @@ static myriad_card_t myriad_card_init(void) {
         default:
             break;
     }
-
     return card;
 }
 
@@ -282,6 +281,13 @@ void myriad_hook_encoder(uint8_t count, bool pads[]) {
 report_mouse_t pointing_device_driver_get_report(report_mouse_t mouse_report) {
     if (myriad_card_init() != SKB_JOYSTICK) { return mouse_report; }
 
+    if (timer_elapsed(myr_joystick_timer) < 10) {
+        wait_ms(2);
+        return mouse_report;
+    }
+
+    myr_joystick_timer = timer_read();
+
     // `analogReadPin` returns 0..1023
     int32_t y = (analogReadPin(MYRIAD_ADC1) - 512) * -1; // Note: axis is flipped
     int32_t x = analogReadPin(MYRIAD_ADC2) - 512;
@@ -310,6 +316,11 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t mouse_report) {
     mouse_report.y = y;
 
     return mouse_report;
+}
+
+void pointing_device_driver_init(void) {
+    setPinInput(MYRIAD_ADC1); // Y
+    setPinInput(MYRIAD_ADC2); // X
 }
 
 void myriad_task(void) {

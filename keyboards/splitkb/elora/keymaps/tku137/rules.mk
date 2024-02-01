@@ -18,6 +18,10 @@
 
 ## Hardware features
 
+POINTING_DEVICE_ENABLE = yes
+POINTING_DEVICE_DRIVER = pimoroni_trackball
+PIMORONI_TRACKBALL_SCALE = 10
+
 # RGBLIGHT_ENABLE = yes
 
 # OLED: optional, can be installed in socket

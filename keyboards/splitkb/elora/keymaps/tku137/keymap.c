@@ -60,6 +60,7 @@ enum custom_keycodes {
     NGRN,              // Custom keycode for cyberpunk green
     ELBL,              // Custom keycode for cyberpunk blue
     RNBW,              // Custom keycode for rainbow swirl
+    SCR_TGL,           // Custom keycode for toggling scroll lock
     // Add other custom keycodes here, if any
 };
 
@@ -124,7 +125,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
       _______, _______, _______, _______, _______, _______,          _______, _______,          KC_PGUP, KC_HOME, KC_UP  , KC_END , KC_VOLU, KC_DEL ,
       _______, KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI, KC_HYPR,          _______, _______,          KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_VOLD, KC_INS ,
-      _______, _______, _______, _______, _______, _______, MICMUTE, _______, _______, _______,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, MICMUTE,
+      _______, _______, _______, _______, _______, _______, MICMUTE, _______, _______, SCR_TGL,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, MICMUTE,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
@@ -362,11 +363,22 @@ void keyboard_post_init_user(void) {
     rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
     rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
     // rgb_matrix_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
+    pimoroni_trackball_set_rgbw(0, 0, 0, 150);
 }
 
+static bool is_scrolling = false; // Tracks the current mode - scrolling or cursor movement
+
+void toggle_scrolling_mode(void) {
+    is_scrolling = !is_scrolling;
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        case SCR_TGL:
+            if (record->event.pressed) {
+                toggle_scrolling_mode(); // Toggle the scrolling mode on key press
+            }
+            return false; // Skip further processing of this key
         case RNBW:
             if (record->event.pressed) {
                 rgb_matrix_mode(RGB_MATRIX_RAINBOW_MOVING_CHEVRON); // or RGB_MATRIX_CYCLE_ALL
@@ -430,5 +442,56 @@ bool oled_task_user(void) {
     }
 
     return false;
+}
+
+
+// Pointing device settings
+
+static report_mouse_t ema_mouse_report = {0}; // EMA smoothed report
+static const float ema_alpha = 0.2; // Smoothing factor, adjust as needed (0 < alpha < 1)
+static const float sensitivity = 0.5; // Sensitivity adjustment, adjust as needed
+
+static report_mouse_t debounced_mouse_report = {0};  // To store the debounced values
+static const int debounce_threshold = 5;  // Threshold for debouncing, adjust as needed
+
+report_mouse_t debounce_trackball(report_mouse_t mouse_report) {
+    // Debounce X movement
+    if (abs(mouse_report.x - debounced_mouse_report.x) > debounce_threshold) {
+        debounced_mouse_report.x = mouse_report.x;
+    }
+
+    // Debounce Y movement
+    if (abs(mouse_report.y - debounced_mouse_report.y) > debounce_threshold) {
+        debounced_mouse_report.y = mouse_report.y;
+    }
+
+    return debounced_mouse_report;
+}
+
+
+report_mouse_t smooth_mouse_movement(report_mouse_t mouse_report) {
+    // Adjust sensitivity
+    mouse_report.x *= sensitivity;
+    mouse_report.y *= sensitivity;
+
+    if (!is_scrolling) {
+        // Apply EMA for cursor movement smoothing
+        ema_mouse_report.x = (ema_alpha * mouse_report.x) + ((1 - ema_alpha) * ema_mouse_report.x);
+        ema_mouse_report.y = (ema_alpha * mouse_report.y) + ((1 - ema_alpha) * ema_mouse_report.y);
+    } else {
+        // Apply EMA for scrolling smoothing
+        ema_mouse_report.h = (ema_alpha * mouse_report.x) + ((1 - ema_alpha) * ema_mouse_report.h);
+        ema_mouse_report.v = (ema_alpha * mouse_report.y) + ((1 - ema_alpha) * ema_mouse_report.v);
+        ema_mouse_report.x = 0; // Neutralize cursor movement in scroll mode
+        ema_mouse_report.y = 0;
+    }
+
+    return ema_mouse_report; // Return the EMA smoothed report
+}
+
+report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    mouse_report = debounce_trackball(mouse_report);
+    mouse_report = smooth_mouse_movement(mouse_report);
+    return mouse_report;
 }
 

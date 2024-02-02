@@ -54,3 +54,5 @@ ENCODER_MAP_ENABLE = yes
 # possibility to change rendering completely
 SRC += cyberdeck.c
 # SRC += terminal.c
+
+CONSOLE_ENABLE = yes

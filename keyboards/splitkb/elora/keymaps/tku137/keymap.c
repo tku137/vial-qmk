@@ -364,6 +364,9 @@ void keyboard_post_init_user(void) {
     rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
     // rgb_matrix_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
     pimoroni_trackball_set_rgbw(0, 0, 0, 150);
+
+    debug_enable=true;
+    debug_matrix=true;
 }
 
 static bool is_scrolling = false; // Tracks the current mode - scrolling or cursor movement

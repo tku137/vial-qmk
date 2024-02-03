@@ -40,8 +40,13 @@
 
 
 // Fix idle right half
+// #define SPLIT_USB_DETECT
 // #define SPLIT_USB_TIMEOUT 10000
 // #define SPLIT_USB_TIMEOUT_POLL 10
+// #define SPLIT_WATCHDOG_ENABLE
+// #define EE_HANDS
+// #define MASTER_LEFT
+
 
 // enable information transmitting
 // #define SPLIT_TRANSPORT_MIRROR

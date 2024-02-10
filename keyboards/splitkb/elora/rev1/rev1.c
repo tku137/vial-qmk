@@ -20,11 +20,14 @@
 
 #include "spi_master.h"
 #include "matrix.h"
+#include "keyboard.h"
 
 #include "myriad.h"
 
 // Needed for early boot
 #include "hardware/xosc.h"
+
+bool is_oled_enabled = true;
 
 //// Early boot
 
@@ -281,7 +284,7 @@ led_config_t g_led_config = {
         {224, 0},  // 8
         {224, 64}, // 9
         {179, 64}, // 10
-        {134, 0}   // 11
+        {134, 64}   // 11
     }, 
     {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
@@ -301,6 +304,13 @@ oled_rotation_t oled_init_kb(oled_rotation_t rotation) {
 bool oled_task_kb(void) {
     if (!oled_task_user()) {
         return false;
+    }
+
+    if (!is_oled_enabled) {
+        oled_off();
+        return false;
+    } else  {
+        oled_on();
     }
 
     if (is_keyboard_master()) {
@@ -346,6 +356,10 @@ bool oled_task_kb(void) {
     }
 
     return false;
+}
+
+void housekeeping_task_kb(void) {
+    is_oled_enabled = last_input_activity_elapsed() < 60000;
 }
 #endif
 

@@ -41,19 +41,20 @@
 #define ESSZ    RALT(KC_S)
 
 
-// Default natural white color
+// struct to hold HSV color values
 typedef struct {
     uint16_t hue;
     uint8_t sat;
     uint8_t val;
 } hsv_color_t;
 
+// Default natural white color
 const hsv_color_t default_color = {32, 102, 255}; // Define default color
 
 
 // Define custom keycodes
 enum custom_keycodes {
-    NWHT = SAFE_RANGE, // Custom keycode for natural white
+    DFLT = SAFE_RANGE, // Custom keycode for natural white
     TRQS,              // Custom keycode for cyberpunk turquoise
     PRPL,              // Custom keycode for cyberpunk purple
     ORNG,              // Custom keycode for cyberpunk orange
@@ -199,9 +200,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |        |      |      |QWERTY|Brite+|      |      |      |  |      |      | White| Turq | Purp | Oran | Gree |  Blue  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |      |      |      |Brite-|      |      |      |  |      |      | Rnbw | HUI  | SAI  | VAI  | MOD  |        |
+ * |        |      |      |      |Brite-|      |      |      |  |      |      | Rnbw | HUI  | SAI  | VAI  | SPI  |  MOD   |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |      |  |      |      | RGB  | HUD  | SAD  | VAD  | RMOD |        |
+ * |        |      |      |      |      |      |      |      |  |      |      | RGB  | HUD  | SAD  | VAD  | SPD  |  RMOD  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -213,9 +214,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_ADJUST] = LAYOUT_myr(
       _______, _______, _______, _______, _______, QK_BOOT,         _______, _______,          _______, _______, _______, _______,  _______, _______,
-      _______, _______, _______, QWERTY , KC_BRIU, _______,         _______, _______,           NWHT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL  ,
-      _______, _______, _______, _______, KC_BRID, _______,         _______, _______,           RNBW  , RGB_HUI, RGB_SAI, RGB_VAI,  RGB_MOD, _______,
-      _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_TOG, RGB_HUD, RGB_SAD, RGB_VAD, RGB_RMOD, _______,
+      _______, _______, _______, QWERTY , KC_BRIU, _______,         _______, _______,           DFLT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL  ,
+      _______, _______, _______, _______, KC_BRID, _______,         _______, _______,           RNBW  , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
+      _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_TOG, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD ,RGB_RMOD,
                                  _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
@@ -357,10 +358,10 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 };
 
 
+// This is run at boot
 void keyboard_post_init_user(void) {
     rgb_matrix_enable_noeeprom(); // Enables RGB, without saving settings
-    // rgb_matrix_sethsv_noeeprom(42, 24, 255); // Set all LEDs to cold white
-    rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
+    rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to default color
     rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
     // rgb_matrix_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_SWIRL);
     pimoroni_trackball_set_rgbw(0, 0, 0, 150);
@@ -375,6 +376,7 @@ void toggle_scrolling_mode(void) {
     is_scrolling = !is_scrolling;
 }
 
+// Custom keycode handling
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case SCR_TGL:
@@ -383,55 +385,62 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false; // Skip further processing of this key
         case RNBW:
+            // When the key is pressed, set the RGB matrix to rainbow swirl mode
             if (record->event.pressed) {
-                rgb_matrix_mode(RGB_MATRIX_RAINBOW_MOVING_CHEVRON); // or RGB_MATRIX_CYCLE_ALL
-                rgb_matrix_set_speed(10); // 0-255
-                rgb_matrix_sethsv(default_color.hue, 255, default_color.val); // Set all LEDs to natural white
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_RAINBOW_MOVING_CHEVRON);
+                rgb_matrix_set_speed_noeeprom(10); // 0-255
+                rgb_matrix_sethsv_noeeprom(default_color.hue, 255, default_color.val);
             }
             return false; // Skip further processing of this key
-        case NWHT:
+        case DFLT:
+            // When the key is pressed, set the RGB matrix to default color
             if (record->event.pressed) {
-                // rgblight_sethsv(42, 24, 255); // Set all LEDs to cold white
-                rgb_matrix_sethsv(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
-                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case TRQS:
+            // When the key is pressed, set the RGB matrix to cyberpunk turquoise
             if (record->event.pressed) {
-                rgb_matrix_sethsv(118, 183, 209); // Set all LEDs to cyberpunk turquoise
-                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv_noeeprom(118, 183, 209);
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case PRPL:
+            // When the key is pressed, set the RGB matrix to cyberpunk purple
             if (record->event.pressed) {
-                rgb_matrix_sethsv(212, 255, 128); // Set all LEDs to cyberpunk purple
-                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv_noeeprom(212, 255, 128);
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case ORNG:
+            // When the key is pressed, set the RGB matrix to cyberpunk orange
             if (record->event.pressed) {
-                rgb_matrix_sethsv(27, 255, 255); // Set all LEDs to cyberpunk orange
-                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv_noeeprom(27, 255, 255);
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case NGRN:
+            // When the key is pressed, set the RGB matrix to cyberpunk green
             if (record->event.pressed) {
-                rgb_matrix_sethsv(78, 235, 255); // Set all LEDs to cyberpunk green
-                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv_noeeprom(78, 235, 255);
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case ELBL:
+            // When the key is pressed, set the RGB matrix to cyberpunk blue
             if (record->event.pressed) {
-                rgb_matrix_sethsv(146, 255, 255); // Set all LEDs to cyberpunk blue
-                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv_noeeprom(146, 255, 255);
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         default:
             return true; // Process all other keycodes normally
     }
 }
-// NWHT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL
 
+
+// OLED handling
 bool oled_task_user(void) {
 
     if (is_keyboard_master()) {

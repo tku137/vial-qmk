@@ -16,7 +16,11 @@
 #define NORMAL_ANIM_SPEED 60 // Animation for 30-60 WPM
 #define FAST_ANIM_SPEED 60 // Animation for above 60 WPM
 
-#define ANIM_FRAME_DURATION 200 // Duration of each frame in ms
+// #define ANIM_FRAME_DURATION 200 // Duration of each frame in ms
+#define IDLE_ANIM_FRAME_DURATION 100 // Duration of each frame in ms
+#define SLOW_ANIM_FRAME_DURATION 100 // Duration of each frame in ms
+#define NORMAL_ANIM_FRAME_DURATION 100 // Duration of each frame in ms
+#define FAST_ANIM_FRAME_DURATION 100 // Duration of each frame in ms
 #define ANIM_SIZE 512 // Placeholder for animation frame size
 
 

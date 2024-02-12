@@ -119,20 +119,38 @@ void render_cyberdeck(void) {
 
 
 // WPM-responsive animation rendering
-uint32_t anim_timer = 0;
-uint8_t current_frame = 0;
 
+// Function to calculate animation frame duration based on WPM
+uint16_t calculate_frame_duration(uint16_t wpm) {
+    // Define ranges and corresponding frame durations
+    if (wpm > FAST_ANIM_SPEED) {
+        return FAST_ANIM_FRAME_DURATION; // Faster animation for high WPM
+    } else if (wpm > NORMAL_ANIM_SPEED) {
+        return NORMAL_ANIM_FRAME_DURATION; // Medium animation speed
+    } else if (wpm > SLOW_ANIM_SPEED) {
+        return SLOW_ANIM_FRAME_DURATION; // Slower animation for low WPM
+    } else {
+        return IDLE_ANIM_FRAME_DURATION; // Idle or very slow typing speed
+    }
+}
+
+// Main render function for WPM-based animation
 void render_wpm_based_animation(void) {
+    static uint32_t anim_timer = 0;
+    static uint8_t current_frame = 0;
+
     uint8_t frame_count;
     const char (*anim_frames)[ANIM_SIZE];
+    uint16_t current_wpm = get_current_wpm();
+    uint16_t frame_duration = calculate_frame_duration(current_wpm);
 
-    if (get_current_wpm() > FAST_ANIM_SPEED) {
+    if (current_wpm > FAST_ANIM_SPEED) {
         frame_count = FAST_ANIM_FRAMES;
         anim_frames = fast_frames;
-    } else if (get_current_wpm() > NORMAL_ANIM_SPEED) {
+    } else if (current_wpm > NORMAL_ANIM_SPEED) {
         frame_count = NORMAL_ANIM_FRAMES;
         anim_frames = normal_frames;
-    } else if (get_current_wpm() > SLOW_ANIM_SPEED) {
+    } else if (current_wpm > SLOW_ANIM_SPEED) {
         frame_count = SLOW_ANIM_FRAMES;
         anim_frames = slow_frames;
     } else {
@@ -140,7 +158,7 @@ void render_wpm_based_animation(void) {
         anim_frames = idle_frames;
     }
 
-    if (timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
+    if (timer_elapsed32(anim_timer) > frame_duration) {
         anim_timer = timer_read32();
         oled_write_raw_P(anim_frames[current_frame], ANIM_SIZE);
         current_frame = (current_frame + 1) % frame_count;
@@ -148,6 +166,10 @@ void render_wpm_based_animation(void) {
 }
 
 
+// Main render functions
+// These functions are called in the `oled_task_user` function
+// They are meant as an interface to minimize maintenance when switching to
+// other oled libraries or display types
 void render_master(void) {
     render_cyberdeck();
 }

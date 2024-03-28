@@ -4,11 +4,10 @@
 #include "layers.h"
 #include "cyberdeck.h"
 
-
 // Host keyboard layer status
 void render_layer_status(uint8_t start_row) {
     oled_set_cursor(0, start_row);
-    switch (get_highest_layer(layer_state  | default_layer_state)) {
+    switch (get_highest_layer(layer_state | default_layer_state)) {
         case _QWERTY:
             oled_write_raw_P(base, sizeof(base));
             break;
@@ -29,8 +28,7 @@ void render_layer_status(uint8_t start_row) {
     }
 }
 
-
-//Host Keyboard LED Status
+// Host Keyboard LED Status
 void render_led_status(uint8_t start_row) {
     oled_set_cursor(0, start_row);
     led_t led_usb_state = host_keyboard_led_state();
@@ -40,7 +38,6 @@ void render_led_status(uint8_t start_row) {
         oled_write_raw_P(caps_off, sizeof(caps_off));
     }
 }
-
 
 void render_modifier_cmd_opt(uint8_t mods) {
     if (mods & MOD_MASK_GUI) {
@@ -75,7 +72,6 @@ void render_modifier_ctrl_shift(uint8_t mods) {
 }
 
 void render_modifiers(uint8_t start_row) {
-
     // Get the current modifiers
     uint8_t modifiers = get_mods() | get_oneshot_mods();
 
@@ -90,7 +86,6 @@ void render_modifiers(uint8_t start_row) {
 
 // Render OLED display parts
 void render_cyberdeck(void) {
-
     // Part 1: Top decoration, Elora banner
     oled_write_raw_P(top, sizeof(top));
 
@@ -114,9 +109,7 @@ void render_cyberdeck(void) {
     // Part 7: Bottom decoration, tku137
     oled_set_cursor(0, 14);
     oled_write_raw_P(tku137, sizeof(tku137));
-
 }
-
 
 // WPM-responsive animation rendering
 
@@ -136,12 +129,12 @@ uint16_t calculate_frame_duration(uint16_t wpm) {
 
 // Main render function for WPM-based animation
 void render_wpm_based_animation(void) {
-    static uint32_t anim_timer = 0;
-    static uint8_t current_frame = 0;
+    static uint32_t anim_timer    = 0;
+    static uint8_t  current_frame = 0;
 
     uint8_t frame_count;
-    const char (*anim_frames)[ANIM_SIZE];
-    uint16_t current_wpm = get_current_wpm();
+    const char(*anim_frames)[ANIM_SIZE];
+    uint16_t current_wpm    = get_current_wpm();
     uint16_t frame_duration = calculate_frame_duration(current_wpm);
 
     if (current_wpm > FAST_ANIM_SPEED) {
@@ -165,15 +158,62 @@ void render_wpm_based_animation(void) {
     }
 }
 
+// Draw a column on the OLED buffer
+void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
+    for (uint8_t i = 0; i < height; i++) {
+        for (uint8_t j = 0; j < width; j++) {
+            oled_write_pixel(x + j, y + i, true);
+        }
+    }
+}
+
+// Drawing function for WPM-based columns
+void draw_wpm_columns(uint16_t wpm) {
+    // Constants for column widths, heights, and spacing
+    const uint8_t column_width      = (OLED_HEIGHT / 3) - COLUMN_SPACING;
+    const uint8_t max_column_height = OLED_WIDTH - BASE_HEIGHT;
+
+    // Calculate base heights for the columns based on WPM
+    uint8_t column_heights[3];
+    for (int i = 0; i < 3; ++i) {
+        column_heights[i] = BASE_HEIGHT + (wpm / WPM_HEIGHT_RATIO);
+    }
+
+    // Add wobble effect by adding or subtracting a small value to the column heights
+    for (int i = 0; i < 3; ++i) {
+        int wobble = rand() % MAX_WOBBLE_HEIGHT;
+        column_heights[i] += wobble;
+        column_heights[i] = column_heights[i] > max_column_height ? max_column_height : column_heights[i];
+    }
+
+    // Clear OLED buffer
+    oled_clear();
+
+    // Draw the columns with current heights
+    for (int i = 0; i < 3; ++i) {
+        oled_draw_column(COLUMN_START_X + (i * (column_width + COLUMN_SPACING)), COLUMN_START_Y, column_width, column_heights[i]);
+    }
+
+    // Push the buffer to the OLED
+    oled_render();
+}
+
+// Function to call from the main loop
+void render_wpm_columns_animation(void) {
+    uint16_t current_wpm = get_current_wpm();
+    draw_wpm_columns(current_wpm);
+}
 
 // Main render functions
 // These functions are called in the `oled_task_user` function
 // They are meant as an interface to minimize maintenance when switching to
 // other oled libraries or display types
 void render_master(void) {
-    render_cyberdeck();
+    // render_cyberdeck();
+    render_wpm_columns_animation();
 }
 
 void render_slave(void) {
-    render_wpm_based_animation();
+    // render_wpm_based_animation();
+    render_wpm_columns_animation();
 }

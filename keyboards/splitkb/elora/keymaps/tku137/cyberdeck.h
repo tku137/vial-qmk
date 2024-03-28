@@ -24,7 +24,7 @@
 
 // Constants for drawing columns
 #define BASE_HEIGHT 5         // Minimum column height when idle
-#define COLUMN_AREA_HEIGHT 64 // Maximum column height
+#define MAX_COLUMN_HEIGHT 64 // Maximum column height
 #define WPM_HEIGHT_RATIO 2    // Ratio to calculate height based on WPM
 #define MAX_WOBBLE_HEIGHT 3   // Max height variation for wobble effect
 #define WPM_WOBBLE_RATIO 20   // Adjust this ratio to control how much wobble effect increases with WPM

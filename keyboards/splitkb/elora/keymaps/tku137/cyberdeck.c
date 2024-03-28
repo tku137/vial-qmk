@@ -159,10 +159,10 @@ void render_wpm_based_animation(void) {
 }
 
 // Draw a column on the OLED buffer
-void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
+void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool fill) {
     for (uint8_t i = 0; i < height; i++) {
         for (uint8_t j = 0; j < width; j++) {
-            oled_write_pixel(x + j, y + i, true);
+            oled_write_pixel(x + j, y + i, fill);
         }
     }
 }
@@ -174,7 +174,6 @@ void draw_wpm_columns(uint16_t wpm) {
     const uint8_t column_start_xs[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_START_X};
 
     // Constants for column widths, heights, and spacing
-    // const uint8_t column_width      = (OLED_HEIGHT / 3) - COLUMN_SPACING;
     const uint8_t max_column_height = OLED_WIDTH - BASE_HEIGHT;
 
     // Calculate dynamic wobble effect
@@ -182,7 +181,9 @@ void draw_wpm_columns(uint16_t wpm) {
     max_wobble         = max_wobble > MAX_WOBBLE_HEIGHT ? MAX_WOBBLE_HEIGHT : max_wobble; // Clamp the value to the max height
 
     // Clear OLED buffer
-    oled_clear();
+    for (int i = 0; i < 3; ++i) {
+        oled_draw_column(column_start_xs[i], COLUMN_START_Y, column_widths[i], max_column_height, false);
+    }
 
     // Apply the wobble effect and draw the columns
     for (int i = 0; i < 3; ++i) {
@@ -194,7 +195,7 @@ void draw_wpm_columns(uint16_t wpm) {
         column_height         = MIN(MAX(column_height, BASE_HEIGHT), max_column_height);
 
         // Draw the column at the specified location with calculated height and width
-        oled_draw_column(column_start_xs[i], COLUMN_START_Y, column_widths[i], column_height);
+        oled_draw_column(column_start_xs[i], COLUMN_START_Y, column_widths[i], column_height, true);
     }
 
     // Push the buffer to the OLED

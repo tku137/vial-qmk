@@ -179,11 +179,16 @@ void draw_wpm_columns(uint16_t wpm) {
         column_heights[i] = BASE_HEIGHT + (wpm / WPM_HEIGHT_RATIO);
     }
 
-    // Add wobble effect by adding or subtracting a small value to the column heights
+    // Calculate dynamic wobble effect
+    uint8_t max_wobble = wpm / WPM_WOBBLE_RATIO;
+    max_wobble         = max_wobble > MAX_WOBBLE_HEIGHT ? MAX_WOBBLE_HEIGHT : max_wobble; // Clamp the value to the max height
+
+    // Apply the wobble effect
     for (int i = 0; i < 3; ++i) {
-        int wobble = rand() % MAX_WOBBLE_HEIGHT;
+        int wobble = (rand() % (max_wobble * 2 + 1)) - max_wobble; // This creates a wobble effect that varies from -max_wobble to max_wobble
         column_heights[i] += wobble;
         column_heights[i] = column_heights[i] > max_column_height ? max_column_height : column_heights[i];
+        column_heights[i] = column_heights[i] < BASE_HEIGHT ? BASE_HEIGHT : column_heights[i]; // Prevent the column from going below the base height
     }
 
     // Clear OLED buffer

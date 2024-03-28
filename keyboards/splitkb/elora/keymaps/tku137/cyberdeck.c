@@ -169,8 +169,12 @@ void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
 
 // Drawing function for WPM-based columns
 void draw_wpm_columns(uint16_t wpm) {
+    // Define column start points and widths based on clamp positions
+    const uint8_t column_widths[]   = {COLUMN1_END_X - COLUMN1_START_X, COLUMN2_END_X - COLUMN2_START_X, COLUMN3_END_X - COLUMN3_START_X};
+    const uint8_t column_start_xs[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_START_X};
+
     // Constants for column widths, heights, and spacing
-    const uint8_t column_width      = (OLED_HEIGHT / 3) - COLUMN_SPACING;
+    // const uint8_t column_width      = (OLED_HEIGHT / 3) - COLUMN_SPACING;
     const uint8_t max_column_height = OLED_WIDTH - BASE_HEIGHT;
 
     // Calculate base heights for the columns based on WPM
@@ -196,7 +200,13 @@ void draw_wpm_columns(uint16_t wpm) {
 
     // Draw the columns with current heights
     for (int i = 0; i < 3; ++i) {
-        oled_draw_column(COLUMN_START_X + (i * (column_width + COLUMN_SPACING)), COLUMN_START_Y, column_width, column_heights[i]);
+        uint8_t column_height  = column_heights[i];
+        uint8_t column_width   = column_widths[i];
+        uint8_t column_start_x = column_start_xs[i];
+
+        oled_draw_column(column_start_x, COLUMN_START_Y, column_width, column_height);
+
+        // oled_draw_column(COLUMN_START_X + (i * (column_width + COLUMN_SPACING)), COLUMN_START_Y, column_width, column_heights[i]);
     }
 
     // Push the buffer to the OLED

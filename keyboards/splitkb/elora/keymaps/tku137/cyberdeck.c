@@ -200,7 +200,13 @@ void draw_wpm_columns(uint16_t wpm) {
 
 // Function to call from the main loop
 void render_wpm_columns_animation(void) {
+    // get the current words per minute
     uint16_t current_wpm = get_current_wpm();
+
+    // render the static background image
+    oled_write_raw_P(wpm_background, sizeof(wpm_background));
+
+    // render the dynamic columns based on the current WPM
     draw_wpm_columns(current_wpm);
 }
 

@@ -170,7 +170,7 @@ void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool 
 // Constants for column configuration
 const uint8_t COLUMN_WIDTHS[]   = {COLUMN1_END_X - COLUMN1_START_X, COLUMN2_END_X - COLUMN2_START_X, COLUMN3_END_X - COLUMN3_START_X};
 const uint8_t COLUMN_START_XS[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_START_X};
-const uint8_t MAX_COLUMN_HEIGHT = COLUMN_AREA_HEIGHT - BASE_HEIGHT;
+const uint8_t MAX_COLUMN_HEIGHT = COLUMN_AREA_HEIGHT;
 
 // Drawing function for WPM-based columns
 void draw_wpm_columns(uint16_t wpm) {

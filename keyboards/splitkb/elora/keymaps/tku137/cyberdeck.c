@@ -215,11 +215,9 @@ void render_wpm_columns_animation(void) {
 // They are meant as an interface to minimize maintenance when switching to
 // other oled libraries or display types
 void render_master(void) {
-    // render_cyberdeck();
-    render_wpm_columns_animation();
+    render_cyberdeck();
 }
 
 void render_slave(void) {
-    // render_wpm_based_animation();
     render_wpm_columns_animation();
 }

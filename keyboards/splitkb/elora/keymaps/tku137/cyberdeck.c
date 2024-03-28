@@ -180,13 +180,11 @@ void draw_wpm_columns(uint16_t wpm) {
     uint8_t max_wobble = wpm / WPM_WOBBLE_RATIO;
     max_wobble         = max_wobble > MAX_WOBBLE_HEIGHT ? MAX_WOBBLE_HEIGHT : max_wobble; // Clamp the value to the max height
 
-    // Clear OLED buffer
-    for (int i = 0; i < 3; ++i) {
-        oled_draw_column(column_start_xs[i], COLUMN_START_Y, column_widths[i], max_column_height, false);
-    }
-
     // Apply the wobble effect and draw the columns
     for (int i = 0; i < 3; ++i) {
+        // Clear the column at the specified location
+        oled_draw_column(column_start_xs[i], COLUMN_START_Y, column_widths[i], max_column_height, false);
+
         // Adjust wobble for each column
         int wobble = (rand() % (max_wobble * 2 + 1)) - max_wobble;
 

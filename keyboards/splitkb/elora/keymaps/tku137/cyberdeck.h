@@ -31,7 +31,7 @@
 #define MAX_WOBBLE_HEIGHT 3 // Max height variation for wobble effect
 #define WPM_WOBBLE_RATIO 20 // Adjust this ratio to control how much wobble effect increases with WPM
 // #define COLUMN_START_X 0    // X-coordinate for the first column
-#define COLUMN_START_Y 24 // Y-coordinate for the columns
+#define COLUMN_START_Y 104 // Y-coordinate for the columns
 #define COLUMN1_START_X 13
 #define COLUMN1_END_X 21
 #define COLUMN2_START_X 27

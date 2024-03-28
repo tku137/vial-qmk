@@ -162,7 +162,7 @@ void render_wpm_based_animation(void) {
 void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool fill) {
     for (uint8_t i = 0; i < height; i++) {
         for (uint8_t j = 0; j < width; j++) {
-            oled_write_pixel(x + j, y + i, fill);
+            oled_write_pixel(x + j, y - i, fill);
         }
     }
 }

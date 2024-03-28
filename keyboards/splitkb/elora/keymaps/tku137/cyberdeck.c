@@ -167,15 +167,13 @@ void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool 
     }
 }
 
+// Constants for column configuration
+const uint8_t COLUMN_WIDTHS[]   = {COLUMN1_END_X - COLUMN1_START_X, COLUMN2_END_X - COLUMN2_START_X, COLUMN3_END_X - COLUMN3_START_X};
+const uint8_t COLUMN_START_XS[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_START_X};
+const uint8_t MAX_COLUMN_HEIGHT = COLUMN_AREA_HEIGHT - BASE_HEIGHT;
+
 // Drawing function for WPM-based columns
 void draw_wpm_columns(uint16_t wpm) {
-    // Define column start points and widths based on clamp positions
-    const uint8_t column_widths[]   = {COLUMN1_END_X - COLUMN1_START_X, COLUMN2_END_X - COLUMN2_START_X, COLUMN3_END_X - COLUMN3_START_X};
-    const uint8_t column_start_xs[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_START_X};
-
-    // Constants for column widths, heights, and spacing
-    const uint8_t max_column_height = OLED_DISPLAY_WIDTH - BASE_HEIGHT;
-
     // Calculate dynamic wobble effect
     uint8_t max_wobble = wpm / WPM_WOBBLE_RATIO;
     max_wobble         = max_wobble > MAX_WOBBLE_HEIGHT ? MAX_WOBBLE_HEIGHT : max_wobble; // Clamp the value to the max height
@@ -183,17 +181,17 @@ void draw_wpm_columns(uint16_t wpm) {
     // Apply the wobble effect and draw the columns
     for (int i = 0; i < 3; ++i) {
         // Clear the column at the specified location
-        oled_draw_column(column_start_xs[i], COLUMN_START_Y, column_widths[i], max_column_height, false);
+        oled_draw_column(COLUMN_START_XS[i], COLUMN_START_Y, COLUMN_WIDTHS[i], MAX_COLUMN_HEIGHT, false);
 
         // Adjust wobble for each column
         int wobble = (rand() % (max_wobble * 2 + 1)) - max_wobble;
 
         // Calculate and clamp the column height
         uint8_t column_height = BASE_HEIGHT + (wpm / WPM_HEIGHT_RATIO) + wobble;
-        column_height         = MIN(MAX(column_height, BASE_HEIGHT), max_column_height);
+        column_height         = MIN(MAX(column_height, BASE_HEIGHT), MAX_COLUMN_HEIGHT);
 
         // Draw the column at the specified location with calculated height and width
-        oled_draw_column(column_start_xs[i], COLUMN_START_Y, column_widths[i], column_height, true);
+        oled_draw_column(COLUMN_START_XS[i], COLUMN_START_Y, COLUMN_WIDTHS[i], column_height, true);
     }
 
     // Push the buffer to the OLED

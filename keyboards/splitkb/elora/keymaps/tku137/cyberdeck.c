@@ -174,7 +174,7 @@ void draw_wpm_columns(uint16_t wpm) {
     const uint8_t column_start_xs[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_START_X};
 
     // Constants for column widths, heights, and spacing
-    const uint8_t max_column_height = OLED_WIDTH - BASE_HEIGHT;
+    const uint8_t max_column_height = OLED_DISPLAY_WIDTH - BASE_HEIGHT;
 
     // Calculate dynamic wobble effect
     uint8_t max_wobble = wpm / WPM_WOBBLE_RATIO;

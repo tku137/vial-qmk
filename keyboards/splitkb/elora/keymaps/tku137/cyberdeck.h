@@ -23,14 +23,10 @@
 #define ANIM_SIZE 512                  // Placeholder for animation frame size
 
 // Constants for drawing columns
-#define OLED_WIDTH 128
-#define OLED_HEIGHT 64
-#define COLUMN_SPACING 2    // Space between columns
 #define BASE_HEIGHT 5       // Minimum column height when idle
 #define WPM_HEIGHT_RATIO 2  // Ratio to calculate height based on WPM
 #define MAX_WOBBLE_HEIGHT 3 // Max height variation for wobble effect
 #define WPM_WOBBLE_RATIO 20 // Adjust this ratio to control how much wobble effect increases with WPM
-// #define COLUMN_START_X 0    // X-coordinate for the first column
 #define COLUMN_START_Y 104 // Y-coordinate for the columns
 #define COLUMN1_START_X 13
 #define COLUMN1_END_X 21

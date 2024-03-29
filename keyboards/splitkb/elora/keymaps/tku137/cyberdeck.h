@@ -23,12 +23,12 @@
 #define ANIM_SIZE 512                  // Placeholder for animation frame size
 
 // Constants for drawing columns
-#define BASE_HEIGHT 5         // Minimum column height when idle
+#define TARGET_WPM 70        // Target WPM for the animation
+#define BASE_HEIGHT 5        // Minimum column height when idle
 #define MAX_COLUMN_HEIGHT 64 // Maximum column height
-#define WPM_HEIGHT_RATIO 2    // Ratio to calculate height based on WPM
-#define MAX_WOBBLE_HEIGHT 3   // Max height variation for wobble effect
-#define WPM_WOBBLE_RATIO 20   // Adjust this ratio to control how much wobble effect increases with WPM
-#define COLUMN_START_Y 103    // Y-coordinate for the columns
+#define MAX_WOBBLE_HEIGHT 3  // Max height variation for wobble effect
+#define WPM_WOBBLE_RATIO 20  // Adjust this ratio to control how much wobble effect increases with WPM
+#define COLUMN_START_Y 103   // Y-coordinate for the columns
 #define COLUMN1_START_X 13
 #define COLUMN1_END_X 20
 #define COLUMN2_START_X 27

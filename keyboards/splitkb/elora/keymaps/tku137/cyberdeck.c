@@ -173,9 +173,16 @@ const uint8_t COLUMN_START_XS[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_STA
 
 // Drawing function for WPM-based columns
 void draw_wpm_columns(uint16_t wpm) {
+    // Calculate the height of the column based on the current WPM
+    float   height_ratio   = (float)wpm / TARGET_WPM;
+    uint8_t dynamic_height = (uint8_t)((MAX_COLUMN_HEIGHT - BASE_HEIGHT) * height_ratio);
+
+    // Ensure the dynamic height does not exceed MAX_COLUMN_HEIGHT
+    dynamic_height = MIN(dynamic_height, MAX_COLUMN_HEIGHT);
+
     // Calculate dynamic wobble effect
     uint8_t max_wobble = wpm / WPM_WOBBLE_RATIO;
-    max_wobble         = max_wobble > MAX_WOBBLE_HEIGHT ? MAX_WOBBLE_HEIGHT : max_wobble; // Clamp the value to the max height
+    max_wobble         = MIN(max_wobble, MAX_WOBBLE_HEIGHT); // Clamp the value to the maximum wobble height
 
     // Apply the wobble effect and draw the columns
     for (int i = 0; i < 3; ++i) {
@@ -186,7 +193,7 @@ void draw_wpm_columns(uint16_t wpm) {
         int wobble = (rand() % (max_wobble * 2 + 1)) - max_wobble;
 
         // Calculate and clamp the column height
-        uint8_t column_height = BASE_HEIGHT + (wpm / WPM_HEIGHT_RATIO) + wobble;
+        uint8_t column_height = BASE_HEIGHT + dynamic_height + wobble;
         column_height         = MIN(MAX(column_height, BASE_HEIGHT), MAX_COLUMN_HEIGHT);
 
         // Draw the column at the specified location with calculated height and width

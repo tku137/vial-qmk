@@ -167,12 +167,32 @@ void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool 
     }
 }
 
+// Function to add wobble effect to columns at peak performance
+void add_peak_performance_wobble(uint8_t *column_start_xs, uint8_t *column_start_y, uint16_t wpm) {
+    if (wpm >= TARGET_WPM) {
+        // Apply a random wobble for peak performance
+        for (int i = 0; i < 3; ++i) {
+            int wobble_x = (rand() % (PEAK_WOBBLE_INTENSITY * 2 + 1)) - PEAK_WOBBLE_INTENSITY;
+            column_start_xs[i] += wobble_x;
+        }
+        int wobble_y = (rand() % (PEAK_WOBBLE_INTENSITY * 2 + 1)) - PEAK_WOBBLE_INTENSITY;
+        *column_start_y += wobble_y;
+    }
+}
+
 // Constants for column configuration
 const uint8_t COLUMN_WIDTHS[]   = {COLUMN1_END_X - COLUMN1_START_X, COLUMN2_END_X - COLUMN2_START_X, COLUMN3_END_X - COLUMN3_START_X};
 const uint8_t COLUMN_START_XS[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_START_X};
 
 // Drawing function for WPM-based columns
 void draw_wpm_columns(uint16_t wpm) {
+    // Prepare temporary variables for the adjusted column positions
+    uint8_t temp_column_start_xs[3] = {COLUMN_START_XS[0], COLUMN_START_XS[1], COLUMN_START_XS[2]};
+    uint8_t temp_column_start_y     = COLUMN_START_Y;
+
+    // Add the peak performance wobble if necessary
+    add_peak_performance_wobble(temp_column_start_xs, &temp_column_start_y, wpm);
+
     // Calculate the height of the column based on the current WPM
     float   height_ratio   = (float)wpm / TARGET_WPM;
     uint8_t dynamic_height = (uint8_t)((MAX_COLUMN_HEIGHT - BASE_HEIGHT) * height_ratio);
@@ -187,7 +207,7 @@ void draw_wpm_columns(uint16_t wpm) {
     // Apply the wobble effect and draw the columns
     for (int i = 0; i < 3; ++i) {
         // Clear the column at the specified location
-        oled_draw_column(COLUMN_START_XS[i], COLUMN_START_Y, COLUMN_WIDTHS[i], MAX_COLUMN_HEIGHT, false);
+        oled_draw_column(temp_column_start_xs[i], temp_column_start_y, COLUMN_WIDTHS[i], MAX_COLUMN_HEIGHT, false);
 
         // Adjust wobble for each column
         int wobble = (rand() % (max_wobble * 2 + 1)) - max_wobble;
@@ -197,7 +217,7 @@ void draw_wpm_columns(uint16_t wpm) {
         column_height         = MIN(MAX(column_height, BASE_HEIGHT), MAX_COLUMN_HEIGHT);
 
         // Draw the column at the specified location with calculated height and width
-        oled_draw_column(COLUMN_START_XS[i], COLUMN_START_Y, COLUMN_WIDTHS[i], column_height, true);
+        oled_draw_column(temp_column_start_xs[i], temp_column_start_y, COLUMN_WIDTHS[i], column_height, true);
     }
 
     // Push the buffer to the OLED

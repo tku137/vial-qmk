@@ -4,8 +4,11 @@
 
 #include <stdint.h>
 
+// Pixel blink settings
+// Blinking speed
+#define BLINK_INTERVAL 1000 // Blinking interval in milliseconds
+
 // WPM-based animation configuration
-// Constants for drawing columns
 #define TARGET_WPM 70           // Target WPM for the animation
 #define BASE_HEIGHT 5           // Minimum column height when idle
 #define MAX_COLUMN_HEIGHT 64    // Maximum column height

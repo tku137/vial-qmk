@@ -111,6 +111,21 @@ void render_cyberdeck(void) {
     oled_write_raw_P(tku137, sizeof(tku137));
 }
 
+// Function to blink specified pixel
+static uint32_t last_blink_time = 0;
+static bool     blink_state     = false;
+
+void blink_pixel(uint8_t x, uint8_t y) {
+    // Check if it's time to toggle the blink state
+    if (timer_elapsed32(last_blink_time) >= BLINK_INTERVAL) {
+        last_blink_time = timer_read32(); // Reset the timer
+        blink_state     = !blink_state;   // Toggle the state
+
+        // Toggle the state of the single pixel
+        oled_write_pixel(x, y, blink_state);
+    }
+}
+
 // WPM-responsive animation rendering
 
 // Draw a column on the OLED buffer
@@ -196,9 +211,33 @@ void render_wpm_columns_animation(void) {
 // They are meant as an interface to minimize maintenance when switching to
 // other oled libraries or display types
 void render_master(void) {
+    // show cyberdeck visualisation
     render_cyberdeck();
+
+    // let some pixels blink
+    if (timer_elapsed32(last_blink_time) >= BLINK_INTERVAL) {
+        last_blink_time = timer_read32(); // Reset the timer
+        blink_state     = !blink_state;   // Toggle the blink state
+    }
+    oled_write_pixel(58, 123, blink_state);
+    oled_write_pixel(60, 123, blink_state);
+    oled_write_pixel(62, 123, blink_state);
+
+    oled_render();
 }
 
 void render_slave(void) {
+    // render the WPM columns animation
     render_wpm_columns_animation();
+
+    // let some pixels blink
+    if (timer_elapsed32(last_blink_time) >= BLINK_INTERVAL) {
+        last_blink_time = timer_read32(); // Reset the timer
+        blink_state     = !blink_state;   // Toggle the blink state
+    }
+    oled_write_pixel(1, 123, blink_state);
+    oled_write_pixel(3, 123, blink_state);
+    oled_write_pixel(5, 123, blink_state);
+
+    oled_render();
 }

@@ -23,11 +23,10 @@
 #include "cyberdeck.h"
 // #include "terminal.h"
 
-
-#define CTL_ESC  MT(MOD_LCTL, KC_ESC)
+#define CTL_ESC MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
 #define CTL_MINS MT(MOD_RCTL, KC_MINUS)
-#define ALT_ENT  MT(MOD_LALT, KC_ENT)
+#define ALT_ENT MT(MOD_LALT, KC_ENT)
 
 // App specific shortcuts
 #define MICMUTE HYPR(KC_M)
@@ -35,22 +34,20 @@
 
 // Special character modes from EurKey
 // This requires EurKey to be installed on the host computer!
-#define EURO    RALT(KC_5)
-#define GREEK   RALT(KC_M)
-#define DEG     RALT(KC_SCLN)
-#define ESSZ    RALT(KC_S)
-
+#define EURO RALT(KC_5)
+#define GREEK RALT(KC_M)
+#define DEG RALT(KC_SCLN)
+#define ESSZ RALT(KC_S)
 
 // struct to hold HSV color values
 typedef struct {
     uint16_t hue;
-    uint8_t sat;
-    uint8_t val;
+    uint8_t  sat;
+    uint8_t  val;
 } hsv_color_t;
 
 // Default natural white color
 const hsv_color_t default_color = {32, 102, 255}; // Define default color
-
 
 // Define custom keycodes
 enum custom_keycodes {
@@ -62,8 +59,9 @@ enum custom_keycodes {
     ELBL,              // Custom keycode for cyberpunk blue
     RNBW,              // Custom keycode for rainbow swirl
     // Add other custom keycodes here, if any
+    WPM_UP,
+    WPM_DOWN,
 };
-
 
 // Note: LAlt/Enter (ALT_ENT) is not the same thing as the keyboard shortcut Alt+Enter.
 // The notation `mod/tap` denotes a key that activates the modifier `mod` when held down, and
@@ -197,9 +195,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |      |      |QWERTY|Brite+|      |      |      |  |      |      | White| Turq | Purp | Oran | Gree |  Blue  |
+ * |        |      |      |QWERTY|Brite+| WPM+ |      |      |  |      |      | White| Turq | Purp | Oran | Gree |  Blue  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |      |      |      |Brite-|      |      |      |  |      |      | Rnbw | HUI  | SAI  | VAI  | SPI  |  MOD   |
+ * |        |      |      |      |Brite-| WPM- |      |      |  |      |      | Rnbw | HUI  | SAI  | VAI  | SPI  |  MOD   |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * |        |      |      |      |      |      |      |      |  |      |      | RGB  | HUD  | SAD  | VAD  | SPD  |  RMOD  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
@@ -213,8 +211,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_ADJUST] = LAYOUT_myr(
       _______, _______, _______, _______, _______, EE_CLR ,         _______, _______,          _______, _______, _______, _______,  _______, _______,
-      _______, _______, _______, QWERTY , KC_BRIU, _______,         _______, _______,           DFLT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL  ,
-      _______, _______, _______, _______, KC_BRID, _______,         _______, _______,           RNBW  , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
+      _______, _______, _______, QWERTY , KC_BRIU, WPM_UP ,         _______, _______,           DFLT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL  ,
+      _______, _______, _______, _______, KC_BRID,WPM_DOWN,         _______, _______,           RNBW  , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
       _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_TOG, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD ,RGB_RMOD,
                                  _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
 
@@ -418,6 +416,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
+        case WPM_UP:
+            if (record->event.pressed) {
+                // Increase TARGET_WPM by 5 with each key press, adjust step size as needed
+                target_wpm += 5;
+                display_wpm_mode = true;
+                wpm_display_start_time = timer_read32(); // Capture the start time
+            }
+            return false; // Skip further processing to prevent default behavior
+
+        case WPM_DOWN:
+            if (record->event.pressed) {
+                // Decrease TARGET_WPM by 5 with each key press, prevent it from going below a minimum value
+                if (target_wpm > 5) { // Ensure TARGET_WPM stays positive or within a logical minimum
+                    target_wpm -= 5;
+                    display_wpm_mode = true;
+                    wpm_display_start_time = timer_read32();
+                }
+            }
+            return false;
         default:
             return true; // Process all other keycodes normally
     }
@@ -429,7 +446,8 @@ bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
 
-        render_master();
+        // render_master();
+        render_slave();
 
     } else {
 

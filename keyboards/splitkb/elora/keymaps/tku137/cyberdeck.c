@@ -122,9 +122,15 @@ void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool 
     }
 }
 
+// Constants for the WPM-based columns
+bool     display_wpm_mode       = false;
+uint32_t wpm_display_start_time = 0;
+
+uint16_t target_wpm = 60; // Initialization with default value
+
 // Function to add wobble effect to columns at peak performance
 void add_peak_performance_wobble(uint8_t *column_start_xs, uint8_t *column_start_y, uint16_t wpm) {
-    if (wpm >= TARGET_WPM) {
+    if (wpm >= target_wpm) {
         // Apply a random wobble for peak performance
         for (int i = 0; i < 3; ++i) {
             int wobble_x = (rand() % (PEAK_WOBBLE_INTENSITY * 2 + 1)) - PEAK_WOBBLE_INTENSITY;
@@ -141,6 +147,25 @@ const uint8_t COLUMN_START_XS[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_STA
 
 // Drawing function for WPM-based columns
 void draw_wpm_columns(uint16_t wpm) {
+    // Show the current WPM on the display for 3 seconds when updating the target WPM
+    if (display_wpm_mode) {
+        // Check if 3 seconds have passed since the WPM mode was activated
+        if (timer_elapsed32(wpm_display_start_time) > 3000) {
+            display_wpm_mode = false; // Revert to column animation mode
+        } else {
+            // Display the current TARGET_WPM and exit the function early
+            oled_set_cursor(0, 9);
+            oled_write_P(PSTR("  Target:"), false);
+
+            char wpm_str[10];
+            snprintf(wpm_str, sizeof(wpm_str), "    %u", target_wpm); // 4 spaces for padding
+            oled_set_cursor(0, 10);                                   // Move to line 10 for the number
+            oled_write(wpm_str, false);
+
+            return;
+        }
+    }
+
     // Prepare temporary variables for the adjusted column positions
     uint8_t temp_column_start_xs[3] = {COLUMN_START_XS[0], COLUMN_START_XS[1], COLUMN_START_XS[2]};
     uint8_t temp_column_start_y     = COLUMN_START_Y;
@@ -149,7 +174,7 @@ void draw_wpm_columns(uint16_t wpm) {
     add_peak_performance_wobble(temp_column_start_xs, &temp_column_start_y, wpm);
 
     // Calculate the height of the column based on the current WPM
-    float   height_ratio   = (float)wpm / TARGET_WPM;
+    float   height_ratio   = (float)wpm / target_wpm;
     uint8_t dynamic_height = (uint8_t)((MAX_COLUMN_HEIGHT - BASE_HEIGHT) * height_ratio);
 
     // Ensure the dynamic height does not exceed MAX_COLUMN_HEIGHT

@@ -126,7 +126,7 @@ void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool 
 bool     display_wpm_mode       = false;
 uint32_t wpm_display_start_time = 0;
 
-uint16_t target_wpm = 60; // Initialization with default value
+uint16_t target_wpm = DEFAULT_WPM; // Initialization with default value
 
 // Function to add wobble effect to columns at peak performance
 void add_peak_performance_wobble(uint8_t *column_start_xs, uint8_t *column_start_y, uint16_t wpm) {

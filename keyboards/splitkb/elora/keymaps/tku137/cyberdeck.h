@@ -12,7 +12,7 @@
 extern uint16_t target_wpm;
 extern bool     display_wpm_mode;
 extern uint32_t wpm_display_start_time;
-// #define TARGET_WPM 60           // Default target WPM for the animation
+#define DEFAULT_WPM 60          // Default WPM for the animation
 #define BASE_HEIGHT 5           // Minimum column height when idle
 #define MAX_COLUMN_HEIGHT 64    // Maximum column height
 #define MAX_WOBBLE_HEIGHT 3     // Max height variation for wobble effect
@@ -25,6 +25,7 @@ extern uint32_t wpm_display_start_time;
 #define COLUMN2_END_X 34
 #define COLUMN3_START_X 41
 #define COLUMN3_END_X 48
+#define EEPROM_TARGET_WPM_ADDR (uint16_t *)0x0400 // EEPROM address to store target WPM
 
 // OLED display configuration
 

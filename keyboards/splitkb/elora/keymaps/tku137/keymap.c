@@ -360,6 +360,14 @@ void keyboard_post_init_user(void) {
     rgb_matrix_enable_noeeprom(); // Enables RGB, without saving settings
     rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to default color
     rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+
+    // Load TARGET_WPM from EEPROM
+    target_wpm = eeprom_read_word(EEPROM_TARGET_WPM_ADDR);
+
+    // Check for EEPROM unset or invalid values, adjust range as necessary
+    if (target_wpm == 0xFFFF || target_wpm < 20 || target_wpm > 200) {
+        target_wpm = DEFAULT_WPM; // Default value if EEPROM is unset or value is out of valid range
+    }
 }
 
 
@@ -419,9 +427,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case WPM_UP:
             if (record->event.pressed) {
                 // Increase TARGET_WPM by 5 with each key press, adjust step size as needed
-                target_wpm += 5;
-                display_wpm_mode = true;
-                wpm_display_start_time = timer_read32(); // Capture the start time
+                if (target_wpm < 200) { // Ensure TARGET_WPM stays positive or within a logical minimum
+                    target_wpm += 5;
+                    // Save the updated TARGET_WPM to EEPROM
+                    eeprom_update_word(EEPROM_TARGET_WPM_ADDR, target_wpm);
+                    // Activate display mode to show updated TARGET_WPM
+                    display_wpm_mode = true;
+                    wpm_display_start_time = timer_read32(); // Capture the start time
+               }
             }
             return false; // Skip further processing to prevent default behavior
 
@@ -430,6 +443,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 // Decrease TARGET_WPM by 5 with each key press, prevent it from going below a minimum value
                 if (target_wpm > 5) { // Ensure TARGET_WPM stays positive or within a logical minimum
                     target_wpm -= 5;
+                    // Save the updated TARGET_WPM to EEPROM
+                    eeprom_update_word(EEPROM_TARGET_WPM_ADDR, target_wpm);
+                    // Activate display mode to show updated TARGET_WPM
                     display_wpm_mode = true;
                     wpm_display_start_time = timer_read32();
                 }
@@ -446,8 +462,7 @@ bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
 
-        // render_master();
-        render_slave();
+        render_master();
 
     } else {
 

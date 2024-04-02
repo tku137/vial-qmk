@@ -141,6 +141,73 @@ void add_peak_performance_wobble(uint8_t *column_start_xs, uint8_t *column_start
     }
 }
 
+// static const uint8_t *const digit_bitmaps[] PROGMEM = {
+//     digit_0, // Assuming you have bitmaps for 0-9 defined
+//     // ... other digits
+//     digit_7,
+//     // ... up to digit_9,
+//     digit_empty // Assuming an 'empty' bitmap for unused spaces if needed
+// };
+
+void display_target_wpm_as_images(uint16_t target_wpm) {
+    char wpm_str[5]; // Buffer for the target WPM number, assuming it won't exceed 4 digits
+    snprintf(wpm_str, sizeof(wpm_str), "%u", target_wpm);
+
+    int num_digits       = strlen(wpm_str); // Get the number of digits in the target WPM
+    int num_empty_digits = 6 - num_digits;  // Calculate how many empty digits we need
+
+    // First, display the empty digits
+    for (int i = 0; i < num_empty_digits; i++) {
+        oled_set_cursor(i, 8);                          // Set cursor for each empty digit
+        oled_write_raw_P((const char *)digit_empty, 6); // Assume digit_empty is 6 bytes
+    }
+
+    // Then, display the actual WPM digits
+    for (int i = 0; i < num_digits; i++) {
+        const uint8_t *digit_bitmap = NULL;
+
+        // Determine which digit bitmap to use
+        switch (wpm_str[i]) {
+            case '0':
+                digit_bitmap = digit_0;
+                break;
+            case '1':
+                digit_bitmap = digit_1;
+                break;
+            case '2':
+                digit_bitmap = digit_2;
+                break;
+            case '3':
+                digit_bitmap = digit_3;
+                break;
+            case '4':
+                digit_bitmap = digit_4;
+                break;
+            case '5':
+                digit_bitmap = digit_5;
+                break;
+            case '6':
+                digit_bitmap = digit_6;
+                break;
+            case '7':
+                digit_bitmap = digit_7;
+                break;
+            case '8':
+                digit_bitmap = digit_8;
+                break;
+            case '9':
+                digit_bitmap = digit_9;
+                break;
+        }
+
+        // If we have a valid bitmap for the digit, draw it
+        if (digit_bitmap != NULL) {
+            oled_set_cursor(num_empty_digits + i, 8);        // Adjust cursor for each digit
+            oled_write_raw_P((const char *)digit_bitmap, 6); // Draw the digit bitmap
+        }
+    }
+}
+
 // Constants for column configuration
 const uint8_t COLUMN_WIDTHS[]   = {COLUMN1_END_X - COLUMN1_START_X, COLUMN2_END_X - COLUMN2_START_X, COLUMN3_END_X - COLUMN3_START_X};
 const uint8_t COLUMN_START_XS[] = {COLUMN1_START_X, COLUMN2_START_X, COLUMN3_START_X};
@@ -154,14 +221,7 @@ void draw_wpm_columns(uint16_t wpm) {
             display_wpm_mode = false; // Revert to column animation mode
         } else {
             // Display the current TARGET_WPM and exit the function early
-            oled_set_cursor(0, 9);
-            oled_write_P(PSTR("  Target:"), false);
-
-            char wpm_str[10];
-            snprintf(wpm_str, sizeof(wpm_str), "    %u", target_wpm); // 4 spaces for padding
-            oled_set_cursor(0, 10);                                   // Move to line 10 for the number
-            oled_write(wpm_str, false);
-
+            display_target_wpm_as_images(target_wpm);
             return;
         }
     }

@@ -18,6 +18,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "transactions.h"
 #include "timer.h"
@@ -377,8 +378,9 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 // This function is called when the slave receives the target_wpm from the master
 void target_wpm_sync_slave_handler(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data) {
     if (in_buflen == sizeof(master_to_slave_t)) {
-        const master_to_slave_t* m2s = (const master_to_slave_t*)in_data;
-        target_wpm = m2s->target_wpm; // Update target_wpm on the slave side
+        master_to_slave_t m2s; // Create a local instance of the struct
+        memcpy(&m2s, in_data, sizeof(m2s)); // Safely copy data into the struct
+        target_wpm = m2s.target_wpm; // Use the struct's data as needed
     }
 }
 

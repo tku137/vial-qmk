@@ -62,9 +62,8 @@ enum custom_keycodes {
     NGRN,              // Custom keycode for cyberpunk green
     ELBL,              // Custom keycode for cyberpunk blue
     RNBW,              // Custom keycode for rainbow swirl
-    // Add other custom keycodes here, if any
-    WPM_UP,
-    WPM_DOWN,
+    WPM_UP,            // Custom keycode for increasing target WPM
+    WPM_DOWN,          // Custom keycode for decreasing target WPM
 };
 
 // Initialize WPM variables
@@ -74,7 +73,7 @@ static uint32_t last_sync_time     = 0;
 
 // This is sent to the slave side
 typedef struct _master_to_slave_t {
-    uint16_t target_wpm;             // Data from master to slave
+    uint16_t target_wpm;             // Target WPM value
     bool     display_wpm_mode;       // Indicates if display mode is active
     uint32_t wpm_display_start_time; // Timestamp for the display start time
 } master_to_slave_t;
@@ -371,13 +370,13 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 };
 
 
-// This function is called when the slave receives the target_wpm from the master
+// This function is called when the slave receives data from the master
 void target_wpm_sync_slave_handler(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data) {
     if (in_buflen == sizeof(master_to_slave_t)) {
         master_to_slave_t m2s; // Create a local instance of the struct
         memcpy(&m2s, in_data, sizeof(m2s)); // Safely copy data into the struct
 
-        // Use the struct's data as needed
+        // Use the struct's data to update the slave's variables
         target_wpm = m2s.target_wpm;
         display_wpm_mode = m2s.display_wpm_mode;
         wpm_display_start_time = m2s.wpm_display_start_time;
@@ -386,24 +385,23 @@ void target_wpm_sync_slave_handler(uint8_t in_buflen, const void* in_data, uint8
 
 
 void housekeeping_task_user(void) {
-    // Only proceed if we're on the keyboard master side and a change has been flagged.
-    if (is_keyboard_master() && target_wpm_changed) {
-        // Check if enough time has passed since the last sync.
-        if (timer_elapsed32(last_sync_time) > SYNC_INTERVAL) {
-            master_to_slave_t m2s_data = {
-                .target_wpm = target_wpm,
-                .display_wpm_mode = display_wpm_mode,
-                .wpm_display_start_time = wpm_display_start_time
-            };
+    // Only proceed if we're on the keyboard master side and a change has been flagged
+    // and also if enough time has passed since the last sync.
+    // This minimizes the number of syncs and reduces the risk of data loss.
+    if (is_keyboard_master() && target_wpm_changed && timer_elapsed32(last_sync_time) > SYNC_INTERVAL) {
+        master_to_slave_t m2s_data = {
+            .target_wpm = target_wpm,
+            .display_wpm_mode = display_wpm_mode,
+            .wpm_display_start_time = wpm_display_start_time
+        };
 
-            // Attempt to send the data to the slave.
-            bool sent = transaction_rpc_send(TARGET_WPM_SYNC, sizeof(m2s_data), &m2s_data);
-            if (sent) {
-                // Update the last sync time to the current time.
-                last_sync_time = timer_read32();
-                // Reset the change flag.
-                target_wpm_changed = false;
-            }
+        // Attempt to send the data to the slave.
+        bool sent = transaction_rpc_send(TARGET_WPM_SYNC, sizeof(m2s_data), &m2s_data);
+        if (sent) {
+            // If data has been sent successfully, update the last sync time to the current time.
+            last_sync_time = timer_read32();
+            // Reset the change flag.
+            target_wpm_changed = false;
         }
     }
 }
@@ -423,7 +421,7 @@ void keyboard_post_init_user(void) {
         target_wpm = DEFAULT_WPM; // Default value if EEPROM is unset or value is out of valid range
     }
 
-    // register custom data sync handler
+    // Register custom data sync handler
     transaction_register_rpc(TARGET_WPM_SYNC, target_wpm_sync_slave_handler);
 }
 
@@ -493,8 +491,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 // Activate display mode to show updated TARGET_WPM
                 display_wpm_mode = true;
                 wpm_display_start_time = timer_read32(); // Capture the start time
-                // send target_wpm to slave
-                // send_target_wpm_to_slave();
             }
             return false; // Skip further processing to prevent default behavior
 
@@ -510,8 +506,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 // Activate display mode to show updated TARGET_WPM
                 display_wpm_mode = true;
                 wpm_display_start_time = timer_read32();
-                // send target_wpm to slave
-                // send_target_wpm_to_slave();
             }
             return false;
         default:

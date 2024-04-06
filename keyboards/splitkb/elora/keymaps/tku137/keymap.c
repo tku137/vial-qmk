@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include "transactions.h"
+#include "timer.h"
 
 #include "layers.h"
 #include "cyberdeck.h"
@@ -66,13 +67,15 @@ enum custom_keycodes {
 };
 
 // Universal WPM variables
-#define DEFAULT_WPM 60                           // Default WPM for the animation
-#define MIN_WPM 5                                // Minimum WPM value
-#define MAX_WPM 200                              // Maximum WPM value
-#define WPM_INCREMENT 5                          // WPM increment value
-#define EEPROM_TARGET_WPM_ADDR (uint16_t*)0x0400 // EEPROM address to store target WPM
-uint16_t    target_wpm         = DEFAULT_WPM;    // Initialization with default value
-static bool target_wpm_changed = false;          // Flag to indicate if target_wpm has changed
+#define DEFAULT_WPM 60                            // Default WPM for the animation
+#define MIN_WPM 5                                 // Minimum WPM value
+#define MAX_WPM 200                               // Maximum WPM value
+#define WPM_INCREMENT 5                           // WPM increment value
+#define EEPROM_TARGET_WPM_ADDR (uint16_t*)0x0400  // EEPROM address to store target WPM
+uint16_t        target_wpm         = DEFAULT_WPM; // Initialization with default value
+static bool     target_wpm_changed = false;       // Flag to indicate if target_wpm has changed
+static uint32_t last_sync_time     = 0;
+#define SYNC_INTERVAL 500
 
 // This is sent to the slave side
 typedef struct _master_to_slave_t {
@@ -376,24 +379,26 @@ void target_wpm_sync_slave_handler(uint8_t in_buflen, const void* in_data, uint8
     if (in_buflen == sizeof(master_to_slave_t)) {
         const master_to_slave_t* m2s = (const master_to_slave_t*)in_data;
         target_wpm = m2s->target_wpm; // Update target_wpm on the slave side
-        // Save the received target_wpm to EEPROM
-        eeprom_update_word(EEPROM_TARGET_WPM_ADDR, target_wpm);
     }
 }
 
-// This function sends the current WPM to the slave
-// void send_target_wpm_to_slave(void) {
-//     master_to_slave_t m2s_data = { .target_wpm = target_wpm };
-//     transaction_rpc_send(TARGET_WPM_SYNC, sizeof(m2s_data), &m2s_data);
-// }
 
 void housekeeping_task_user(void) {
+    // Only proceed if we're on the keyboard master side and a change has been flagged.
     if (is_keyboard_master() && target_wpm_changed) {
-        master_to_slave_t m2s_data = { .target_wpm = target_wpm };
-        bool sent = transaction_rpc_send(TARGET_WPM_SYNC, sizeof(m2s_data), &m2s_data);
-        if (sent) {
-            target_wpm_changed = false; // Clear the flag after successful sync
-            dprintf("target_wpm synced: %u\n", target_wpm);
+        // Check if enough time has passed since the last sync.
+        if (timer_elapsed32(last_sync_time) > SYNC_INTERVAL) {
+            master_to_slave_t m2s_data = { .target_wpm = target_wpm };
+            // Attempt to send the data to the slave.
+            bool sent = transaction_rpc_send(TARGET_WPM_SYNC, sizeof(m2s_data), &m2s_data);
+            if (sent) {
+                // Update the last sync time to the current time.
+                last_sync_time = timer_read32();
+                // Reset the change flag.
+                target_wpm_changed = false;
+                // Optionally, log the sync operation.
+                dprintf("target_wpm synced: %u\n", target_wpm);
+            }
         }
     }
 }

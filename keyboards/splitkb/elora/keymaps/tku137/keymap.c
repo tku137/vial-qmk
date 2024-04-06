@@ -67,16 +67,10 @@ enum custom_keycodes {
     WPM_DOWN,
 };
 
-// Universal WPM variables
-#define DEFAULT_WPM 60                            // Default WPM for the animation
-#define MIN_WPM 5                                 // Minimum WPM value
-#define MAX_WPM 200                               // Maximum WPM value
-#define WPM_INCREMENT 5                           // WPM increment value
-#define EEPROM_TARGET_WPM_ADDR (uint16_t*)0x0400  // EEPROM address to store target WPM
+// Initialize WPM variables
 uint16_t        target_wpm         = DEFAULT_WPM; // Initialization with default value
 static bool     target_wpm_changed = false;       // Flag to indicate if target_wpm has changed
 static uint32_t last_sync_time     = 0;
-#define SYNC_INTERVAL 500
 
 // This is sent to the slave side
 typedef struct _master_to_slave_t {

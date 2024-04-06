@@ -80,7 +80,9 @@ static uint32_t last_sync_time     = 0;
 
 // This is sent to the slave side
 typedef struct _master_to_slave_t {
-    uint16_t target_wpm; // Data from master to slave
+    uint16_t target_wpm;             // Data from master to slave
+    bool     display_wpm_mode;       // Indicates if display mode is active
+    uint32_t wpm_display_start_time; // Timestamp for the display start time
 } master_to_slave_t;
 
 // Note: LAlt/Enter (ALT_ENT) is not the same thing as the keyboard shortcut Alt+Enter.
@@ -380,7 +382,11 @@ void target_wpm_sync_slave_handler(uint8_t in_buflen, const void* in_data, uint8
     if (in_buflen == sizeof(master_to_slave_t)) {
         master_to_slave_t m2s; // Create a local instance of the struct
         memcpy(&m2s, in_data, sizeof(m2s)); // Safely copy data into the struct
-        target_wpm = m2s.target_wpm; // Use the struct's data as needed
+
+        // Use the struct's data as needed
+        target_wpm = m2s.target_wpm;
+        display_wpm_mode = m2s.display_wpm_mode;
+        wpm_display_start_time = m2s.wpm_display_start_time;
     }
 }
 
@@ -390,7 +396,12 @@ void housekeeping_task_user(void) {
     if (is_keyboard_master() && target_wpm_changed) {
         // Check if enough time has passed since the last sync.
         if (timer_elapsed32(last_sync_time) > SYNC_INTERVAL) {
-            master_to_slave_t m2s_data = { .target_wpm = target_wpm };
+            master_to_slave_t m2s_data = {
+                .target_wpm = target_wpm,
+                .display_wpm_mode = display_wpm_mode,
+                .wpm_display_start_time = wpm_display_start_time
+            };
+
             // Attempt to send the data to the slave.
             bool sent = transaction_rpc_send(TARGET_WPM_SYNC, sizeof(m2s_data), &m2s_data);
             if (sent) {
@@ -398,8 +409,6 @@ void housekeeping_task_user(void) {
                 last_sync_time = timer_read32();
                 // Reset the change flag.
                 target_wpm_changed = false;
-                // Optionally, log the sync operation.
-                dprintf("target_wpm synced: %u\n", target_wpm);
             }
         }
     }

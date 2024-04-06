@@ -380,6 +380,9 @@ void target_wpm_sync_slave_handler(uint8_t in_buflen, const void* in_data, uint8
         target_wpm = m2s.target_wpm;
         display_wpm_mode = m2s.display_wpm_mode;
         wpm_display_start_time = m2s.wpm_display_start_time;
+
+        // Save the updated TARGET_WPM to EEPROM
+        eeprom_update_word(EEPROM_TARGET_WPM_ADDR, target_wpm);
     }
 }
 
@@ -519,8 +522,7 @@ bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
 
-        render_slave();
-        // render_master();
+        render_master();
 
     } else {
 

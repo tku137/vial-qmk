@@ -3,16 +3,17 @@
 #include QMK_KEYBOARD_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // Pixel blink settings
 // Blinking speed
 #define BLINK_INTERVAL 1000 // Blinking interval in milliseconds
 
 // WPM-based animation configuration
-extern uint16_t target_wpm;
-extern bool     display_wpm_mode;
-extern uint32_t wpm_display_start_time;
-#define DEFAULT_WPM 60          // Default WPM for the animation
+extern bool     display_wpm_mode;       // Use display mode from keymap.c
+extern uint32_t wpm_display_start_time; // Use wpm display timer from keymap.c
+extern uint16_t target_wpm;             // Use target WPM from keymap.c
+
 #define BASE_HEIGHT 5           // Minimum column height when idle
 #define MAX_COLUMN_HEIGHT 64    // Maximum column height
 #define MAX_WOBBLE_HEIGHT 3     // Max height variation for wobble effect
@@ -25,7 +26,6 @@ extern uint32_t wpm_display_start_time;
 #define COLUMN2_END_X 34
 #define COLUMN3_START_X 41
 #define COLUMN3_END_X 48
-#define EEPROM_TARGET_WPM_ADDR (uint16_t *)0x0400 // EEPROM address to store target WPM
 
 // OLED display configuration
 
@@ -65,6 +65,38 @@ void render_cyberdeck(void);
 // These are the general interfaces. Define them to easily switch between different visuals
 void render_master(void);
 void render_slave(void);
+
+// OLED Display parts rendering
+
+// Draws a single column on the OLED display
+// x: x-coordinate of the column
+// y: y-coordinate of the column
+// width: width of the column
+// height: height of the column
+// fill: fill the column with the color
+// This function is used by the other functions to draw the columns
+void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool fill);
+
+// Adds a random wobble effect to an array of column start x-coordinates
+// and their y-coordinate height
+// Results in wobbling columns in both dimensions
+// Only does this if WPM exceeds target WPM
+// column_start_xs: array of x-coordinates of the column start
+// column_start_y: y-coordinate of the column
+// wpm: current WPM
+void add_peak_performance_wobble(uint8_t *column_start_xs, uint8_t *column_start_y, uint16_t wpm);
+
+// Renders the set target WPM as digits in the same czberdeck
+// font as the rest of this visualisation
+// target_wpm: the target WPM to display
+void display_target_wpm_as_images(uint16_t target_wpm);
+
+// Renders the WPM columns based on the current WPM
+void draw_wpm_columns(uint16_t wpm);
+
+// Main function to render the whole OLED display with
+// the WPM columns animation
+void render_wpm_columns_animation(void);
 
 // Bitmap Definitions
 

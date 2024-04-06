@@ -126,8 +126,6 @@ void oled_draw_column(uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool 
 bool     display_wpm_mode       = false;
 uint32_t wpm_display_start_time = 0;
 
-uint16_t target_wpm = DEFAULT_WPM; // Initialization with default value
-
 // Function to add wobble effect to columns at peak performance
 void add_peak_performance_wobble(uint8_t *column_start_xs, uint8_t *column_start_y, uint16_t wpm) {
     if (wpm >= target_wpm) {
@@ -140,14 +138,6 @@ void add_peak_performance_wobble(uint8_t *column_start_xs, uint8_t *column_start
         *column_start_y += wobble_y;
     }
 }
-
-// static const uint8_t *const digit_bitmaps[] PROGMEM = {
-//     digit_0, // Assuming you have bitmaps for 0-9 defined
-//     // ... other digits
-//     digit_7,
-//     // ... up to digit_9,
-//     digit_empty // Assuming an 'empty' bitmap for unused spaces if needed
-// };
 
 void display_target_wpm_as_images(uint16_t target_wpm) {
     char wpm_str[5]; // Buffer for the target WPM number, assuming it won't exceed 4 digits

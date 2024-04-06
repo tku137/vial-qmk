@@ -19,6 +19,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "transactions.h"
+
 #include "layers.h"
 #include "cyberdeck.h"
 // #include "terminal.h"
@@ -62,6 +64,20 @@ enum custom_keycodes {
     WPM_UP,
     WPM_DOWN,
 };
+
+// Universal WPM variables
+#define DEFAULT_WPM 60                           // Default WPM for the animation
+#define MIN_WPM 5                                // Minimum WPM value
+#define MAX_WPM 200                              // Maximum WPM value
+#define WPM_INCREMENT 5                          // WPM increment value
+#define EEPROM_TARGET_WPM_ADDR (uint16_t*)0x0400 // EEPROM address to store target WPM
+uint16_t    target_wpm         = DEFAULT_WPM;    // Initialization with default value
+static bool target_wpm_changed = false;          // Flag to indicate if target_wpm has changed
+
+// This is sent to the slave side
+typedef struct _master_to_slave_t {
+    uint16_t target_wpm; // Data from master to slave
+} master_to_slave_t;
 
 // Note: LAlt/Enter (ALT_ENT) is not the same thing as the keyboard shortcut Alt+Enter.
 // The notation `mod/tap` denotes a key that activates the modifier `mod` when held down, and
@@ -355,6 +371,34 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 };
 
 
+// This function is called when the slave receives the target_wpm from the master
+void target_wpm_sync_slave_handler(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data) {
+    if (in_buflen == sizeof(master_to_slave_t)) {
+        const master_to_slave_t* m2s = (const master_to_slave_t*)in_data;
+        target_wpm = m2s->target_wpm; // Update target_wpm on the slave side
+        // Save the received target_wpm to EEPROM
+        eeprom_update_word(EEPROM_TARGET_WPM_ADDR, target_wpm);
+    }
+}
+
+// This function sends the current WPM to the slave
+// void send_target_wpm_to_slave(void) {
+//     master_to_slave_t m2s_data = { .target_wpm = target_wpm };
+//     transaction_rpc_send(TARGET_WPM_SYNC, sizeof(m2s_data), &m2s_data);
+// }
+
+void housekeeping_task_user(void) {
+    if (is_keyboard_master() && target_wpm_changed) {
+        master_to_slave_t m2s_data = { .target_wpm = target_wpm };
+        bool sent = transaction_rpc_send(TARGET_WPM_SYNC, sizeof(m2s_data), &m2s_data);
+        if (sent) {
+            target_wpm_changed = false; // Clear the flag after successful sync
+            dprintf("target_wpm synced: %u\n", target_wpm);
+        }
+    }
+}
+
+
 // This is run at boot
 void keyboard_post_init_user(void) {
     rgb_matrix_enable_noeeprom(); // Enables RGB, without saving settings
@@ -365,9 +409,12 @@ void keyboard_post_init_user(void) {
     target_wpm = eeprom_read_word(EEPROM_TARGET_WPM_ADDR);
 
     // Check for EEPROM unset or invalid values, adjust range as necessary
-    if (target_wpm == 0xFFFF || target_wpm < 20 || target_wpm > 200) {
+    if (target_wpm == 0xFFFF || target_wpm < MIN_WPM || target_wpm > MAX_WPM) {
         target_wpm = DEFAULT_WPM; // Default value if EEPROM is unset or value is out of valid range
     }
+
+    // register custom data sync handler
+    transaction_register_rpc(TARGET_WPM_SYNC, target_wpm_sync_slave_handler);
 }
 
 
@@ -427,28 +474,34 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case WPM_UP:
             if (record->event.pressed) {
                 // Increase TARGET_WPM by 5 with each key press, adjust step size as needed
-                if (target_wpm < 200) { // Ensure TARGET_WPM stays positive or within a logical minimum
-                    target_wpm += 5;
+                if (target_wpm < MAX_WPM) { // Ensure TARGET_WPM stays positive or within a logical minimum
+                    target_wpm_changed = true; // Indicate that the target WPM has changed
+                    target_wpm += WPM_INCREMENT;
                     // Save the updated TARGET_WPM to EEPROM
                     eeprom_update_word(EEPROM_TARGET_WPM_ADDR, target_wpm);
-                    // Activate display mode to show updated TARGET_WPM
-                    display_wpm_mode = true;
-                    wpm_display_start_time = timer_read32(); // Capture the start time
-               }
+                }
+                // Activate display mode to show updated TARGET_WPM
+                display_wpm_mode = true;
+                wpm_display_start_time = timer_read32(); // Capture the start time
+                // send target_wpm to slave
+                // send_target_wpm_to_slave();
             }
             return false; // Skip further processing to prevent default behavior
 
         case WPM_DOWN:
             if (record->event.pressed) {
                 // Decrease TARGET_WPM by 5 with each key press, prevent it from going below a minimum value
-                if (target_wpm > 5) { // Ensure TARGET_WPM stays positive or within a logical minimum
-                    target_wpm -= 5;
+                if (target_wpm > MIN_WPM) { // Ensure TARGET_WPM stays positive or within a logical minimum
+                    target_wpm_changed = true; // Indicate that the target WPM has changed
+                    target_wpm -= WPM_INCREMENT;
                     // Save the updated TARGET_WPM to EEPROM
                     eeprom_update_word(EEPROM_TARGET_WPM_ADDR, target_wpm);
-                    // Activate display mode to show updated TARGET_WPM
-                    display_wpm_mode = true;
-                    wpm_display_start_time = timer_read32();
                 }
+                // Activate display mode to show updated TARGET_WPM
+                display_wpm_mode = true;
+                wpm_display_start_time = timer_read32();
+                // send target_wpm to slave
+                // send_target_wpm_to_slave();
             }
             return false;
         default:
@@ -462,7 +515,8 @@ bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
 
-        render_master();
+        render_slave();
+        // render_master();
 
     } else {
 

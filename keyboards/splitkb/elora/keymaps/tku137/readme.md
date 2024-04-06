@@ -1,6 +1,6 @@
 # tku137's keymap for Elora
 
-![kle-render herokuapp com-4](https://github.com/tku137/vial-qmk/assets/3052212/cac04c7c-581f-4306-98eb-205f1c318e25)
+![elora-2](https://github.com/tku137/vial-qmk/assets/3052212/f21ee7a4-41eb-45bf-a6bb-0c126474eadf)
 
 ## Base layer
 

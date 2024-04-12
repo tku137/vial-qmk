@@ -56,6 +56,7 @@
 #define WPM_INCREMENT 5                           // WPM increment value
 #define EEPROM_TARGET_WPM_ADDR (uint16_t *)0x0400 // EEPROM address to store target WPM
 #define SYNC_INTERVAL 500                         // Interval in milliseconds between syncs
+#define EEPROM_RGB_ADDR (uint16_t *)0x0405        // EEPROM address to store default underglow
 
 // RGB magic
 #define ENABLE_RGB_MATRIX_RAINBOW_MOVING_CHEVRON

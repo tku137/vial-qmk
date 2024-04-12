@@ -48,30 +48,32 @@ typedef struct {
     uint8_t hue;
     uint8_t sat;
     uint8_t val;
-} hsv_color_t;
+    uint8_t mode;
+    uint8_t speed;
+} rgb_settings_t;
 
 // Define some nice colors
-const hsv_color_t default_sand1    = {25, 178, 255};
-const hsv_color_t default_sand2    = {30, 178, 230};
-const hsv_color_t default_white    = {32, 102, 255};
-const hsv_color_t default_turquise = {118, 183, 209};
-const hsv_color_t default_purple   = {212, 255, 128};
-const hsv_color_t default_orange   = {27, 255, 255};
-const hsv_color_t default_green    = {78, 235, 255};
-const hsv_color_t default_blue     = {146, 255, 255};
+const rgb_settings_t default_sand1    = {25, 178, 255, RGB_MATRIX_SOLID_COLOR, 50};
+const rgb_settings_t default_sand2    = {30, 178, 230, RGB_MATRIX_SOLID_COLOR, 50};
+const rgb_settings_t default_white    = {32, 102, 255, RGB_MATRIX_SOLID_COLOR, 50};
+const rgb_settings_t default_turquise = {118, 183, 209, RGB_MATRIX_SOLID_COLOR, 50};
+const rgb_settings_t default_purple   = {212, 255, 128, RGB_MATRIX_SOLID_COLOR, 50};
+const rgb_settings_t default_orange   = {27, 255, 255, RGB_MATRIX_SOLID_COLOR, 50};
+const rgb_settings_t default_green    = {78, 235, 255, RGB_MATRIX_SOLID_COLOR, 50};
+const rgb_settings_t default_blue     = {146, 255, 255, RGB_MATRIX_SOLID_COLOR, 50};
 
-// Define default color
-hsv_color_t default_color = default_sand2;
+rgb_settings_t default_setting;
+int            current_color_index = 0;
 
 // Define array of colors
-const hsv_color_t colors[] = {default_sand1, default_sand2, default_white, default_turquise, default_purple, default_orange, default_green, default_blue};
-#define NUM_COLORS (sizeof(colors) / sizeof(hsv_color_t))
-int current_color_index = 0;
+const rgb_settings_t colors[] = {default_sand1, default_sand2, default_white, default_turquise, default_purple, default_orange, default_green, default_blue};
+#define NUM_COLORS (sizeof(colors) / sizeof(rgb_settings_t))
 
 // Define custom keycodes
 enum custom_keycodes {
     DFLT = SAFE_RANGE, // Custom keycode for natural white
     RNBW,              // Custom keycode for rainbow swirl
+    WHT,               // Custom keycode for white
     WPM_UP,            // Custom keycode for increasing target WPM
     WPM_DOWN,          // Custom keycode for decreasing target WPM
     RGB_UP,            // Custom keycode for cycling RGB mode
@@ -238,8 +240,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------'      `------'                `---------------------------'      '------'
  */
     [_ADJUST] = LAYOUT_myr(
-      _______, _______, _______, _______, _______, EE_CLR ,         _______, _______,          RGB_TOG, _______, _______, _______, _______, _______,
-      _______, _______, _______, QWERTY , KC_BRIU, WPM_UP ,         _______, _______,           DFLT  , RGB_SAV, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, EE_CLR ,         _______, _______,          RGB_TOG, RGB_SAV, _______, _______, _______, _______,
+      _______, _______, _______, QWERTY , KC_BRIU, WPM_UP ,         _______, _______,           DFLT  ,  WHT   ,  RNBW  , _______, _______, _______,
       _______, _______, _______, _______, KC_BRID,WPM_DOWN,         _______, _______,          RGB_UP , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
       _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_DWN, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD ,RGB_RMOD,
                                  _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
@@ -424,36 +426,54 @@ void housekeeping_task_user(void) {
 
 
 // Custom RGB underglow functions
-void save_rgb_settings(hsv_color_t color) {
-    eeprom_update_block((const void *)&color, (void *)EEPROM_RGB_ADDR, sizeof(hsv_color_t));
+void set_rgb_settings(rgb_settings_t settings) {
+    rgb_matrix_sethsv(settings.hue, settings.sat, settings.val);
+    rgb_matrix_mode(settings.mode);
+    rgb_matrix_set_speed(settings.speed);
+}
+
+void save_rgb_settings(rgb_settings_t settings) {
+    eeprom_update_block((const void *)&settings, (void *)EEPROM_RGB_ADDR, sizeof(rgb_settings_t));
 }
 
 void load_rgb_settings(void) {
-    eeprom_read_block((void *)&default_color, (const void *)EEPROM_RGB_ADDR, sizeof(hsv_color_t));
+    rgb_settings_t settings;
+    eeprom_read_block((void *)&settings, (const void *)EEPROM_RGB_ADDR, sizeof(rgb_settings_t));
 }
 
 void cycle_color_up(void) {
     current_color_index = (current_color_index + 1) % NUM_COLORS;
-    hsv_color_t new_color = colors[current_color_index];
+    rgb_settings_t new_color = colors[current_color_index];
     rgb_matrix_sethsv(new_color.hue, new_color.sat, new_color.val);
 }
 
 void cycle_color_down(void) {
     if (current_color_index == 0) current_color_index = NUM_COLORS;
     current_color_index--;
-    hsv_color_t new_color = colors[current_color_index];
+    rgb_settings_t new_color = colors[current_color_index];
     rgb_matrix_sethsv(new_color.hue, new_color.sat, new_color.val);
 }
 
 void set_current_rgb_as_default(void) {
-    default_color = colors[current_color_index];  // Update the default color
-    save_rgb_settings(default_color);             // Save to EEPROM
+    rgb_settings_t current_settings = {
+        .hue = rgb_matrix_get_hue(),
+        .sat = rgb_matrix_get_sat(),
+        .val = rgb_matrix_get_val(),
+        .mode = rgb_matrix_get_mode(),
+        .speed = rgb_matrix_get_speed()
+    };
+    default_setting = current_settings;
+    save_rgb_settings(current_settings);
 }
 
 
 // This is run at boot
 void keyboard_post_init_user(void) {
-    load_rgb_settings();  // Load RGB settings from EEPROM
+
+
+
+    // Load RGB settings from EEPROM
+    load_rgb_settings();
 
     // Load TARGET_WPM from EEPROM
     target_wpm = eeprom_read_word(EEPROM_TARGET_WPM_ADDR);
@@ -476,14 +496,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 rgb_matrix_mode(RGB_MATRIX_RAINBOW_MOVING_CHEVRON);
                 rgb_matrix_set_speed(10); // 0-255
-                rgb_matrix_sethsv(default_color.hue, 255, default_color.val);
+                rgb_matrix_sethsv(default_setting.hue, 255, default_setting.val);
+            }
+            return false; // Skip further processing of this key
+        case WHT:
+            // When the key is pressed, set the RGB matrix to white color
+            if (record->event.pressed) {
+                rgb_matrix_sethsv(default_white.hue, default_white.sat, default_white.val); // Set all LEDs to natural white
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case DFLT:
             // When the key is pressed, set the RGB matrix to default color
             if (record->event.pressed) {
-                rgb_matrix_sethsv(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
-                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+                set_rgb_settings(default_setting);
             }
             return false; // Skip further processing of this key
         case RGB_UP:

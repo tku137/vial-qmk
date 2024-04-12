@@ -435,17 +435,17 @@ void load_rgb_settings(void) {
 void cycle_color_up(void) {
     current_color_index = (current_color_index + 1) % NUM_COLORS;
     hsv_color_t new_color = colors[current_color_index];
-    rgb_matrix_sethsv_noeeprom(new_color.hue, new_color.sat, new_color.val);
+    rgb_matrix_sethsv(new_color.hue, new_color.sat, new_color.val);
 }
 
 void cycle_color_down(void) {
     if (current_color_index == 0) current_color_index = NUM_COLORS;
     current_color_index--;
     hsv_color_t new_color = colors[current_color_index];
-    rgb_matrix_sethsv_noeeprom(new_color.hue, new_color.sat, new_color.val);
+    rgb_matrix_sethsv(new_color.hue, new_color.sat, new_color.val);
 }
 
-void set_current_as_default(void) {
+void set_current_rgb_as_default(void) {
     default_color = colors[current_color_index];  // Update the default color
     save_rgb_settings(default_color);             // Save to EEPROM
 }
@@ -454,8 +454,6 @@ void set_current_as_default(void) {
 // This is run at boot
 void keyboard_post_init_user(void) {
     load_rgb_settings();  // Load RGB settings from EEPROM
-    rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to default color
-    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
 
     // Load TARGET_WPM from EEPROM
     target_wpm = eeprom_read_word(EEPROM_TARGET_WPM_ADDR);
@@ -476,16 +474,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case RNBW:
             // When the key is pressed, set the RGB matrix to rainbow swirl mode
             if (record->event.pressed) {
-                rgb_matrix_mode_noeeprom(RGB_MATRIX_RAINBOW_MOVING_CHEVRON);
-                rgb_matrix_set_speed_noeeprom(10); // 0-255
-                rgb_matrix_sethsv_noeeprom(default_color.hue, 255, default_color.val);
+                rgb_matrix_mode(RGB_MATRIX_RAINBOW_MOVING_CHEVRON);
+                rgb_matrix_set_speed(10); // 0-255
+                rgb_matrix_sethsv(default_color.hue, 255, default_color.val);
             }
             return false; // Skip further processing of this key
         case DFLT:
             // When the key is pressed, set the RGB matrix to default color
             if (record->event.pressed) {
-                rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
-                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case RGB_UP:
@@ -503,7 +501,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case RGB_SAV:
             // When the key is pressed, set the current color as the default color
             if (record->event.pressed) {
-                set_current_as_default();
+                set_current_rgb_as_default();
             }
             return false; // Skip further processing of this key
         case WPM_UP:

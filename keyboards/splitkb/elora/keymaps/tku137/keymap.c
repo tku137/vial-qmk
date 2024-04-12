@@ -45,9 +45,9 @@
 
 // struct to hold HSV color values
 typedef struct {
-    uint16_t hue;
-    uint8_t  sat;
-    uint8_t  val;
+    uint8_t hue;
+    uint8_t sat;
+    uint8_t val;
 } hsv_color_t;
 
 // Define some nice colors

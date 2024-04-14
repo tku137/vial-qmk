@@ -1,6 +1,6 @@
 # tku137's keymap for Elora
 
-![elora-2](https://github.com/tku137/vial-qmk/assets/3052212/f21ee7a4-41eb-45bf-a6bb-0c126474eadf)
+![elora-3](https://github.com/tku137/vial-qmk/assets/3052212/32644209-b79b-44d3-b671-a84bd6c84f10)
 
 ## Base layer
 

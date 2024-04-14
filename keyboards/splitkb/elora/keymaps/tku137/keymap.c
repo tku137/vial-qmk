@@ -24,6 +24,7 @@
 #include "timer.h"
 
 #include "layers.h"
+#include "rgb.h"
 #include "cyberdeck.h"
 // #include "terminal.h"
 
@@ -43,39 +44,13 @@
 #define DEG RALT(KC_SCLN)
 #define ESSZ RALT(KC_S)
 
-// struct to hold HSV color values
-typedef struct {
-    uint8_t hue;
-    uint8_t sat;
-    uint8_t val;
-    uint8_t mode;
-    uint8_t speed;
-} rgb_settings_t;
-
-// Define some nice colors
-const rgb_settings_t default_sand1    = {25, 178, 255, RGB_MATRIX_SOLID_COLOR, 50};
-const rgb_settings_t default_sand2    = {30, 178, 230, RGB_MATRIX_SOLID_COLOR, 50};
-const rgb_settings_t default_white    = {32, 102, 255, RGB_MATRIX_SOLID_COLOR, 50};
-const rgb_settings_t default_turquise = {118, 183, 209, RGB_MATRIX_SOLID_COLOR, 50};
-const rgb_settings_t default_purple   = {212, 255, 128, RGB_MATRIX_SOLID_COLOR, 50};
-const rgb_settings_t default_orange   = {27, 255, 255, RGB_MATRIX_SOLID_COLOR, 50};
-const rgb_settings_t default_green    = {78, 235, 255, RGB_MATRIX_SOLID_COLOR, 50};
-const rgb_settings_t default_blue     = {146, 255, 255, RGB_MATRIX_SOLID_COLOR, 50};
-
-rgb_settings_t default_setting;
-int            current_color_index = 0;
-
-// Define array of colors
-const rgb_settings_t colors[] = {default_sand1, default_sand2, default_white, default_turquise, default_purple, default_orange, default_green, default_blue};
-#define NUM_COLORS (sizeof(colors) / sizeof(rgb_settings_t))
-
 // Define custom keycodes
 enum custom_keycodes {
-    DFLT = SAFE_RANGE, // Custom keycode for natural white
-    RNBW,              // Custom keycode for rainbow swirl
-    WHT,               // Custom keycode for white
     WPM_UP,            // Custom keycode for increasing target WPM
     WPM_DOWN,          // Custom keycode for decreasing target WPM
+    DFLT = SAFE_RANGE, // Custom keycode for natural white
+    WHT,               // Custom keycode for white
+    RNBW,              // Custom keycode for rainbow swirl
     RGB_UP,            // Custom keycode for cycling RGB mode
     RGB_DWN,           // Custom keycode for cycling RGB mode
     RGB_SAV,           // Custom keycode for setting current color as default

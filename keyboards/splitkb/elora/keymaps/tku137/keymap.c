@@ -410,30 +410,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false; // Skip further processing of this key
         case WPM_UP:
             if (record->event.pressed) {
-                // Increase TARGET_WPM by 5 with each key press, adjust step size as needed
+                // Increase TARGET_WPM by WPM_INCREMENT with each key press
+                // Prevent it from going below a minimum value
                 if (target_wpm < MAX_WPM) { // Ensure TARGET_WPM stays positive or within a logical minimum
-                    target_wpm_changed = true; // Indicate that the target WPM has changed
                     target_wpm += WPM_INCREMENT;
                     // Save the updated TARGET_WPM to EEPROM
                     eeprom_update_word(EEPROM_TARGET_WPM_ADDR, target_wpm);
                 }
-                // Activate display mode to show updated TARGET_WPM
-                display_wpm_mode = true;
+                target_wpm_changed = true; // Indicate that the target WPM has changed
+                display_wpm_mode = true; // Activate display mode to show updated TARGET_WPM
                 wpm_display_start_time = timer_read32(); // Capture the start time
             }
             return false; // Skip further processing to prevent default behavior
         case WPM_DOWN:
             if (record->event.pressed) {
-                // Decrease TARGET_WPM by 5 with each key press, prevent it from going below a minimum value
+                // Decrease TARGET_WPM by WPM_INCREMENT with each key press
+                // Prevent it from going below a minimum value
                 if (target_wpm > MIN_WPM) { // Ensure TARGET_WPM stays positive or within a logical minimum
-                    target_wpm_changed = true; // Indicate that the target WPM has changed
                     target_wpm -= WPM_INCREMENT;
                     // Save the updated TARGET_WPM to EEPROM
                     eeprom_update_word(EEPROM_TARGET_WPM_ADDR, target_wpm);
                 }
-                // Activate display mode to show updated TARGET_WPM
-                display_wpm_mode = true;
-                wpm_display_start_time = timer_read32();
+                target_wpm_changed = true; // Indicate that the target WPM has changed
+                display_wpm_mode = true; // Activate display mode to show updated TARGET_WPM
+                wpm_display_start_time = timer_read32(); // Capture the start time
             }
             return false;
         default:

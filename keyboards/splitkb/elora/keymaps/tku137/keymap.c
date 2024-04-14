@@ -46,14 +46,14 @@
 
 // Define custom keycodes
 enum custom_keycodes {
-    WPM_UP,            // Custom keycode for increasing target WPM
-    WPM_DOWN,          // Custom keycode for decreasing target WPM
-    DFLT = SAFE_RANGE, // Custom keycode for natural white
-    WHT,               // Custom keycode for white
-    RNBW,              // Custom keycode for rainbow swirl
-    RGB_UP,            // Custom keycode for cycling RGB mode
-    RGB_DWN,           // Custom keycode for cycling RGB mode
-    RGB_SAV,           // Custom keycode for setting current color as default
+    WPM_UP = SAFE_RANGE, // Custom keycode for increasing target WPM
+    WPM_DOWN,            // Custom keycode for decreasing target WPM
+    DFLT,                // Custom keycode for natural white
+    WHT,                 // Custom keycode for white
+    RNBW,                // Custom keycode for rainbow swirl
+    RGB_UP,              // Custom keycode for cycling RGB mode
+    RGB_DWN,             // Custom keycode for cycling RGB mode
+    RGB_SAV,             // Custom keycode for setting current color as default
 };
 
 // Initialize WPM variables
@@ -422,7 +422,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 wpm_display_start_time = timer_read32(); // Capture the start time
             }
             return false; // Skip further processing to prevent default behavior
-
         case WPM_DOWN:
             if (record->event.pressed) {
                 // Decrease TARGET_WPM by 5 with each key press, prevent it from going below a minimum value

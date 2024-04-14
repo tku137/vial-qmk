@@ -58,4 +58,5 @@
 #define SYNC_INTERVAL 500                         // Interval in milliseconds between syncs
 
 // RGB magic
+#define EEPROM_RGB_ADDR (uint16_t *)0x0405 // EEPROM address to store default underglow
 #define ENABLE_RGB_MATRIX_RAINBOW_MOVING_CHEVRON

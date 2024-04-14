@@ -24,6 +24,7 @@
 #include "timer.h"
 
 #include "layers.h"
+#include "rgb.h"
 #include "cyberdeck.h"
 // #include "terminal.h"
 
@@ -43,27 +44,16 @@
 #define DEG RALT(KC_SCLN)
 #define ESSZ RALT(KC_S)
 
-// struct to hold HSV color values
-typedef struct {
-    uint16_t hue;
-    uint8_t  sat;
-    uint8_t  val;
-} hsv_color_t;
-
-// Default natural white color
-const hsv_color_t default_color = {32, 102, 255}; // Define default color
-
 // Define custom keycodes
 enum custom_keycodes {
-    DFLT = SAFE_RANGE, // Custom keycode for natural white
-    TRQS,              // Custom keycode for cyberpunk turquoise
-    PRPL,              // Custom keycode for cyberpunk purple
-    ORNG,              // Custom keycode for cyberpunk orange
-    NGRN,              // Custom keycode for cyberpunk green
-    ELBL,              // Custom keycode for cyberpunk blue
-    RNBW,              // Custom keycode for rainbow swirl
-    WPM_UP,            // Custom keycode for increasing target WPM
-    WPM_DOWN,          // Custom keycode for decreasing target WPM
+    WPM_UP = SAFE_RANGE, // Custom keycode for increasing target WPM
+    WPM_DOWN,            // Custom keycode for decreasing target WPM
+    DFLT,                // Custom keycode for natural white
+    WHT,                 // Custom keycode for white
+    RNBW,                // Custom keycode for rainbow swirl
+    RGB_UP,              // Custom keycode for cycling RGB mode
+    RGB_DWN,             // Custom keycode for cycling RGB mode
+    RGB_SAV,             // Custom keycode for setting current color as default
 };
 
 // Initialize WPM variables
@@ -225,69 +215,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------'      `------'                `---------------------------'      '------'
  */
     [_ADJUST] = LAYOUT_myr(
-      _______, _______, _______, _______, _______, EE_CLR ,         _______, _______,          _______, _______, _______, _______,  _______, _______,
-      _______, _______, _______, QWERTY , KC_BRIU, WPM_UP ,         _______, _______,           DFLT  ,  TRQS  ,  PRPL  ,  ORNG  ,  NGRN   ,  ELBL  ,
-      _______, _______, _______, _______, KC_BRID,WPM_DOWN,         _______, _______,           RNBW  , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
-      _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_TOG, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD ,RGB_RMOD,
+      _______, _______, _______, _______, _______, EE_CLR ,         _______, _______,          RGB_TOG, RGB_SAV, _______, _______, _______, _______,
+      _______, _______, _______, QWERTY , KC_BRIU, WPM_UP ,         _______, _______,           DFLT  ,  WHT   ,  RNBW  , _______, _______, _______,
+      _______, _______, _______, _______, KC_BRID,WPM_DOWN,         _______, _______,          RGB_UP , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
+      _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_DWN, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD ,RGB_RMOD,
                                  _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
 
     ),
 
-// /*
-//  * Layer template - LAYOUT
-//  *
-//  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
-//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
-//  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
-//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
-//  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
-//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
-//  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
-//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
-//  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
-//  *                        |      |      |      |      |      |  |      |      |      |      |      |
-//  *                        |      |      |      |      |      |  |      |      |      |      |      |
-//  *                        `----------------------------------'  `----------------------------------'
-//  */
-//     [_LAYERINDEX] = LAYOUT(
-//       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-//       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-//       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-//       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-//                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
-//     ),
-
-// /*
-//  * Layer template - LAYOUT_myr
-//  *
-//  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
-//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
-//  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
-//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
-//  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
-//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
-//  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
-//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
-//  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
-//  *                        |      |      |      |      |      |  |      |      |      |      |      |
-//  *                        |      |      |      |      |      |  |      |      |      |      |      |
-//  *                        `----------------------------------'  `----------------------------------'
-//  *
-//  * ,-----------------------------.      ,------.                ,---------------------------.      ,------.
-//  * |        |      |      |      |      |      |                |      |      |      |      |      |      |
-//  * `-----------------------------'      `------'                `---------------------------'      '------'
-//  */
-//     [_LAYERINDEX] = LAYOUT_myr(
-//       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-//       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-//       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-//       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-//                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-//
-//       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
-//     ),
 };
 
 /* The default OLED and rotary encoder code can be found at the bottom of qmk_firmware/keyboards/splitkb/elora/rev1/rev1.c
@@ -412,9 +349,9 @@ void housekeeping_task_user(void) {
 
 // This is run at boot
 void keyboard_post_init_user(void) {
-    rgb_matrix_enable_noeeprom(); // Enables RGB, without saving settings
-    rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to default color
-    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+
+    // Load RGB settings from EEPROM
+    load_rgb_settings();
 
     // Load TARGET_WPM from EEPROM
     target_wpm = eeprom_read_word(EEPROM_TARGET_WPM_ADDR);
@@ -435,51 +372,40 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case RNBW:
             // When the key is pressed, set the RGB matrix to rainbow swirl mode
             if (record->event.pressed) {
-                rgb_matrix_mode_noeeprom(RGB_MATRIX_RAINBOW_MOVING_CHEVRON);
-                rgb_matrix_set_speed_noeeprom(10); // 0-255
-                rgb_matrix_sethsv_noeeprom(default_color.hue, 255, default_color.val);
+                rgb_matrix_mode(RGB_MATRIX_RAINBOW_MOVING_CHEVRON);
+                rgb_matrix_set_speed(10); // 0-255
+                rgb_matrix_sethsv(default_setting.hue, 255, default_setting.val);
+            }
+            return false; // Skip further processing of this key
+        case WHT:
+            // When the key is pressed, set the RGB matrix to white color
+            if (record->event.pressed) {
+                rgb_matrix_sethsv(default_white.hue, default_white.sat, default_white.val); // Set all LEDs to natural white
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
             }
             return false; // Skip further processing of this key
         case DFLT:
             // When the key is pressed, set the RGB matrix to default color
             if (record->event.pressed) {
-                rgb_matrix_sethsv_noeeprom(default_color.hue, default_color.sat, default_color.val); // Set all LEDs to natural white
-                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+                set_rgb_settings(default_setting);
             }
             return false; // Skip further processing of this key
-        case TRQS:
-            // When the key is pressed, set the RGB matrix to cyberpunk turquoise
+        case RGB_UP:
+            // When the key is pressed, cycle through the colors
             if (record->event.pressed) {
-                rgb_matrix_sethsv_noeeprom(118, 183, 209);
-                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+                cycle_color_up();
             }
             return false; // Skip further processing of this key
-        case PRPL:
-            // When the key is pressed, set the RGB matrix to cyberpunk purple
+        case RGB_DWN:
+            // When the key is pressed, cycle through the colors
             if (record->event.pressed) {
-                rgb_matrix_sethsv_noeeprom(212, 255, 128);
-                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+                cycle_color_down();
             }
             return false; // Skip further processing of this key
-        case ORNG:
-            // When the key is pressed, set the RGB matrix to cyberpunk orange
+        case RGB_SAV:
+            // When the key is pressed, set the current color as the default color
             if (record->event.pressed) {
-                rgb_matrix_sethsv_noeeprom(27, 255, 255);
-                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
-            }
-            return false; // Skip further processing of this key
-        case NGRN:
-            // When the key is pressed, set the RGB matrix to cyberpunk green
-            if (record->event.pressed) {
-                rgb_matrix_sethsv_noeeprom(78, 235, 255);
-                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
-            }
-            return false; // Skip further processing of this key
-        case ELBL:
-            // When the key is pressed, set the RGB matrix to cyberpunk blue
-            if (record->event.pressed) {
-                rgb_matrix_sethsv_noeeprom(146, 255, 255);
-                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+                set_current_rgb_as_default();
             }
             return false; // Skip further processing of this key
         case WPM_UP:
@@ -496,7 +422,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 wpm_display_start_time = timer_read32(); // Capture the start time
             }
             return false; // Skip further processing to prevent default behavior
-
         case WPM_DOWN:
             if (record->event.pressed) {
                 // Decrease TARGET_WPM by 5 with each key press, prevent it from going below a minimum value

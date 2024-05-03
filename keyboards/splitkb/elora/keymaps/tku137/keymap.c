@@ -128,8 +128,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
       _______, _______, _______, _______, _______, _______,          _______, _______,          KC_PGUP, KC_HOME, KC_UP  , KC_END , KC_VOLU, KC_DEL ,
       _______, KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI, KC_HYPR,          _______, _______,          KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_VOLD, KC_INS ,
-      _______, _______, _______, _______, _______, _______, MICMUTE, _______, _______, _______,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, MICMUTE,
-                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, _______, MICMUTE, _______, _______, _______, _______, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, MICMUTE,
+                                 _______, _______, _______, _______, _______, _______, _______, KC_BSPC, KC_DEL , _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
     ),
@@ -157,8 +157,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_SYM] = LAYOUT_myr(
       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, DEG    ,
       _______, KC_CIRC, KC_LABK, KC_RABK, KC_DQUO, KC_QUOT,          _______, _______,          KC_AMPR, KC_LBRC, KC_RBRC, KC_GRV , KC_PERC, EURO   ,
-      _______, KC_EXLM, KC_MINS, KC_PLUS, KC_EQL , KC_COMM,          _______, _______,          KC_PIPE, KC_LPRN, KC_RPRN, KC_COLN, KC_QUES, KC_DLR ,
-      _______, KC_TILD, KC_SLSH, KC_ASTR, KC_BSLS, KC_DOT , _______, _______, _______, _______, KC_UNDS, KC_LCBR, KC_RCBR, KC_SCLN, KC_AT  , GREEK  ,
+      _______, KC_EXLM, KC_MINS, KC_PLUS, KC_EQL , KC_COMM,          _______, _______,          KC_PIPE, KC_LPRN, KC_RPRN, KC_COLN, KC_AT  , KC_DLR ,
+      _______, KC_TILD, KC_SLSH, KC_ASTR, KC_BSLS, KC_DOT , _______, _______, _______, _______, KC_UNDS, KC_LCBR, KC_RCBR, KC_SCLN, KC_QUES, GREEK  ,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______

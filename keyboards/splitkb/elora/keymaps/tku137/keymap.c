@@ -232,7 +232,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |        |      |      |QWERTY|Brite+| WPM+ |      |      |  |      |      | White| Turq | Purp | Oran | Gree |  Blue  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |      |      |      |Brite-| WPM- |      |      |  |      |      | Rnbw | HUI  | SAI  | VAI  | SPI  |  MOD   |
+ * |        |      |      |COLEMA|Brite-| WPM- |      |      |  |      |      | Rnbw | HUI  | SAI  | VAI  | SPI  |  MOD   |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * |        |      |      |      |      |      |      |      |  |      |      | RGB  | HUD  | SAD  | VAD  | SPD  |  RMOD  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
@@ -409,6 +409,18 @@ void keyboard_post_init_user(void) {
 // Custom keycode handling
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        case QWERTY:
+            // Switch to the QWERTY layer persistently
+            if (record->event.pressed) {
+                set_single_persistent_default_layer(_QWERTY);
+            }
+            return false;
+        case COLEMAK:
+            // Switch to the COLEMAK_DH layer persistently
+            if (record->event.pressed) {
+                set_single_persistent_default_layer(_COLEMAK_DH);
+            }
+            return false;  // Skip further processing of this key code
         case RNBW:
             // When the key is pressed, set the RGB matrix to rainbow swirl mode
             if (record->event.pressed) {

@@ -1,10 +1,10 @@
 # tku137's keymap for Elora
 
-![elora-3](https://github.com/tku137/vial-qmk/assets/3052212/32644209-b79b-44d3-b671-a84bd6c84f10)
+![kle-render herokuapp com-6](https://github.com/tku137/vial-qmk/assets/3052212/6ec58f9e-e254-402c-a56d-76001c99855f)
 
 ## Base layer
 
-This keymap uses Elora's default QWERTY layout as the base layer.
+This keymap uses a QWERTY base layer and features setting Colemak-DH as the default base layer as well.
 
 ## Symbols layer
 
@@ -20,4 +20,4 @@ This also has the modifiers on the right for consistency along the additional Hy
 
 ## Adjust leyer
 
-The adjust layer uses some keyboard specific settings on the right and has been extended by brightness keys on the left. On the right, there is a RGB underglow toggle, HSV adjustment keys and RGB effect mode cycle. There is a fixed Rainbow Swirl effect key as well as a row of static colors to choose from.
+The adjust layer uses some keyboard specific settings on the right. The right has buttons for switching the default base layer, adjusting the screen brigheness (if supported) and setting the target WPM. The left has buttons to save and load the default RGB setting and controls to modify every aspect of the RGB underglow.

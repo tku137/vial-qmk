@@ -9,7 +9,10 @@ void render_layer_status(uint8_t start_row) {
     oled_set_cursor(0, start_row);
     switch (get_highest_layer(layer_state | default_layer_state)) {
         case _QWERTY:
-            oled_write_raw_P(base, sizeof(base));
+            oled_write_raw_P(qwerty, sizeof(qwerty));
+            break;
+        case _COLEMAK_DH:
+            oled_write_raw_P(colemak_dh, sizeof(colemak_dh));
             break;
         case _NAV:
             oled_write_raw_P(navigation, sizeof(navigation));

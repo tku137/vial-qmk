@@ -105,6 +105,36 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
 /*
+ * Base Layer: Colemak DH
+ *
+ * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
+ * |  Esc   |   1  |   2  |   3  |   4  |   5  |      |LShift|  |RShift|      |   6  |   7  |   8  |   9  |   0  |  Esc   |
+ * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
+ * |  Tab   |   Q  |   W  |   F  |   P  |   B  |      |LCtrl |  | RCtrl|      |   J  |   L  |   U  |   Y  | ;  : |  Bksp  |
+ * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
+ * |Ctrl/Esc|   A  |   R  |   S  |   T  |   G  |      | LAlt |  | RAlt |      |   M  |   N  |   E  |   I  |   O  |Ctrl/' "|
+ * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
+ * | LShift |   Z  |   X  |   C  |   D  |   V  | [ {  |CapsLk|  |F-keys|  ] } |   K  |   H  | ,  < | . >  | /  ? | RShift |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        |Adjust| LGUI | LAlt/| Space| Nav  |  | Sym  | Space| AltGr| RGUI | Menu |
+ *                        |      |      | Enter|      |      |  |      |      |      |      |      |
+ *                        `----------------------------------'  `----------------------------------'
+ *
+ * ,----------------------------.      ,------.                 ,----------------------------.      ,------.
+ * | Prev | Next | Pause | Stop |      | Mute |                 | Prev | Next | Pause | Stop |      | Mute |
+ * `----------------------------'      `------'                 `----------------------------'      '------'
+ */
+    [_COLEMAK_DH] = LAYOUT_myr(
+      KC_ESC  , KC_1 ,  KC_2   ,  KC_3  ,   KC_4 ,   KC_5 ,         KC_LSFT,     KC_RSFT,          KC_6 ,  KC_7 ,  KC_8 ,   KC_9 ,  KC_0 , KC_ESC,
+      KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,         KC_LCTL,     KC_RCTL,          KC_J,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_BSPC,
+      CTL_ESC , KC_A ,  KC_R   ,  KC_S  ,   KC_T ,   KC_G ,         KC_LALT,     KC_RALT,          KC_M,   KC_N ,  KC_E ,   KC_I ,  KC_O , CTL_QUOT,
+      KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , KC_LBRC,KC_LPRN,     KC_RPRN, KC_RBRC, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, KC_RSFT,
+                                  ADJUST , KC_LGUI, ALT_ENT, KC_SPC , NAV   ,     SYM    , KC_SPC ,KC_RALT, KC_RGUI, FKEYS,
+
+      KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE,                            KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE
+    ),
+
+/*
  * Nav Layer: Media, navigation
  *
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
@@ -217,7 +247,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_ADJUST] = LAYOUT_myr(
       _______, _______, _______, _______, _______, EE_CLR ,         _______, _______,          RGB_TOG, RGB_SAV, _______, _______, _______, _______,
       _______, _______, _______, QWERTY , KC_BRIU, WPM_UP ,         _______, _______,           DFLT  ,  WHT   ,  RNBW  , _______, _______, _______,
-      _______, _______, _______, _______, KC_BRID,WPM_DOWN,         _______, _______,          RGB_UP , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
+      _______, _______, _______, COLEMAK, KC_BRID,WPM_DOWN,         _______, _______,          RGB_UP , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
       _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, RGB_DWN, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD ,RGB_RMOD,
                                  _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
 
@@ -295,6 +325,16 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
       ENCODER_CCW_CW(KC_VOLD, KC_VOLU)
     },
     [4] = {
+      ENCODER_CCW_CW(KC_LEFT, KC_RIGHT),
+      ENCODER_CCW_CW(KC_LEFT, KC_RIGHT),
+      ENCODER_CCW_CW(KC_LEFT, KC_RIGHT),
+      ENCODER_CCW_CW(KC_VOLD, KC_VOLU),
+      ENCODER_CCW_CW(KC_PGUP, KC_PGDN),
+      ENCODER_CCW_CW(KC_PGUP, KC_PGDN),
+      ENCODER_CCW_CW(KC_PGUP, KC_PGDN),
+      ENCODER_CCW_CW(KC_VOLD, KC_VOLU)
+    },
+    [5] = {
       ENCODER_CCW_CW(KC_LEFT, KC_RIGHT),
       ENCODER_CCW_CW(KC_LEFT, KC_RIGHT),
       ENCODER_CCW_CW(KC_LEFT, KC_RIGHT),

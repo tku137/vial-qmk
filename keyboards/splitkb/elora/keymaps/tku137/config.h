@@ -41,6 +41,9 @@
 #define VIAL_UNLOCK_COMBO_COLS \
     { 2, 5 }
 
+// homerow mods
+#define TAPPING_TERM 200
+
 // enable information transmitting
 // #define SPLIT_TRANSPORT_MIRROR
 // #define SPLIT_LAYER_STATE_ENABLE

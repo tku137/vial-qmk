@@ -53,3 +53,5 @@ ENCODER_MAP_ENABLE = yes
 SRC += cyberdeck.c
 # SRC += terminal.c
 SRC += rgb.c
+
+DYNAMIC_TAPPING_TERM_ENABLE = yes

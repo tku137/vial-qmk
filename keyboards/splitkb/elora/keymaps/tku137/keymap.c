@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "keycodes.h"
 #include QMK_KEYBOARD_H
 
 #include <stdbool.h>
@@ -37,11 +38,11 @@
 // Left-hand
 #define H_CTL_A LCTL_T(KC_A)
 #define H_ALT_S LALT_T(KC_S)
-#define H_SFT_D LSFT_T(KC_D)
-#define H_GUI_F LGUI_T(KC_F)
+#define H_GUI_D LGUI_T(KC_D)
+#define H_SFT_F LSFT_T(KC_F)
 // Right-hand
-#define H_GUI_J RGUI_T(KC_J)
-#define H_SFT_K RSFT_T(KC_K)
+#define H_SFT_J RSFT_T(KC_J)
+#define H_GUI_K RGUI_T(KC_K)
 #define H_ALT_L LALT_T(KC_L)
 #define H_CTL_SC RCTL_T(KC_SCLN)
 
@@ -49,11 +50,11 @@
 // Left-hand
 // #define H_CTL_A LCTL_T(KC_A)
 #define H_ALT_R LALT_T(KC_R)
-#define H_SFT_S LSFT_T(KC_S)
-#define H_GUI_T LGUI_T(KC_T)
+#define H_GUI_S LGUI_T(KC_S)
+#define H_SFT_T LSFT_T(KC_T)
 // Right-hand
-#define H_GUI_N RGUI_T(KC_N)
-#define H_SFT_E RSFT_T(KC_E)
+#define H_SFT_N RSFT_T(KC_N)
+#define H_GUI_E RGUI_T(KC_E)
 #define H_ALT_I LALT_T(KC_I)
 #define H_CTL_O RCTL_T(KC_O)
 
@@ -106,7 +107,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |  Tab   |   Q  |   W  |   E  |   R  |   T  |      |LCtrl |  | RCtrl|      |   Y  |   U  |   I  |   O  |   P  |  \  |  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |Ctrl/Esc| C-A  | A-S  | S-D  | G-F  |   G  |      | LAlt |  | RAlt |      |   H  | G-J  | S-K  | A-L  | C-;: |Ctrl/' "|
+ * |Ctrl/Esc| C-A  | A-S  | G-D  | S-F  |   G  |      | LAlt |  | RAlt |      |   H  | S-J  | G-K  | A-L  | C-;: |Ctrl/' "|
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * | LShift |   Z  |   X  |   C  |   V  |   B  | [ {  |  (   |  |   )  |  ] } |   N  |   M  | ,  < | . >  | /  ? | RShift |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
@@ -121,7 +122,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT_myr(
       KC_ESC  , KC_1   ,  KC_2  ,  KC_3  ,   KC_4 ,   KC_5 ,          KC_LSFT,     KC_RSFT,           KC_6  ,   KC_7 ,   KC_8 ,   KC_9 ,   KC_0 , KC_MINS,
       KC_TAB  , KC_Q   ,  KC_W  ,  KC_E  ,   KC_R ,   KC_T ,          KC_LCTL,     KC_RCTL,           KC_Y  ,   KC_U ,   KC_I ,   KC_O ,   KC_P , KC_BSLS,
-      CTL_ESC , H_CTL_A, H_ALT_S, H_SFT_D,H_GUI_F ,   KC_G ,          KC_LALT,     KC_RALT,           KC_H  , H_GUI_J, H_SFT_K, H_ALT_L,H_CTL_SC,CTL_QUOT,
+      CTL_ESC , H_CTL_A, H_ALT_S, H_GUI_D,H_SFT_F ,   KC_G ,          KC_LALT,     KC_RALT,           KC_H  , H_SFT_J, H_GUI_K, H_ALT_L,H_CTL_SC,CTL_QUOT,
       KC_LSFT , KC_Z   ,  KC_X  ,  KC_C  ,   KC_V ,   KC_B , KC_LBRC, KC_LPRN,     KC_RPRN, KC_RBRC,  KC_N  ,   KC_M , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT,
                                   ADJUST , KC_ESC , ALT_ENT, KC_SPC , NAV    ,      SYM   , KC_BSPC, KC_TAB , KC_RALT,  FKEYS ,
 
@@ -136,7 +137,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |  Tab   |   Q  |   W  |   F  |   P  |   B  |      |LCtrl |  | RCtrl|      |   J  |   L  |   U  |   Y  | ;  : |  \  |  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |Ctrl/Esc| C-A  | A-R  | S-S  | G-T  |   G  |      | LAlt |  | RAlt |      |   M  | G-N  | S-E  | A-I  | C-O  |Ctrl/' "|
+ * |Ctrl/Esc| C-A  | A-R  | G-S  | S-T  |   G  |      | LAlt |  | RAlt |      |   M  | S-N  | G-E  | A-I  | C-O  |Ctrl/' "|
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * | LShift |   Z  |   X  |   C  |   D  |   V  | [ {  |  (   |  |   )  |  ] } |   K  |   H  | ,  < | . >  | /  ? | RShift |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
@@ -151,7 +152,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_COLEMAK_DH] = LAYOUT_myr(
       KC_ESC  ,  KC_1  ,  KC_2  ,  KC_3  ,   KC_4 ,   KC_5 ,          KC_LSFT,     KC_RSFT,           KC_6  ,   KC_7 ,   KC_8 ,   KC_9 ,   KC_0 , KC_MINS,
       KC_TAB  ,  KC_Q  ,  KC_W  ,  KC_F  ,   KC_P ,   KC_B ,          KC_LCTL,     KC_RCTL,           KC_J  ,   KC_L ,   KC_U ,   KC_Y , KC_SCLN, KC_BSLS,
-      CTL_ESC , H_CTL_A, H_ALT_R, H_SFT_S, H_GUI_T,   KC_G ,          KC_LALT,     KC_RALT,           KC_M  , H_GUI_N, H_SFT_E, H_ALT_I ,H_CTL_O ,CTL_QUOT,
+      CTL_ESC , H_CTL_A, H_ALT_R, H_GUI_S, H_SFT_T,   KC_G ,          KC_LALT,     KC_RALT,           KC_M  , H_SFT_N, H_GUI_E, H_ALT_I ,H_CTL_O ,CTL_QUOT,
       KC_LSFT ,  KC_Z  ,  KC_X  ,  KC_C  ,   KC_D ,   KC_V , KC_LBRC, KC_LPRN,     KC_RPRN, KC_RBRC,  KC_K  ,   KC_H , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT,
                                   ADJUST , KC_ESC , ALT_ENT, KC_SPC , NAV    ,      SYM   , KC_BSPC, KC_TAB , KC_RALT,  FKEYS ,
 
@@ -166,7 +167,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |        |      |      |      |      |      |      |      |  |      |      |      |M Next|M Play|M Prev| VolUp| Delete |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        | Ctrl | Alt  | Shift| GUI  | Hyper|      |      |  |      |      | PgUp |  ←   |   ↑  |   →  | VolDn| Insert |
+ * |        | Ctrl | Alt  | GUI  | Shift| Hyper|      |      |  |      |      | PgUp |  ←   |   ↑  |   →  | VolDn| Insert |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * |        |      |      |      |      |      |MicMute|     |  |      |      | PgDn | Home |   ↓  | End  |VolMut|MicMute |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
@@ -181,7 +182,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_NAV] = LAYOUT_myr(
       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, KC_MPRV, KC_MPLY, KC_MNXT, KC_VOLU, KC_DEL ,
-      _______, KC_LCTL, KC_LALT, KC_LSFT, KC_LGUI, KC_HYPR,          _______, _______,          KC_PGUP, KC_LEFT, KC_UP  , KC_RGHT, KC_VOLD, KC_INS ,
+      _______, KC_LCTL, KC_LALT, KC_LGUI, KC_LSFT, KC_HYPR,          _______, _______,          KC_PGUP, KC_LEFT, KC_UP  , KC_RGHT, KC_VOLD, KC_INS ,
       _______, _______, _______, _______, _______, _______, MICMUTE, _______, _______, _______, KC_PGDN, KC_HOME, KC_DOWN, KC_END , KC_MUTE, MICMUTE,
                                  _______, _______, _______, _______, _______, _______, KC_DEL , _______, _______, _______,
 
@@ -226,7 +227,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |        |      |      |      |      |      |      |      |  |      |      |KeyCst| F1   | F2   | F3   | F4   |        |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        | Ctrl | Alt  | Shift| GUI  | Hyper|      |      |      |  |      |      | F5   | F6   | F7   | F8   |        |
+ * |        | Ctrl | Alt  | GUI  | Shift| Hyper|      |      |      |  |      |      | F5   | F6   | F7   | F8   |        |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * |        |      |      |      |      |      | LPad |MContr|  |MContr| LPad |      | F9   | F10  | F11  | F12  |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
@@ -241,7 +242,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_FUNCTION] = LAYOUT_myr(
       _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, KC_PSCR, KC_NUM , KC_CAPS, KC_SCRL,
       _______, _______, _______, _______, _______, _______,          _______, _______,          KEYCAST,  KC_F1 ,  KC_F2 ,  KC_F3 ,  KC_F4 , _______,
-      _______, KC_LCTL, KC_LALT, KC_LSFT, KC_LGUI, KC_HYPR,          _______, _______,          _______,  KC_F5 ,  KC_F6 ,  KC_F7 ,  KC_F8 , _______,
+      _______, KC_LCTL, KC_LALT, KC_LGUI, KC_LSFT, KC_HYPR,          _______, _______,          _______,  KC_F5 ,  KC_F6 ,  KC_F7 ,  KC_F8 , _______,
       _______, _______, _______, _______, _______, _______, KC_LPAD, KC_MCTL, KC_MCTL, KC_LPAD, _______,  KC_F9 ,  KC_F10,  KC_F11,  KC_F12, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
 

@@ -32,6 +32,9 @@
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
 #define CTL_MINS MT(MOD_RCTL, KC_MINUS)
 #define ALT_ENT MT(MOD_LALT, KC_ENT)
+#define ALT_ESC MT(MOD_LALT, KC_ESC)
+#define GUI_ENT MT(MOD_LGUI, KC_ENT)
+#define GUI_TAB MT(MOD_RGUI, KC_TAB)
 
 // App specific shortcuts
 #define MICMUTE HYPR(KC_M)
@@ -86,8 +89,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * | LShift |   Z  |   X  |   C  |   V  |   B  | [ {  |  (   |  |   )  |  ] } |   N  |   M  | ,  < | . >  | /  ? | RShift |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |Adjust| LGUI | LAlt/| Space| Nav  |  | Sym  | Bksp | AltGr| RGUI |F-Keys|
- *                        |      |      | Enter|      |      |  |      |      |      |      |      |
+ *                        |Adjust| LAlt/| LGUI/| Space| Nav  |  | Sym  | Bksp | RGUI/| RAlt |F-Keys|
+ *                        |      | Esc  | Enter|      |      |  |      |      | Tab  |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
  * ,----------------------------.      ,------.                 ,----------------------------.      ,------.
@@ -95,11 +98,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `----------------------------'      `------'                 `----------------------------'      '------'
  */
     [_QWERTY] = LAYOUT_myr(
-      KC_ESC  , KC_1 ,  KC_2   ,  KC_3  ,   KC_4 ,   KC_5 ,         KC_LSFT,     KC_RSFT,          KC_6 ,  KC_7 ,  KC_8 ,   KC_9 ,  KC_0 , KC_MINS,
-      KC_TAB  , KC_Q ,  KC_W   ,  KC_E  ,   KC_R ,   KC_T ,         KC_LCTL,     KC_RCTL,          KC_Y ,  KC_U ,  KC_I ,   KC_O ,  KC_P , KC_BSLS,
-      CTL_ESC , KC_A ,  KC_S   ,  KC_D  ,   KC_F ,   KC_G ,         KC_LALT,     KC_RALT,          KC_H ,  KC_J ,  KC_K ,   KC_L ,KC_SCLN,CTL_QUOT,
-      KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_V ,   KC_B , KC_LBRC,KC_LPRN,     KC_RPRN, KC_RBRC, KC_N ,  KC_M ,KC_COMM, KC_DOT ,KC_SLSH, KC_RSFT,
-                                 ADJUST , KC_LGUI, ALT_ENT, KC_SPC , NAV   ,     SYM    , KC_BSPC,KC_RALT, KC_RGUI, FKEYS,
+      KC_ESC  ,  KC_1  ,  KC_2  ,  KC_3  ,  KC_4  ,  KC_5  ,          KC_LSFT,     KC_RSFT,           KC_6  ,  KC_7  ,  KC_8  ,  KC_9  ,  KC_0  , KC_MINS,
+      KC_TAB  ,  KC_Q  ,  KC_W  ,  KC_E  ,  KC_R  ,  KC_T  ,          KC_LCTL,     KC_RCTL,           KC_Y  ,  KC_U  ,  KC_I  ,  KC_O  ,  KC_P  , KC_BSLS,
+      CTL_ESC ,  KC_A  ,  KC_S  ,  KC_D  ,  KC_F  ,  KC_G  ,          KC_LALT,     KC_RALT,           KC_H  ,  KC_J  ,  KC_K  ,  KC_L  , KC_SCLN,CTL_QUOT,
+      KC_LSFT ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_V  ,  KC_B  , KC_LBRC, KC_LPRN,     KC_RPRN, KC_RBRC,  KC_N  ,  KC_M  , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT,
+                                  ADJUST , ALT_ESC, GUI_ENT, KC_SPC , NAV    ,      SYM   , KC_BSPC, GUI_TAB, KC_RALT,  FKEYS ,
 
       KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE,                            KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE
     ),
@@ -116,8 +119,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * | LShift |   Z  |   X  |   C  |   D  |   V  | [ {  |  (   |  |   )  |  ] } |   K  |   H  | ,  < | . >  | /  ? | RShift |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |Adjust| LGUI | LAlt/| Space| Nav  |  | Sym  | Bksp | AltGr| RGUI |F-Keys|
- *                        |      |      | Enter|      |      |  |      |      |      |      |      |
+ *                        |Adjust| LAlt/| LGUI/| Space| Nav  |  | Sym  | Bksp | RGUI/| RAlt |F-Keys|
+ *                        |      | Esc  | Enter|      |      |  |      |      | Tab  |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
  * ,----------------------------.      ,------.                 ,----------------------------.      ,------.
@@ -125,11 +128,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `----------------------------'      `------'                 `----------------------------'      '------'
  */
     [_COLEMAK_DH] = LAYOUT_myr(
-      KC_ESC  , KC_1 ,  KC_2   ,  KC_3  ,   KC_4 ,   KC_5 ,         KC_LSFT,     KC_RSFT,          KC_6  ,   KC_7 ,  KC_8 ,   KC_9 ,  KC_0 , KC_MINS,
-      KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,         KC_LCTL,     KC_RCTL,          KC_J  ,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_BSLS,
-      CTL_ESC , KC_A ,  KC_R   ,  KC_S  ,   KC_T ,   KC_G ,         KC_LALT,     KC_RALT,          KC_M  ,   KC_N ,  KC_E ,   KC_I ,  KC_O ,CTL_QUOT,
-      KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , KC_LBRC,KC_LPRN,     KC_RPRN, KC_RBRC, KC_K  ,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, KC_RSFT,
-                                 ADJUST , KC_LGUI, ALT_ENT, KC_SPC , NAV   ,     SYM    , KC_BSPC,KC_RALT, KC_RGUI, FKEYS ,
+      KC_ESC  ,  KC_1  ,  KC_2  ,  KC_3  ,  KC_4  ,  KC_5  ,          KC_LSFT,     KC_RSFT,           KC_6  ,  KC_7  ,  KC_8  ,  KC_9  ,  KC_0  , KC_MINS,
+      KC_TAB  ,  KC_Q  ,  KC_W  ,  KC_F  ,  KC_P  ,  KC_B  ,          KC_LCTL,     KC_RCTL,           KC_J  ,  KC_L  ,  KC_U  ,  KC_Y  , KC_SCLN, KC_BSLS,
+      CTL_ESC ,  KC_A  ,  KC_R  ,  KC_S  ,  KC_T  ,  KC_G  ,          KC_LALT,     KC_RALT,           KC_M  ,  KC_N  ,  KC_E  ,  KC_I  ,  KC_O  ,CTL_QUOT,
+      KC_LSFT ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_D  ,  KC_V  , KC_LBRC, KC_LPRN,     KC_RPRN, KC_RBRC,  KC_K  ,  KC_H  , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT,
+                                  ADJUST , ALT_ESC, GUI_ENT, KC_SPC , NAV    ,      SYM   , KC_BSPC, GUI_TAB, KC_RALT,  FKEYS ,
 
       KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE,                            KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE
     ),

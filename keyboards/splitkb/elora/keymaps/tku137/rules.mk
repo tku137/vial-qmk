@@ -53,3 +53,8 @@ ENCODER_MAP_ENABLE = yes
 SRC += cyberdeck.c
 # SRC += terminal.c
 SRC += rgb.c
+
+# Define BME680 integration
+I2C_DRIVER = i2c_master
+SRC += $(KEYMAP_PATH)/bme68x_lib/bme68x.c
+CFLAGS += -I$(KEYMAP_PATH)/bme68x_lib

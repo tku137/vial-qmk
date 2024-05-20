@@ -27,6 +27,7 @@
 #include "rgb.h"
 #include "cyberdeck.h"
 // #include "terminal.h"
+#include "bme680_integration.c"
 
 #define CTL_ESC MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
@@ -391,6 +392,14 @@ void housekeeping_task_user(void) {
     }
 }
 
+void matrix_init_user(void) {
+    // Initialize the I2C and sensor
+    bme680_setup();
+}
+void matrix_scan_user(void) {
+    // Read sensor data periodically
+    bme680_read_data();
+}
 
 // This is run at boot
 void keyboard_post_init_user(void) {
@@ -508,7 +517,17 @@ bool oled_task_user(void) {
 
     } else {
 
-        render_slave();
+        // render_slave();
+
+        // Use global_temperature and global_humidity to display the data
+        char temp_str[16];
+        char hum_str[16];
+        snprintf(temp_str, sizeof(temp_str), "Temp: %.2f C", global_temperature);
+        snprintf(hum_str, sizeof(hum_str), "Hum: %.2f %%", global_humidity);
+
+        // Display the strings on your OLED display
+        oled_write(temp_str, false);
+        oled_write(hum_str, false);
 
     }
 

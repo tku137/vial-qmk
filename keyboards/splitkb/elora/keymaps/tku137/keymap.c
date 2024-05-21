@@ -519,15 +519,20 @@ bool oled_task_user(void) {
 
         // render_slave();
 
-        // Use global_temperature and global_humidity to display the data
         char temp_str[16];
         char hum_str[16];
+        char iaq_str[16];
+        char iaq_text[16];
+
         snprintf(temp_str, sizeof(temp_str), "Temp: %.2f C", global_temperature);
         snprintf(hum_str, sizeof(hum_str), "Hum: %.2f %%", global_humidity);
+        snprintf(iaq_str, sizeof(iaq_str), "IAQ: %.2f", global_iaq);
+        snprintf(iaq_text, sizeof(iaq_text), "%s", iaq_to_text(global_iaq));
 
-        // Display the strings on your OLED display
         oled_write(temp_str, false);
         oled_write(hum_str, false);
+        oled_write(iaq_str, false);
+        oled_write(iaq_text, false);
 
     }
 

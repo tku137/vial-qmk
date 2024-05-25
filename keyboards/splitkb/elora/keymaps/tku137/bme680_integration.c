@@ -1,116 +1,81 @@
-#include "bme68x_lib/bme68x.h"
-#include "bme68x_lib/bme68x_defs.h"
+#include "bme680/bme68x.h"
+#include "bme680/bme68x_defs.h"
 #include "i2c_master.h"
+#include "print.h"
 #include "wait.h"
-#include <math.h>
-#include <string.h>
+#include <stdint.h>
+#include <stdio.h>
 
-struct bme68x_dev sensor;
+// Define the I2C address for the BME680 sensor
+#define BME680_I2C_ADDR BME68X_I2C_ADDR_HIGH
+// #define I2C_TIMEOUT 100
 
-int8_t qmk_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr) {
-    uint8_t dev_id = *(uint8_t *)intf_ptr;
-    i2c_transmit(dev_id, &reg_addr, 1, I2C_STOP);
-    i2c_receive(dev_id, data, len, I2C_STOP);
-    return 0;
+// BME680 device structure
+struct bme68x_dev        bme680;
+struct bme68x_conf       conf;
+struct bme68x_heatr_conf heatr_conf;
+struct bme68x_data       data;
+int8_t                   rslt;
+
+// Custom I2C read function
+int8_t user_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr) {
+    return i2c_readReg(BME680_I2C_ADDR, reg_addr, reg_data, len, I2C_TIMEOUT) == I2C_STATUS_SUCCESS ? BME68X_OK : BME68X_E_COM_FAIL;
 }
 
-int8_t qmk_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr) {
-    uint8_t dev_id = *(uint8_t *)intf_ptr;
-    uint8_t buffer[len + 1];
-    buffer[0] = reg_addr;
-    memcpy(&buffer[1], data, len);
-    i2c_transmit(dev_id, buffer, len + 1, I2C_STOP);
-    return 0;
+// Custom I2C write function
+int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr) {
+    return i2c_writeReg(BME680_I2C_ADDR, reg_addr, reg_data, len, I2C_TIMEOUT) == I2C_STATUS_SUCCESS ? BME68X_OK : BME68X_E_COM_FAIL;
 }
 
-void qmk_delay_us(uint32_t period, void *intf_ptr) {
+// Custom delay function
+void user_delay_us(uint32_t period, void *intf_ptr) {
     wait_us(period);
 }
 
-float global_temperature = 0.0;
-float global_humidity    = 0.0;
-float global_iaq         = 0.0;
+// Function to initialize the BME680 sensor
+void init_bme680(void) {
+    // Configure I2C settings
+    i2c_init();
+    bme680.intf     = BME68X_I2C_INTF;
+    bme680.read     = user_i2c_read;
+    bme680.write    = user_i2c_write;
+    bme680.delay_us = user_delay_us;
+    bme680.intf_ptr = NULL;
 
-void bme680_setup(void) {
-    sensor.intf     = BME68X_I2C_INTF;
-    sensor.read     = qmk_i2c_read;
-    sensor.write    = qmk_i2c_write;
-    sensor.delay_us = qmk_delay_us;
-    uint8_t dev_id  = BME68X_I2C_ADDR_HIGH;
-    sensor.intf_ptr = &dev_id;
-
-    bme68x_init(&sensor);
-
-    struct bme68x_conf conf;
-    bme68x_get_conf(&conf, &sensor);
-    conf.os_hum  = BME68X_OS_2X;
-    conf.os_temp = BME68X_OS_4X;
-    conf.os_pres = BME68X_OS_8X;
-    conf.filter  = BME68X_FILTER_SIZE_3;
-    bme68x_set_conf(&conf, &sensor);
-
-    struct bme68x_heatr_conf heatr_conf;
-    heatr_conf.enable     = BME68X_ENABLE;
-    heatr_conf.heatr_temp = 320; // Target temperature in degree Celsius
-    heatr_conf.heatr_dur  = 150; // Duration in milliseconds
-    bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &sensor);
-}
-
-float calculate_iaq(uint32_t gas_resistance, float humidity) {
-    float hum_weighting = 0.25; // Humidity effect is 25% of the total air quality score
-    float gas_weighting = 0.75; // Gas effect is 75% of the total air quality score
-
-    float hum_score, gas_score;
-    float hum_reference = 40.0;
-
-    // Calculate humidity contribution to IAQ index
-    if (humidity >= 38 && humidity <= 42) {
-        hum_score = 0.25 * 100.0; // Humidity +/-5% around optimum
-    } else {
-        if (humidity < 38) {
-            hum_score = (hum_weighting / hum_reference) * humidity * 100.0;
-        } else {
-            hum_score = ((-hum_weighting / (100.0 - hum_reference) * humidity) + 0.416666) * 100.0;
-        }
+    rslt = bme68x_init(&bme680);
+    if (rslt != BME68X_OK) {
+        printf("BME680 initialization failed!\n");
+        return;
     }
 
-    // Calculate gas contribution to IAQ index
-    float gas_lower_limit = 5000.0;  // Bad air quality limit
-    float gas_upper_limit = 50000.0; // Good air quality limit
-    if (gas_resistance > gas_upper_limit) gas_resistance = gas_upper_limit;
-    if (gas_resistance < gas_lower_limit) gas_resistance = gas_lower_limit;
-    gas_score = (gas_weighting / (gas_upper_limit - gas_lower_limit) * gas_resistance - (gas_lower_limit * (gas_weighting / (gas_upper_limit - gas_lower_limit)))) * 100.0;
+    // Configure BME680 sensor settings
+    conf.filter  = BME68X_FILTER_OFF;
+    conf.odr     = BME68X_ODR_NONE;
+    conf.os_hum  = BME68X_OS_2X;
+    conf.os_pres = BME68X_OS_4X;
+    conf.os_temp = BME68X_OS_8X;
+    rslt         = bme68x_set_conf(&conf, &bme680);
 
-    // Combine results for the final IAQ index value (0-100% where 100% is good quality air)
-    float air_quality_score = hum_score + gas_score;
-    if (air_quality_score > 100.0) air_quality_score = 100.0;
-
-    return air_quality_score;
+    // Set heater profile
+    heatr_conf.enable     = BME68X_ENABLE;
+    heatr_conf.heatr_temp = 320;
+    heatr_conf.heatr_dur  = 100;
+    rslt                  = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &bme680);
 }
 
-const char *iaq_to_text(float iaq) {
-    if (iaq >= 301)
-        return "Hazardous";
-    else if (iaq >= 201 && iaq <= 300)
-        return "Very Unhealthy";
-    else if (iaq >= 176 && iaq <= 200)
-        return "Unhealthy";
-    else if (iaq >= 151 && iaq <= 175)
-        return "Unhealthy for Sensitive Groups";
-    else if (iaq >= 51 && iaq <= 150)
-        return "Moderate";
-    else
-        return "Good";
-}
+// Function to read data from the BME680 sensor
+void read_bme680_data(void) {
+    uint32_t del_period;
+    uint8_t  n_data = 1;
+    del_period      = bme68x_get_meas_dur(BME68X_FORCED_MODE, &conf, &bme680) + (heatr_conf.heatr_dur * 1000);
 
-void bme680_read_data(void) {
-    struct bme68x_data data;
-    uint8_t            n_fields;
-    int8_t             rslt = bme68x_get_data(BME68X_FORCED_MODE, &data, &n_fields, &sensor);
+    bme68x_set_op_mode(BME68X_FORCED_MODE, &bme680);
+    bme680.delay_us(del_period, NULL);
 
+    rslt = bme68x_get_data(BME68X_FORCED_MODE, &data, &n_data, &bme680);
     if (rslt == BME68X_OK) {
-        global_temperature = data.temperature / 100.0;
-        global_humidity    = data.humidity / 1000.0;
-        global_iaq         = calculate_iaq(data.gas_resistance, global_humidity);
+        printf("Temperature: %.2f °C, Pressure: %.2f hPa, Humidity: %.2f %%\n", data.temperature / 100.0, data.pressure / 100.0, data.humidity / 1000.0);
+    } else {
+        printf("BME680 data read failed!\n");
     }
 }

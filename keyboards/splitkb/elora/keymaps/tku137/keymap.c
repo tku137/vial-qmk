@@ -14,11 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "keyboard.h"
+#include "oled_driver.h"
 #include QMK_KEYBOARD_H
 
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "transactions.h"
 #include "timer.h"
@@ -28,6 +31,7 @@
 #include "cyberdeck.h"
 // #include "terminal.h"
 #include "bme680_integration.c"
+// #include "bme68x_lib/bme680_helper.h"
 
 #define CTL_ESC MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
@@ -392,14 +396,14 @@ void housekeeping_task_user(void) {
     }
 }
 
+
 void matrix_init_user(void) {
-    // Initialize the I2C and sensor
-    bme680_setup();
+
+    printf("Matrix init user started\n");
+    init_bme680();
+    // bme680_setup();
 }
-void matrix_scan_user(void) {
-    // Read sensor data periodically
-    bme680_read_data();
-}
+
 
 // This is run at boot
 void keyboard_post_init_user(void) {
@@ -417,6 +421,14 @@ void keyboard_post_init_user(void) {
 
     // Register custom data sync handler
     transaction_register_rpc(TARGET_WPM_SYNC, target_wpm_sync_slave_handler);
+
+    // Initialize the I2C and sensor
+    printf("This is post_init_user\n");
+    // bme680_setup();
+    // setup_bme680();
+
+    // debug_enable = true;
+    // debug_matrix = true;
 }
 
 
@@ -513,26 +525,50 @@ bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
 
-        render_master();
+        read_bme680_data();
+
+        // static bool initialized = false;
+        //
+        // // Call bme680_setup once from here if not already called
+        // if (!initialized) {
+        //     printf("Initializing BME680 from oled_task_user\n");
+        //     bme680_setup();
+        //     initialized = true;
+        // }
+        //
+        // bme680_read_data();
+        //
+        // char temp_str[11];
+        // char hum_str[11];
+        // char iaq_str[11];
+        // char iaq_text[11];
+        //
+        // int temp_int = (int)(global_temperature * 100);
+        // int hum_int = (int)(global_humidity * 100);
+        // int iaq_int = (int)(global_iaq * 100);
+        //
+        // snprintf(temp_str, sizeof(temp_str), "T:%d.%02d", temp_int / 100, temp_int % 100);
+        // snprintf(hum_str, sizeof(hum_str), "H:%d.%02d%%", hum_int / 100, hum_int % 100);
+        // snprintf(iaq_str, sizeof(iaq_str), "IAQ:%d.%02d", iaq_int / 100, iaq_int % 100);
+        // snprintf(iaq_text, sizeof(iaq_text), "%s", iaq_to_text(global_iaq));
+        //
+        // oled_clear();
+        //
+        // oled_set_cursor(0, 0);
+        // oled_write(temp_str, false);
+        //
+        // oled_set_cursor(0, 2);
+        // oled_write(hum_str, false);
+        //
+        // oled_set_cursor(0, 4);
+        // oled_write(iaq_str, false);
+        //
+        // oled_set_cursor(0, 6);
+        // oled_write(iaq_text, false);
 
     } else {
 
-        // render_slave();
-
-        char temp_str[16];
-        char hum_str[16];
-        char iaq_str[16];
-        char iaq_text[16];
-
-        snprintf(temp_str, sizeof(temp_str), "Temp: %.2f C", global_temperature);
-        snprintf(hum_str, sizeof(hum_str), "Hum: %.2f %%", global_humidity);
-        snprintf(iaq_str, sizeof(iaq_str), "IAQ: %.2f", global_iaq);
-        snprintf(iaq_text, sizeof(iaq_text), "%s", iaq_to_text(global_iaq));
-
-        oled_write(temp_str, false);
-        oled_write(hum_str, false);
-        oled_write(iaq_str, false);
-        oled_write(iaq_text, false);
+        render_slave();
 
     }
 

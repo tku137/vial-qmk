@@ -56,5 +56,11 @@ SRC += rgb.c
 
 # Define BME680 integration
 I2C_DRIVER = i2c_master
-SRC += $(KEYMAP_PATH)/bme68x_lib/bme68x.c
-CFLAGS += -I$(KEYMAP_PATH)/bme68x_lib
+# SRC += bme68x_lib/bme68x.c
+# SRC += bme68x_lib/bme680_helper.c
+SRC += bme680/bme68x.c
+
+# CFLAGS += -I$(KEYMAP_PATH)/bme68x_lib
+# CFLAGS += -DPRINTF_FLOAT
+
+CONSOLE_ENABLE = yes

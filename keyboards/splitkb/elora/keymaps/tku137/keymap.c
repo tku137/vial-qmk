@@ -527,6 +527,8 @@ bool oled_task_user(void) {
 
         read_bme680_data();
 
+        // render_master();
+
         // static bool initialized = false;
         //
         // // Call bme680_setup once from here if not already called

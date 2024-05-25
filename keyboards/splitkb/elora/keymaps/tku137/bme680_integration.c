@@ -5,8 +5,10 @@
 #include "wait.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "debug.h"
 
 // Define the I2C address for the BME680 sensor
+// #define BME680_I2C_ADDR BME68X_I2C_ADDR_LOW
 #define BME680_I2C_ADDR BME68X_I2C_ADDR_HIGH
 
 // BME680 device structure
@@ -21,12 +23,22 @@ char init_status[50] = "not initialized";
 
 // Custom I2C read function
 int8_t user_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr) {
-    return i2c_readReg(BME680_I2C_ADDR, reg_addr, reg_data, len, I2C_TIMEOUT) == I2C_STATUS_SUCCESS ? BME68X_OK : BME68X_E_COM_FAIL;
+    printf("I2C Read - Addr: 0x%02X, Reg: 0x%02X, Len: %ld\n", BME680_I2C_ADDR, reg_addr, len);
+    int8_t result = i2c_readReg(BME680_I2C_ADDR, reg_addr, reg_data, len, I2C_TIMEOUT);
+    if (result != I2C_STATUS_SUCCESS) {
+        printf("I2C Read Failed: %d\n", result);
+    }
+    return result == I2C_STATUS_SUCCESS ? BME68X_OK : BME68X_E_COM_FAIL;
 }
 
 // Custom I2C write function
 int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr) {
-    return i2c_writeReg(BME680_I2C_ADDR, reg_addr, reg_data, len, I2C_TIMEOUT) == I2C_STATUS_SUCCESS ? BME68X_OK : BME68X_E_COM_FAIL;
+    printf("I2C Write - Addr: 0x%02X, Reg: 0x%02X, Len: %ld\n", BME680_I2C_ADDR, reg_addr, len);
+    int8_t result = i2c_writeReg(BME680_I2C_ADDR, reg_addr, reg_data, len, I2C_TIMEOUT);
+    if (result != I2C_STATUS_SUCCESS) {
+        printf("I2C Write Failed: %d\n", result);
+    }
+    return result == I2C_STATUS_SUCCESS ? BME68X_OK : BME68X_E_COM_FAIL;
 }
 
 // Custom delay function
@@ -44,9 +56,11 @@ void init_bme680(void) {
     bme680.delay_us = user_delay_us;
     bme680.intf_ptr = NULL;
 
+    dprintf("Initializing BME680\n");
     rslt = bme68x_init(&bme680);
     if (rslt != BME68X_OK) {
         snprintf(init_status, sizeof(init_status), "BME680 init failed: %d", rslt);
+        printf("%s\n", init_status);
         return;
     }
 
@@ -59,6 +73,7 @@ void init_bme680(void) {
     rslt         = bme68x_set_conf(&conf, &bme680);
     if (rslt != BME68X_OK) {
         snprintf(init_status, sizeof(init_status), "BME680 conf failed: %d", rslt);
+        printf("%s\n", init_status);
         return;
     }
 
@@ -69,10 +84,12 @@ void init_bme680(void) {
     rslt                  = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &bme680);
     if (rslt != BME68X_OK) {
         snprintf(init_status, sizeof(init_status), "BME680 heater conf failed: %d", rslt);
+        printf("%s\n", init_status);
         return;
     }
 
     snprintf(init_status, sizeof(init_status), "BME680 init successful");
+    printf("%s\n", init_status);
 }
 
 // Function to read data from the BME680 sensor

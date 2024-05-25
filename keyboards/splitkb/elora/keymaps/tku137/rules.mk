@@ -55,7 +55,9 @@ SRC += cyberdeck.c
 SRC += rgb.c
 
 # Define BME680 integration
+I2C_ENABLE = yes
 I2C_DRIVER = i2c_master
+I2C_DRIVER_REQUIRED = yes
 # SRC += bme68x_lib/bme68x.c
 # SRC += bme68x_lib/bme680_helper.c
 SRC += bme680/bme68x.c

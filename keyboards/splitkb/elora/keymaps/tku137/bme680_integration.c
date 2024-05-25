@@ -8,7 +8,6 @@
 
 // Define the I2C address for the BME680 sensor
 #define BME680_I2C_ADDR BME68X_I2C_ADDR_HIGH
-// #define I2C_TIMEOUT 100
 
 // BME680 device structure
 struct bme68x_dev        bme680;
@@ -16,6 +15,9 @@ struct bme68x_conf       conf;
 struct bme68x_heatr_conf heatr_conf;
 struct bme68x_data       data;
 int8_t                   rslt;
+
+// Global variable to track initialization status
+char init_status[50] = "not initialized";
 
 // Custom I2C read function
 int8_t user_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr) {
@@ -44,7 +46,7 @@ void init_bme680(void) {
 
     rslt = bme68x_init(&bme680);
     if (rslt != BME68X_OK) {
-        printf("BME680 initialization failed!\n");
+        snprintf(init_status, sizeof(init_status), "BME680 init failed: %d", rslt);
         return;
     }
 
@@ -55,12 +57,22 @@ void init_bme680(void) {
     conf.os_pres = BME68X_OS_4X;
     conf.os_temp = BME68X_OS_8X;
     rslt         = bme68x_set_conf(&conf, &bme680);
+    if (rslt != BME68X_OK) {
+        snprintf(init_status, sizeof(init_status), "BME680 conf failed: %d", rslt);
+        return;
+    }
 
     // Set heater profile
     heatr_conf.enable     = BME68X_ENABLE;
     heatr_conf.heatr_temp = 320;
     heatr_conf.heatr_dur  = 100;
     rslt                  = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &bme680);
+    if (rslt != BME68X_OK) {
+        snprintf(init_status, sizeof(init_status), "BME680 heater conf failed: %d", rslt);
+        return;
+    }
+
+    snprintf(init_status, sizeof(init_status), "BME680 init successful");
 }
 
 // Function to read data from the BME680 sensor
@@ -76,6 +88,6 @@ void read_bme680_data(void) {
     if (rslt == BME68X_OK) {
         printf("Temperature: %.2f °C, Pressure: %.2f hPa, Humidity: %.2f %%\n", data.temperature / 100.0, data.pressure / 100.0, data.humidity / 1000.0);
     } else {
-        printf("BME680 data read failed!\n");
+        printf("BME680 data read failed! Init status: %s\n", init_status);
     }
 }

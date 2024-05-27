@@ -28,6 +28,17 @@
 #include "cyberdeck.h"
 // #include "terminal.h"
 
+#include "i2c_master.h"
+#include "print.h"
+#include <stdio.h>
+#include "debug.h"
+#include <math.h>
+
+// #define HTU21D_ADDRESS 0x40
+#define HTU21D_ADDRESS (0x40 << 1)
+#define HTU21D_TEMP_MEASURE_NOHOLD 0xF3
+#define TIMEOUT 1000 // Timeout for I2C operations
+
 #define CTL_ESC MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
 #define SFT_ESC MT(MOD_LSFT, KC_ESC)
@@ -392,6 +403,60 @@ void housekeeping_task_user(void) {
 }
 
 
+__attribute__((weak)) i2c_status_t i2c_ping_address(uint8_t address, uint16_t timeout) {
+    // Best effort tries reading register 0 which will either succeed or timeout.
+    // This approach may produce false negative results for I2C devices that do not respond to a register 0 read request.
+    uint8_t data = 0;
+    return i2c_readReg(address, 0, &data, sizeof(data), timeout);
+}
+
+float read_temperature(void) {
+    uint8_t data[3];
+    uint16_t raw_temp;
+
+    // Send temperature measurement command
+    int write_status = i2c_writeReg(HTU21D_ADDRESS, HTU21D_TEMP_MEASURE_NOHOLD, NULL, 0, TIMEOUT);
+    if (write_status != I2C_STATUS_SUCCESS) {
+        uprintf("I2C write failed with status: %d\n", write_status);
+        return NAN; // Return NaN to indicate failure
+    }
+
+    // Wait for the sensor to perform the measurement
+    wait_ms(50);
+
+    // Read 3 bytes of data (2 bytes of temperature and 1 CRC byte)
+    int read_status = i2c_readReg(HTU21D_ADDRESS, HTU21D_TEMP_MEASURE_NOHOLD, data, 3, TIMEOUT);
+    if (read_status != I2C_STATUS_SUCCESS) {
+        uprintf("I2C read failed with status: %d\n", read_status);
+        return NAN; // Return NaN to indicate failure
+    }
+
+    uprintf("Raw data: %02X %02X %02X\n", data[0], data[1], data[2]);
+
+    // Combine the bytes into a 16-bit value
+    raw_temp = (data[0] << 8) | data[1];
+
+    // Apply temperature conversion as per the datasheet
+    float temperature = -46.85 + 175.72 * (raw_temp / 65536.0);
+
+    return temperature;
+}
+
+void matrix_init_user(void) {
+    i2c_init();
+    uprintf("I2C initialized.\n");
+
+    // Additional initialization if needed
+    i2c_status_t status = i2c_start(HTU21D_ADDRESS);
+    if (status != I2C_STATUS_SUCCESS) {
+        uprintf("I2C start failed with status: %d\n", status);
+    } else {
+        uprintf("I2C start successful for address 0x%02X\n", HTU21D_ADDRESS);
+    }
+}
+
+
+
 // This is run at boot
 void keyboard_post_init_user(void) {
 
@@ -498,13 +563,38 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
+void matrix_scan_user(void) {
+    // Scan I2C bus for devices
+    for (uint8_t addr = 1; addr < 127; addr++) {
+        int status = i2c_ping_address(addr << 1, TIMEOUT);
+        if (status == I2C_STATUS_SUCCESS) {
+            uprintf("Found device at 0x%02X\n", addr);
+        }
+    }
+
+    // Read temperature from the sensor
+    float temperature = read_temperature();
+    if (isnan(temperature)) {
+        uprintf("Failed to read temperature.\n");
+        return;
+    }
+
+    int integer_part = (int)temperature;
+    int fractional_part = abs((int)((temperature - integer_part) * 100)); // Get two decimal places
+
+    // Print integer and fractional parts separately
+    uprintf("Temperature: %d.%02d C\n", integer_part, fractional_part);
+}
 
 // OLED handling
 bool oled_task_user(void) {
 
+    float temperature = read_temperature();
+    printf("Temperature: %.2f C\n", temperature);
+
     if (is_keyboard_master()) {
 
-        render_master();
+        // render_master();
 
     } else {
 

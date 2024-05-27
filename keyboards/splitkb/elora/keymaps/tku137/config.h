@@ -60,3 +60,9 @@
 // RGB magic
 #define EEPROM_RGB_ADDR (uint16_t *)0x0405 // EEPROM address to store default underglow
 #define ENABLE_RGB_MATRIX_RAINBOW_MOVING_CHEVRON
+
+// Enable debug print
+#define DEBUG_ENABLE
+#define DEBUG_MATRIX_SCAN_RATE
+#define DEBUG_ACTION
+#define DEBUG_EVENT

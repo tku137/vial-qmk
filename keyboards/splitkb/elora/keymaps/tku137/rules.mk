@@ -53,9 +53,4 @@ ENCODER_MAP_ENABLE = yes
 SRC += cyberdeck.c
 # SRC += terminal.c
 SRC += rgb.c
-
-CONSOLE_ENABLE = yes
-DEBUG_ENABLE = yes
-# printf = yes
-# I2C_DRIVER_REQUIRED = yes
-
+SRC += htu21d.c

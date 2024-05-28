@@ -415,23 +415,26 @@ float read_temperature(void) {
     uint16_t raw_temp;
 
     // Send temperature measurement command
-    int write_status = i2c_writeReg(HTU21D_ADDRESS, HTU21D_TEMP_MEASURE_NOHOLD, NULL, 0, TIMEOUT);
+    uint8_t cmd = HTU21D_TEMP_MEASURE_NOHOLD;
+    int write_status = i2c_transmit(HTU21D_ADDRESS, &cmd, 1, TIMEOUT);
     if (write_status != I2C_STATUS_SUCCESS) {
         uprintf("I2C write failed with status: %d\n", write_status);
         return NAN; // Return NaN to indicate failure
     }
 
     // Wait for the sensor to perform the measurement
-    wait_ms(50);
+    wait_ms(55);  // Increase the delay to ensure measurement is complete
 
     // Read 3 bytes of data (2 bytes of temperature and 1 CRC byte)
-    int read_status = i2c_readReg(HTU21D_ADDRESS, HTU21D_TEMP_MEASURE_NOHOLD, data, 3, TIMEOUT);
+    int read_status = i2c_receive(HTU21D_ADDRESS, data, 3, TIMEOUT);
     if (read_status != I2C_STATUS_SUCCESS) {
         uprintf("I2C read failed with status: %d\n", read_status);
         return NAN; // Return NaN to indicate failure
     }
 
     uprintf("Raw data: %02X %02X %02X\n", data[0], data[1], data[2]);
+
+    // TODO: Perform CRC check on the received data
 
     // Combine the bytes into a 16-bit value
     raw_temp = (data[0] << 8) | data[1];
@@ -442,8 +445,11 @@ float read_temperature(void) {
     return temperature;
 }
 
+
 void matrix_init_user(void) {
     i2c_init();
+    i2c_writeReg(0x40, 0xFE, NULL, 0, TIMEOUT);
+    wait_ms(50);
     uprintf("I2C initialized.\n");
 
     // Additional initialization if needed

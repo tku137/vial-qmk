@@ -56,6 +56,6 @@ SRC += rgb.c
 
 CONSOLE_ENABLE = yes
 DEBUG_ENABLE = yes
-printf = yes
-I2C_DRIVER_REQUIRED = yes
+# printf = yes
+# I2C_DRIVER_REQUIRED = yes
 

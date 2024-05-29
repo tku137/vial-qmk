@@ -8,37 +8,42 @@
 #include "debug.h"
 
 // Define the I2C address for the BME680 sensor
-// #define BME680_I2C_ADDR BME68X_I2C_ADDR_LOW
-#define BME680_I2C_ADDR BME68X_I2C_ADDR_HIGH
+#define BME680_I2C_ADDR BME68X_I2C_ADDR_LOW
+// #define BME680_I2C_ADDR BME68X_I2C_ADDR_HIGH
 
 // BME680 device structure
-struct bme68x_dev        bme680;
-struct bme68x_conf       conf;
-struct bme68x_heatr_conf heatr_conf;
-struct bme68x_data       data;
-int8_t                   rslt;
-
-// Global variable to track initialization status
-char init_status[50] = "not initialized";
+struct bme68x_dev bme680;
 
 // Custom I2C read function
 int8_t user_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr) {
-    printf("I2C Read - Addr: 0x%02X, Reg: 0x%02X, Len: %ld\n", BME680_I2C_ADDR, reg_addr, len);
-    int8_t result = i2c_readReg(BME680_I2C_ADDR, reg_addr, reg_data, len, I2C_TIMEOUT);
+    int8_t result = i2c_transmit(BME680_I2C_ADDR << 1, &reg_addr, 1, I2C_TIMEOUT);
+    if (result != I2C_STATUS_SUCCESS) {
+        printf("I2C Write Failed: %d\n", result);
+        return BME68X_E_COM_FAIL;
+    }
+
+    result = i2c_receive(BME680_I2C_ADDR << 1, reg_data, len, I2C_TIMEOUT);
     if (result != I2C_STATUS_SUCCESS) {
         printf("I2C Read Failed: %d\n", result);
+        return BME68X_E_COM_FAIL;
     }
-    return result == I2C_STATUS_SUCCESS ? BME68X_OK : BME68X_E_COM_FAIL;
+
+    return BME68X_OK;
 }
 
 // Custom I2C write function
 int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr) {
-    printf("I2C Write - Addr: 0x%02X, Reg: 0x%02X, Len: %ld\n", BME680_I2C_ADDR, reg_addr, len);
-    int8_t result = i2c_writeReg(BME680_I2C_ADDR, reg_addr, reg_data, len, I2C_TIMEOUT);
+    uint8_t data[len];
+    data[0] = reg_addr;
+    memcpy(&data[1], reg_data, len);
+
+    int8_t result = i2c_transmit(BME680_I2C_ADDR << 1, data, len, I2C_TIMEOUT);
     if (result != I2C_STATUS_SUCCESS) {
         printf("I2C Write Failed: %d\n", result);
+        return BME68X_E_COM_FAIL;
     }
-    return result == I2C_STATUS_SUCCESS ? BME68X_OK : BME68X_E_COM_FAIL;
+
+    return BME68X_OK;
 }
 
 // Custom delay function
@@ -57,14 +62,14 @@ void init_bme680(void) {
     bme680.intf_ptr = NULL;
 
     dprintf("Initializing BME680\n");
-    rslt = bme68x_init(&bme680);
+    int8_t rslt = bme68x_init(&bme680);
     if (rslt != BME68X_OK) {
-        snprintf(init_status, sizeof(init_status), "BME680 init failed: %d", rslt);
-        printf("%s\n", init_status);
+        printf("BME680 init failed: %d\n", rslt);
         return;
     }
 
     // Configure BME680 sensor settings
+    struct bme68x_conf conf;
     conf.filter  = BME68X_FILTER_OFF;
     conf.odr     = BME68X_ODR_NONE;
     conf.os_hum  = BME68X_OS_2X;
@@ -72,39 +77,50 @@ void init_bme680(void) {
     conf.os_temp = BME68X_OS_8X;
     rslt         = bme68x_set_conf(&conf, &bme680);
     if (rslt != BME68X_OK) {
-        snprintf(init_status, sizeof(init_status), "BME680 conf failed: %d", rslt);
-        printf("%s\n", init_status);
+        printf("BME680 conf failed: %d\n", rslt);
         return;
     }
 
     // Set heater profile
+    struct bme68x_heatr_conf heatr_conf;
     heatr_conf.enable     = BME68X_ENABLE;
     heatr_conf.heatr_temp = 320;
     heatr_conf.heatr_dur  = 100;
     rslt                  = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &bme680);
     if (rslt != BME68X_OK) {
-        snprintf(init_status, sizeof(init_status), "BME680 heater conf failed: %d", rslt);
-        printf("%s\n", init_status);
+        printf("BME680 heater conf failed: %d\n", rslt);
         return;
     }
 
-    snprintf(init_status, sizeof(init_status), "BME680 init successful");
-    printf("%s\n", init_status);
+    printf("BME680 init successful\n");
 }
 
 // Function to read data from the BME680 sensor
 void read_bme680_data(void) {
-    uint32_t del_period;
-    uint8_t  n_data = 1;
-    del_period      = bme68x_get_meas_dur(BME68X_FORCED_MODE, &conf, &bme680) + (heatr_conf.heatr_dur * 1000);
+    struct bme68x_data data;
+    uint8_t            n_fields;
 
-    bme68x_set_op_mode(BME68X_FORCED_MODE, &bme680);
-    bme680.delay_us(del_period, NULL);
+    int8_t rslt = bme68x_set_op_mode(BME68X_FORCED_MODE, &bme680);
+    if (rslt != BME68X_OK) {
+        printf("BME680 set op mode failed: %d\n", rslt);
+        return;
+    }
 
-    rslt = bme68x_get_data(BME68X_FORCED_MODE, &data, &n_data, &bme680);
+    struct bme68x_conf conf;
+    conf.filter  = BME68X_FILTER_OFF;
+    conf.odr     = BME68X_ODR_NONE;
+    conf.os_hum  = BME68X_OS_2X;
+    conf.os_pres = BME68X_OS_4X;
+    conf.os_temp = BME68X_OS_8X;
+
+    uint16_t meas_dur = bme68x_get_meas_dur(BME68X_FORCED_MODE, &conf, &bme680);
+    meas_dur += 1000; // Add an additional delay of 1000 microseconds
+    bme680.delay_us(meas_dur, bme680.intf_ptr);
+
+    rslt = bme68x_get_data(BME68X_FORCED_MODE, &data, &n_fields, &bme680);
     if (rslt == BME68X_OK) {
-        printf("Temperature: %.2f °C, Pressure: %.2f hPa, Humidity: %.2f %%\n", data.temperature / 100.0, data.pressure / 100.0, data.humidity / 1000.0);
+        printf("Temperature: %.2f °C, Pressure: %.2f hPa, Humidity: %.2f %%, Gas Resistance: %.2f ohms\n", data.temperature, data.pressure, data.humidity, data.gas_resistance);
     } else {
-        printf("BME680 data read failed! Init status: %s\n", init_status);
+        printf("BME680 data read failed: %d\n", rslt);
     }
 }

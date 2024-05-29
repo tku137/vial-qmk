@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bme680/bme68x.h"
 #include "keyboard.h"
 #include "oled_driver.h"
 #include QMK_KEYBOARD_H
@@ -31,7 +32,6 @@
 #include "cyberdeck.h"
 // #include "terminal.h"
 #include "bme680_integration.c"
-// #include "bme68x_lib/bme680_helper.h"
 
 #define CTL_ESC MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
@@ -398,10 +398,7 @@ void housekeeping_task_user(void) {
 
 
 void matrix_init_user(void) {
-
-    printf("Matrix init user started\n");
-    init_bme680();
-    // bme680_setup();
+    bme680_init();
 }
 
 
@@ -423,7 +420,10 @@ void keyboard_post_init_user(void) {
     transaction_register_rpc(TARGET_WPM_SYNC, target_wpm_sync_slave_handler);
 
     // Initialize the I2C and sensor
-    printf("This is post_init_user\n");
+    // printf("This is post_init_user\n");
+    // bme680_init();
+    // bme680_config();
+
     // bme680_setup();
     // setup_bme680();
 
@@ -525,7 +525,7 @@ bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
 
-        read_bme680_data();
+        bme680_read_data();
 
         // render_master();
 

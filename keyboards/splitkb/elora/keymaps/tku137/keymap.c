@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bme680/bme68x.h"
 #include "keyboard.h"
 #include "oled_driver.h"
 #include QMK_KEYBOARD_H

@@ -96,10 +96,23 @@ void bme680_read_data(void) {
     }
 
     if (n_fields) {
-        uprintf("Temperature: %.2f C\n", (float)data.temperature / 100.0f);
-        uprintf("Humidity: %.2f %%\n", (float)data.humidity / 1000.0f);
-        uprintf("Pressure: %.2f hPa\n", (float)data.pressure / 100.0f);
-        uprintf("Gas Resistance: %lu ohms\n", (unsigned long)data.gas_resistance);
+        int temp_int = (int)(data.temperature * 100);
+        int hum_int  = (int)(data.humidity * 1000);
+        int pres_int = (int)(data.pressure * 100);
+
+        char temp_str[8];
+        char hum_str[8];
+        char pres_str[12];
+
+        snprintf(temp_str, sizeof(temp_str), "T:%d.%01d C", temp_int / 100, temp_int % 10);
+        snprintf(hum_str, sizeof(hum_str), "H:%d.%01d %%", hum_int / 1000, hum_int % 10);
+        snprintf(pres_str, sizeof(pres_str), "P:%d.%01d hPa", pres_int / 10000, pres_int % 10);
+
+        uprintf("%s\n", temp_str);
+        uprintf("%s\n", hum_str);
+        uprintf("%s\n", pres_str);
+
+        uprintf("G: %lu ohms\n", (unsigned long)data.gas_resistance);
     } else {
         uprintf("No new data available\n");
     }

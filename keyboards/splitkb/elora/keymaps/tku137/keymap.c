@@ -513,21 +513,24 @@ bool oled_task_user(void) {
             float temperature = get_temperature();
             float humidity = get_humidity();
 
+            // Convert temperature and humidity to integers with two decimal places
+            int temp_int = (int)(temperature * 100);
+            int hum_int = (int)(humidity * 100);
+
             // Convert temperature and humidity to strings
             char temp_str[8];
             char hum_str[8];
-            sprintf(temp_str, "%.2f", temperature);
-            sprintf(hum_str, "%.2f", humidity);
+            snprintf(temp_str, sizeof(temp_str), "T:%d.%01d", temp_int / 100, temp_int % 10);
+            snprintf(hum_str, sizeof(hum_str), "H:%d.%01d", hum_int / 100, hum_int % 10);
 
             // Display temperature and humidity on the OLED
             oled_clear();
-            oled_write_P(PSTR("T: "), false);
             oled_write(temp_str, false);
             oled_write_P(PSTR(" C\n"), false);
-            oled_write_P(PSTR("H: "), false);
             oled_write(hum_str, false);
             oled_write_P(PSTR(" %\n"), false);
         }
+
 
     } else {
 

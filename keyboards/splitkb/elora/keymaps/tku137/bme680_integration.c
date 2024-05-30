@@ -61,13 +61,26 @@ int8_t bme680_init(void) {
         return rslt;
     }
 
-    // Set heater configuration
-    heatr_conf.enable     = BME68X_ENABLE;
-    heatr_conf.heatr_temp = 320;
-    heatr_conf.heatr_dur  = 150;
-    rslt                  = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &gas_sensor);
+    // Set heater configuration for parallel mode
+    heatr_conf.enable          = BME68X_ENABLE;
+    heatr_conf.heatr_temp_prof = temp_prof; // Provide the temperature profile array
+    heatr_conf.heatr_dur_prof  = mul_prof;  // Provide the duration multiplier profile array
+    heatr_conf.profile_len     = 10;        // Set the length of the temperature and duration profiles
+
+    // Calculate the shared heating duration
+    uint32_t meas_dur           = bme68x_get_meas_dur(BME68X_PARALLEL_MODE, &conf, &gas_sensor);
+    heatr_conf.shared_heatr_dur = (uint16_t)(140 - (meas_dur / 1000));
+
+    rslt = bme68x_set_heatr_conf(BME68X_PARALLEL_MODE, &heatr_conf, &gas_sensor);
     if (rslt != BME68X_OK) {
         // BME680 set heater config failed
+        return rslt;
+    }
+
+    // Set the sensor to parallel mode
+    rslt = bme68x_set_op_mode(BME68X_PARALLEL_MODE, &gas_sensor);
+    if (rslt != BME68X_OK) {
+        // BME680 set op mode failed
         return rslt;
     }
 
@@ -129,36 +142,42 @@ int8_t bme680_read_data(struct bme680_data *data, uint32_t update_interval) {
     }
 
     int8_t             rslt;
-    struct bme68x_data sensor_data;
+    struct bme68x_data sensor_data[3]; // Array to store up to 3 sets of sensor data
     uint8_t            n_fields;
 
-    // Set sensor to forced mode
-    rslt = bme68x_set_op_mode(BME68X_FORCED_MODE, &gas_sensor);
+    // Set sensor to parallel mode
+    rslt = bme68x_set_op_mode(BME68X_PARALLEL_MODE, &gas_sensor);
     if (rslt != BME68X_OK) {
         // BME680 set op mode failed
         return rslt;
     }
 
     // Wait for the measurement to complete
-    uint32_t del_period = bme68x_get_meas_dur(BME68X_FORCED_MODE, &conf, &gas_sensor) + (heatr_conf.heatr_dur * 1000);
+    uint32_t del_period = bme68x_get_meas_dur(BME68X_PARALLEL_MODE, &conf, &gas_sensor) + (heatr_conf.shared_heatr_dur * 1000);
     gas_sensor.delay_us(del_period, gas_sensor.intf_ptr);
 
     // Read sensor data
-    rslt = bme68x_get_data(BME68X_FORCED_MODE, &sensor_data, &n_fields, &gas_sensor);
+    rslt = bme68x_get_data(BME68X_PARALLEL_MODE, sensor_data, &n_fields, &gas_sensor);
     if (rslt != BME68X_OK) {
         // BME680 get data failed
         return rslt;
     }
 
     if (n_fields) {
-        data->temperature    = (int)sensor_data.temperature;
-        data->humidity       = (int)sensor_data.humidity;
-        data->pressure       = (int)sensor_data.pressure;
-        data->gas_resistance = sensor_data.gas_resistance;
-        last_read_time       = current_time;
+        // Process the sensor data from the parallel mode
+        for (uint8_t i = 0; i < n_fields; i++) {
+            if (sensor_data[i].status & BME68X_VALID_DATA) {
+                // Process the valid sensor data
+                data->temperature    = (int)sensor_data[i].temperature;
+                data->humidity       = (int)sensor_data[i].humidity;
+                data->pressure       = (int)sensor_data[i].pressure;
+                data->gas_resistance = sensor_data[i].gas_resistance;
+                last_read_time       = current_time;
+            }
+        }
         return BME68X_OK;
     } else {
         uprintf("No new data available\n");
-        return BME68X_E_NULL_PTR;
+        return BME68X_W_NO_NEW_DATA;
     }
 }

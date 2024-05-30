@@ -25,6 +25,18 @@ struct bme680_data {
     uint32_t gas_resistance; /**< Gas resistance in ohms */
 };
 
+/* Heater temperature in degree Celsius */
+uint16_t temp_prof[10] = {320, 100, 100, 100, 200, 200, 200, 320, 320, 320};
+
+/* Multiplier to the shared heater duration */
+uint16_t mul_prof[10] = {5, 2, 10, 30, 5, 5, 5, 5, 5, 5};
+
+/*
+ * Macro definition for valid new data (0x80) AND
+ * heater stability (0x10) AND gas resistance (0x20) values
+ */
+#define BME68X_VALID_DATA UINT8_C(0xB0)
+
 /**
  * @brief Initialize the BME680 sensor.
  *

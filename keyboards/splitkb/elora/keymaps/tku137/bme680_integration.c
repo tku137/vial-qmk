@@ -32,20 +32,18 @@ int8_t bme680_init(void) {
 
     // Initialize I2C
     i2c_init();
-    uprintf("I2C initialized\n");
 
     // Initialize BME680
     gas_sensor.read     = bme680_i2c_read;
     gas_sensor.write    = bme680_i2c_write;
     gas_sensor.delay_us = bme680_delay_us;
     gas_sensor.intf     = BME68X_I2C_INTF;
-    gas_sensor.amb_temp = 25; // Ambient temperature in degree Celsius
+    gas_sensor.amb_temp = 22; // Ambient temperature in degree Celsius
     rslt                = bme68x_init(&gas_sensor);
     if (rslt != BME68X_OK) {
-        uprintf("BME680 initialization failed\n");
+        // BME680 initialization failed
         return rslt;
     }
-    uprintf("BME680 initialized\n");
 
     // Set sensor configuration
     conf.os_hum  = BME68X_OS_16X;
@@ -55,7 +53,7 @@ int8_t bme680_init(void) {
     conf.odr     = BME68X_ODR_NONE;
     rslt         = bme68x_set_conf(&conf, &gas_sensor);
     if (rslt != BME68X_OK) {
-        uprintf("BME680 set config failed\n");
+        // BME680 set config failed
         return rslt;
     }
 
@@ -65,7 +63,7 @@ int8_t bme680_init(void) {
     heatr_conf.heatr_dur  = 150;
     rslt                  = bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heatr_conf, &gas_sensor);
     if (rslt != BME68X_OK) {
-        uprintf("BME680 set heater config failed\n");
+        // BME680 set heater config failed
         return rslt;
     }
 
@@ -80,7 +78,7 @@ void bme680_read_data(void) {
     // Set sensor to forced mode
     rslt = bme68x_set_op_mode(BME68X_FORCED_MODE, &gas_sensor);
     if (rslt != BME68X_OK) {
-        uprintf("BME680 set op mode failed\n");
+        // BME680 set op mode failed
         return;
     }
 
@@ -91,7 +89,7 @@ void bme680_read_data(void) {
     // Read sensor data
     rslt = bme68x_get_data(BME68X_FORCED_MODE, &data, &n_fields, &gas_sensor);
     if (rslt != BME68X_OK) {
-        uprintf("BME680 get data failed\n");
+        // BME680 get data failed
         return;
     }
 

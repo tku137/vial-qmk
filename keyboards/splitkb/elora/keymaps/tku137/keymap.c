@@ -418,16 +418,6 @@ void keyboard_post_init_user(void) {
     // Register custom data sync handler
     transaction_register_rpc(TARGET_WPM_SYNC, target_wpm_sync_slave_handler);
 
-    // Initialize the I2C and sensor
-    // printf("This is post_init_user\n");
-    // bme680_init();
-    // bme680_config();
-
-    // bme680_setup();
-    // setup_bme680();
-
-    // debug_enable = true;
-    // debug_matrix = true;
 }
 
 
@@ -525,47 +515,6 @@ bool oled_task_user(void) {
     if (is_keyboard_master()) {
 
         bme680_read_data();
-
-        // render_master();
-
-        // static bool initialized = false;
-        //
-        // // Call bme680_setup once from here if not already called
-        // if (!initialized) {
-        //     printf("Initializing BME680 from oled_task_user\n");
-        //     bme680_setup();
-        //     initialized = true;
-        // }
-        //
-        // bme680_read_data();
-        //
-        // char temp_str[11];
-        // char hum_str[11];
-        // char iaq_str[11];
-        // char iaq_text[11];
-        //
-        // int temp_int = (int)(global_temperature * 100);
-        // int hum_int = (int)(global_humidity * 100);
-        // int iaq_int = (int)(global_iaq * 100);
-        //
-        // snprintf(temp_str, sizeof(temp_str), "T:%d.%02d", temp_int / 100, temp_int % 100);
-        // snprintf(hum_str, sizeof(hum_str), "H:%d.%02d%%", hum_int / 100, hum_int % 100);
-        // snprintf(iaq_str, sizeof(iaq_str), "IAQ:%d.%02d", iaq_int / 100, iaq_int % 100);
-        // snprintf(iaq_text, sizeof(iaq_text), "%s", iaq_to_text(global_iaq));
-        //
-        // oled_clear();
-        //
-        // oled_set_cursor(0, 0);
-        // oled_write(temp_str, false);
-        //
-        // oled_set_cursor(0, 2);
-        // oled_write(hum_str, false);
-        //
-        // oled_set_cursor(0, 4);
-        // oled_write(iaq_str, false);
-        //
-        // oled_set_cursor(0, 6);
-        // oled_write(iaq_text, false);
 
     } else {
 

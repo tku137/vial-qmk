@@ -70,16 +70,23 @@ int8_t bme680_init(void) {
     return BME68X_OK;
 }
 
-void bme680_read_data(void) {
+struct bme680_data {
+    int      temperature;
+    int      humidity;
+    int      pressure;
+    uint32_t gas_resistance;
+};
+
+int8_t bme680_read_data(struct bme680_data *data) {
     int8_t             rslt;
-    struct bme68x_data data;
+    struct bme68x_data sensor_data;
     uint8_t            n_fields;
 
     // Set sensor to forced mode
     rslt = bme68x_set_op_mode(BME68X_FORCED_MODE, &gas_sensor);
     if (rslt != BME68X_OK) {
         // BME680 set op mode failed
-        return;
+        return rslt;
     }
 
     // Wait for the measurement to complete
@@ -87,31 +94,20 @@ void bme680_read_data(void) {
     gas_sensor.delay_us(del_period, gas_sensor.intf_ptr);
 
     // Read sensor data
-    rslt = bme68x_get_data(BME68X_FORCED_MODE, &data, &n_fields, &gas_sensor);
+    rslt = bme68x_get_data(BME68X_FORCED_MODE, &sensor_data, &n_fields, &gas_sensor);
     if (rslt != BME68X_OK) {
         // BME680 get data failed
-        return;
+        return rslt;
     }
 
     if (n_fields) {
-        int temp_int = (int)(data.temperature * 100);
-        int hum_int  = (int)(data.humidity * 1000);
-        int pres_int = (int)(data.pressure * 100);
-
-        char temp_str[8];
-        char hum_str[8];
-        char pres_str[12];
-
-        snprintf(temp_str, sizeof(temp_str), "T:%d.%01d C", temp_int / 100, temp_int % 10);
-        snprintf(hum_str, sizeof(hum_str), "H:%d.%01d %%", hum_int / 1000, hum_int % 10);
-        snprintf(pres_str, sizeof(pres_str), "P:%d.%01d hPa", pres_int / 10000, pres_int % 10);
-
-        uprintf("%s\n", temp_str);
-        uprintf("%s\n", hum_str);
-        uprintf("%s\n", pres_str);
-
-        uprintf("G: %lu ohms\n", (unsigned long)data.gas_resistance);
+        data->temperature    = (int)sensor_data.temperature;
+        data->humidity       = (int)sensor_data.humidity;
+        data->pressure       = (int)sensor_data.pressure;
+        data->gas_resistance = sensor_data.gas_resistance;
+        return BME68X_OK;
     } else {
         uprintf("No new data available\n");
+        return BME68X_E_NULL_PTR;
     }
 }

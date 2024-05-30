@@ -56,5 +56,6 @@ SRC += rgb.c
 
 # Define BME680 integration
 SRC += bme68x/bme68x.c
+SRC += bme680_integration.c
 
 CONSOLE_ENABLE = yes

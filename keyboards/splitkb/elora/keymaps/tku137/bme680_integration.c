@@ -5,13 +5,6 @@
 #include "print.h"
 #include <math.h>
 
-#define BME680_ADDR BME68X_I2C_ADDR_LOW // 0x76
-#define SENSOR_UPDATE_INTERVAL 1000     // Read sensor every 1 second
-
-#define SENSOR_STATE_IDLE 0
-#define SENSOR_STATE_MEASURING 1
-#define SENSOR_STATE_READING 2
-
 // Declare static global variables
 static struct bme68x_dev        gas_sensor;
 static struct bme68x_conf       conf;
@@ -23,6 +16,12 @@ static uint8_t     sensor_state      = SENSOR_STATE_IDLE;
 static uint32_t    sensor_start_time = 0;
 static uint32_t    last_timer_check  = 0;
 struct bme680_data current_sensor_data;
+
+/* Heater temperature in degree Celsius */
+uint16_t temp_prof[10] = {320, 100, 100, 100, 200, 200, 200, 320, 320, 320};
+
+/* Multiplier to the shared heater duration */
+uint16_t mul_prof[10] = {5, 2, 10, 30, 5, 5, 5, 5, 5, 5};
 
 void bme680_delay_us(uint32_t period, void *intf_ptr) {
     wait_us(period);

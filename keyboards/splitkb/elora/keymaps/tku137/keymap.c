@@ -30,7 +30,7 @@
 #include "rgb.h"
 #include "cyberdeck.h"
 // #include "terminal.h"
-#include "bme680_integration.c"
+#include "bme680_integration.h"
 
 #define CTL_ESC MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
@@ -537,7 +537,6 @@ bool oled_task_user(void) {
         snprintf(iaq_text, sizeof(iaq_text), "%s", iaq_text_str);
 
         // Render OLED display with sensor data
-        oled_clear();
         oled_set_cursor(0, 0);
         oled_write(temp_str, false);
         oled_set_cursor(0, 2);
@@ -548,6 +547,8 @@ bool oled_task_user(void) {
         oled_write(iaq_str, false);
         oled_set_cursor(0, 7);
         oled_write(iaq_text, false);
+
+        oled_render();
 
     } else {
 

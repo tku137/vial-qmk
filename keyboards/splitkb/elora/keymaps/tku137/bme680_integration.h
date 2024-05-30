@@ -1,35 +1,27 @@
-/**
- * @file bme680_integration.h
- * @brief Header file for BME680 sensor integration with QMK firmware.
- * @author Your Name (your@email.com)
- * @date 2023-05-30
- *
- * This file contains the declarations and documentation for the BME680 sensor
- * integration with QMK firmware. It includes the struct definitions for sensor
- * data and the function prototypes for initializing, reading, and processing
- * the sensor data.
- */
-
 #ifndef BME680_INTEGRATION_H
 #define BME680_INTEGRATION_H
 
-#include <stdint.h>
+#include "quantum.h"
+#include "bme68x/bme68x.h"
 
-/**
- * @brief Struct to hold the BME680 sensor data.
- */
+// Define the address of the BME680 sensor
+#define BME680_ADDR BME68X_I2C_ADDR_LOW // 0x76
+
+// Define the interval for sensor updates in milliseconds
+#define SENSOR_UPDATE_INTERVAL 1000 // 1000 ms (1 second)
+
+// State definitions for the state machine
+#define SENSOR_STATE_IDLE 0
+#define SENSOR_STATE_MEASURING 1
+#define SENSOR_STATE_READING 2
+
+// Structure to hold sensor data
 struct bme680_data {
-    int      temperature;    /**< Temperature in degrees Celsius (scaled by 100) */
-    int      humidity;       /**< Humidity in percent (scaled by 1000) */
-    int      pressure;       /**< Pressure in hectoPascals (scaled by 100) */
-    uint32_t gas_resistance; /**< Gas resistance in ohms */
+    int      temperature;
+    int      humidity;
+    int      pressure;
+    uint32_t gas_resistance;
 };
-
-/* Heater temperature in degree Celsius */
-uint16_t temp_prof[10] = {320, 100, 100, 100, 200, 200, 200, 320, 320, 320};
-
-/* Multiplier to the shared heater duration */
-uint16_t mul_prof[10] = {5, 2, 10, 30, 5, 5, 5, 5, 5, 5};
 
 /*
  * Macro definition for valid new data (0x80) AND
@@ -37,48 +29,68 @@ uint16_t mul_prof[10] = {5, 2, 10, 30, 5, 5, 5, 5, 5, 5};
  */
 #define BME68X_VALID_DATA UINT8_C(0xB0)
 
+// External declaration of the current sensor data
+extern struct bme680_data current_sensor_data;
+
 /**
- * @brief Initialize the BME680 sensor.
+ * @brief Initializes the BME680 sensor.
  *
- * This function initializes the BME680 sensor, sets up the I2C communication,
- * and configures the sensor settings.
+ * This function initializes the I2C communication and configures the BME680 sensor
+ * for parallel mode operation with specified settings for temperature, humidity,
+ * and pressure oversampling, as well as the gas sensor heater configuration.
  *
- * @return BME68X_OK on success, or an error code on failure.
+ * @return int8_t BME68X_OK if initialization is successful, otherwise an error code.
  */
 int8_t bme680_init(void);
 
 /**
- * @brief Read data from the BME680 sensor.
+ * @brief Updates the BME680 sensor data.
  *
- * This function reads the temperature, humidity, pressure, and gas resistance
- * data from the BME680 sensor.
- *
- * @param[out] data Pointer to a bme680_data struct to store the sensor data.
- * @return BME68X_OK on success, or an error code on failure.
+ * This function implements a state machine to manage the sensor reading process
+ * in a non-blocking manner. It periodically checks the sensor state and reads
+ * the sensor data when the measurement is complete. The function should be called
+ * regularly from the main loop (e.g., from matrix_scan_user).
  */
-int8_t bme680_read_data(struct bme680_data *data, uint32_t update_interval);
+void bme680_update(void);
 
 /**
- * @brief Calculate the Indoor Air Quality (IAQ) index.
+ * @brief Calculates the Indoor Air Quality (IAQ) index.
  *
- * This function calculates the IAQ index based on the gas resistance and
- * humidity values from the BME680 sensor.
+ * This function calculates the IAQ index based on the gas resistance and humidity
+ * readings from the BME680 sensor. The IAQ index is a measure of air quality, with
+ * higher values indicating better air quality.
  *
- * @param gas_resistance The gas resistance value from the BME680 sensor.
- * @param humidity The humidity value from the BME680 sensor.
- * @return The calculated IAQ index (0-100, where 100 is good quality air).
+ * @param gas_resistance The gas resistance reading from the BME680 sensor.
+ * @param humidity The humidity reading from the BME680 sensor.
+ *
+ * @return int The calculated IAQ index.
  */
 int calculate_iaq(uint32_t gas_resistance, int humidity);
 
 /**
- * @brief Get the IAQ text description based on the IAQ index.
+ * @brief Converts the IAQ index to a text description.
  *
- * This function returns a string describing the air quality based on the
- * provided IAQ index value.
+ * This function converts the numerical IAQ index to a human-readable text description
+ * indicating the air quality level.
  *
- * @param iaq The IAQ index value.
- * @return A string describing the air quality.
+ * @param iaq The IAQ index.
+ *
+ * @return const char* The text description of the air quality level.
  */
 const char *iaq_to_text(int iaq);
 
-#endif /* BME680_INTEGRATION_H */
+/**
+ * @brief Reads the BME680 sensor data.
+ *
+ * This function reads the temperature, humidity, pressure, and gas resistance data
+ * from the BME680 sensor. It should be used to get the latest sensor data after
+ * calling bme680_update.
+ *
+ * @param data Pointer to a bme680_data structure to store the read data.
+ * @param update_interval The minimum interval between sensor reads in milliseconds.
+ *
+ * @return int8_t BME68X_OK if data is read successfully, otherwise an error code.
+ */
+int8_t bme680_read_data(struct bme680_data *data, uint32_t update_interval);
+
+#endif // BME680_INTEGRATION_H

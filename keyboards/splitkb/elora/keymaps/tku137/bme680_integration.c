@@ -1,7 +1,9 @@
 #include "quantum.h"
 #include "bme68x/bme68x.h"
+#include "bme680_integration.h"
 #include "i2c_master.h"
 #include "print.h"
+#include <math.h>
 
 #define BME680_ADDR BME68X_I2C_ADDR_LOW // 0x76
 
@@ -70,12 +72,52 @@ int8_t bme680_init(void) {
     return BME68X_OK;
 }
 
-struct bme680_data {
-    int      temperature;
-    int      humidity;
-    int      pressure;
-    uint32_t gas_resistance;
-};
+int calculate_iaq(uint32_t gas_resistance, int humidity) {
+    float hum_weighting = 0.25; // Humidity effect is 25% of the total air quality score
+    float gas_weighting = 0.75; // Gas effect is 75% of the total air quality score
+
+    float hum_score, gas_score;
+    float hum_reference = 40.0;
+
+    // Calculate humidity contribution to IAQ index
+    if (humidity >= 38 && humidity <= 42) {
+        hum_score = 0.25 * 100.0; // Humidity +/-5% around optimum
+    } else {
+        if (humidity < 38) {
+            hum_score = (hum_weighting / hum_reference) * humidity * 100.0;
+        } else {
+            hum_score = ((-hum_weighting / (100.0 - hum_reference) * humidity) + 0.416666) * 100.0;
+        }
+    }
+
+    // Calculate gas contribution to IAQ index
+    float gas_lower_limit = 5000.0;  // Bad air quality limit
+    float gas_upper_limit = 50000.0; // Good air quality limit
+    if (gas_resistance > gas_upper_limit) gas_resistance = gas_upper_limit;
+    if (gas_resistance < gas_lower_limit) gas_resistance = gas_lower_limit;
+    gas_score = (gas_weighting / (gas_upper_limit - gas_lower_limit) * gas_resistance - (gas_lower_limit * (gas_weighting / (gas_upper_limit - gas_lower_limit)))) * 100.0;
+
+    // Combine results for the final IAQ index value (0-100% where 100% is good quality air)
+    float air_quality_score = hum_score + gas_score;
+    if (air_quality_score > 100.0) air_quality_score = 100.0;
+
+    return (int)round(air_quality_score);
+}
+
+const char *iaq_to_text(int iaq) {
+    if (iaq >= 301)
+        return "Hazardous";
+    else if (iaq >= 201 && iaq <= 300)
+        return "Very Unhealthy";
+    else if (iaq >= 176 && iaq <= 200)
+        return "Unhealthy";
+    else if (iaq >= 151 && iaq <= 175)
+        return "Unhealthy for Sensitive Groups";
+    else if (iaq >= 51 && iaq <= 150)
+        return "Moderate";
+    else
+        return "Good";
+}
 
 int8_t bme680_read_data(struct bme680_data *data) {
     int8_t             rslt;

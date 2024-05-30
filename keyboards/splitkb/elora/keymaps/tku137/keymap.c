@@ -522,11 +522,18 @@ bool oled_task_user(void) {
             char hum_str[8];
             char pres_str[12];
             char gas_str[12];
+            char iaq_str[16];
+            char iaq_text[24];
 
-            snprintf(temp_str, sizeof(temp_str), "T:%d C", sensor_data.temperature);
-            snprintf(hum_str, sizeof(hum_str), "H:%d %%", sensor_data.humidity);
-            snprintf(pres_str, sizeof(pres_str), "P:%d hPa", sensor_data.pressure / 100);
-            snprintf(gas_str, sizeof(gas_str), "P:%lu hPa", (unsigned long)sensor_data.gas_resistance);
+            snprintf(temp_str, sizeof(temp_str), "T:%dC", sensor_data.temperature);
+            snprintf(hum_str, sizeof(hum_str), "H:%d%%", sensor_data.humidity);
+            snprintf(pres_str, sizeof(pres_str), "P:%dhPa", sensor_data.pressure / 100);
+            snprintf(gas_str, sizeof(gas_str), "P:%luhPa", (unsigned long)sensor_data.gas_resistance);
+
+            int iaq_value = calculate_iaq(sensor_data.gas_resistance, sensor_data.humidity);
+            const char *iaq_text_str = iaq_to_text(iaq_value);
+            snprintf(iaq_str, sizeof(iaq_str), "IAQ:%d", iaq_value);
+            snprintf(iaq_text, sizeof(iaq_text), "%s", iaq_text_str);
 
             // Render OLED display with sensor data
             oled_set_cursor(0, 0);
@@ -536,7 +543,9 @@ bool oled_task_user(void) {
             oled_set_cursor(0, 4);
             oled_write(pres_str, false);
             oled_set_cursor(0, 6);
-            oled_write(gas_str, false);
+            oled_write(iaq_str, false);
+            oled_set_cursor(0, 7);
+            oled_write(iaq_text, false);
 
         } else {
             oled_write("BME680 read failed", false);

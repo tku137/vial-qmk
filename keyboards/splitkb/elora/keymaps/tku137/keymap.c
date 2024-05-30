@@ -509,48 +509,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 
+void matrix_scan_user(void) {
+    bme680_update();
+}
+
+
 // OLED handling
 bool oled_task_user(void) {
 
     if (is_keyboard_master()) {
 
-        struct bme680_data sensor_data;
-        int8_t rslt = bme680_read_data(&sensor_data, BME680_UPDATE_INTERVAL);
+        char temp_str[8];
+        char hum_str[8];
+        char pres_str[12];
+        char gas_str[12];
+        char iaq_str[16];
+        char iaq_text[24];
 
-        if (rslt == BME68X_OK) {
-            char temp_str[8];
-            char hum_str[8];
-            char pres_str[12];
-            char gas_str[12];
-            char iaq_str[16];
-            char iaq_text[24];
+        snprintf(temp_str, sizeof(temp_str), "T:%dC", current_sensor_data.temperature);
+        snprintf(hum_str, sizeof(hum_str), "H:%d%%", current_sensor_data.humidity);
+        snprintf(pres_str, sizeof(pres_str), "P:%dhPa", current_sensor_data.pressure / 100);
+        snprintf(gas_str, sizeof(gas_str), "G:%luOhms", (unsigned long)current_sensor_data.gas_resistance);
 
-            snprintf(temp_str, sizeof(temp_str), "T:%dC", sensor_data.temperature);
-            snprintf(hum_str, sizeof(hum_str), "H:%d%%", sensor_data.humidity);
-            snprintf(pres_str, sizeof(pres_str), "P:%dhPa", sensor_data.pressure / 100);
-            snprintf(gas_str, sizeof(gas_str), "P:%luhPa", (unsigned long)sensor_data.gas_resistance);
+        int iaq_value = calculate_iaq(current_sensor_data.gas_resistance, current_sensor_data.humidity);
+        const char *iaq_text_str = iaq_to_text(iaq_value);
+        snprintf(iaq_str, sizeof(iaq_str), "IAQ:%d", iaq_value);
+        snprintf(iaq_text, sizeof(iaq_text), "%s", iaq_text_str);
 
-            int iaq_value = calculate_iaq(sensor_data.gas_resistance, sensor_data.humidity);
-            const char *iaq_text_str = iaq_to_text(iaq_value);
-            snprintf(iaq_str, sizeof(iaq_str), "IAQ:%d", iaq_value);
-            snprintf(iaq_text, sizeof(iaq_text), "%s", iaq_text_str);
-
-            // Render OLED display with sensor data
-            oled_clear();
-            oled_set_cursor(0, 0);
-            oled_write(temp_str, false);
-            oled_set_cursor(0, 2);
-            oled_write(hum_str, false);
-            oled_set_cursor(0, 4);
-            oled_write(pres_str, false);
-            oled_set_cursor(0, 6);
-            oled_write(iaq_str, false);
-            oled_set_cursor(0, 7);
-            oled_write(iaq_text, false);
-
-        } else {
-            oled_write("BME680 read failed", false);
-        }
+        // Render OLED display with sensor data
+        oled_clear();
+        oled_set_cursor(0, 0);
+        oled_write(temp_str, false);
+        oled_set_cursor(0, 2);
+        oled_write(hum_str, false);
+        oled_set_cursor(0, 4);
+        oled_write(pres_str, false);
+        oled_set_cursor(0, 6);
+        oled_write(iaq_str, false);
+        oled_set_cursor(0, 7);
+        oled_write(iaq_text, false);
 
     } else {
 

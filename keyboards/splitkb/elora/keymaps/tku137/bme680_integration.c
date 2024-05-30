@@ -6,12 +6,23 @@
 #include <math.h>
 
 #define BME680_ADDR BME68X_I2C_ADDR_LOW // 0x76
+#define SENSOR_UPDATE_INTERVAL 1000     // Read sensor every 1 second
 
-struct bme68x_dev        gas_sensor;
-struct bme68x_conf       conf;
-struct bme68x_heatr_conf heatr_conf;
+#define SENSOR_STATE_IDLE 0
+#define SENSOR_STATE_MEASURING 1
+#define SENSOR_STATE_READING 2
+
+// Declare static global variables
+static struct bme68x_dev        gas_sensor;
+static struct bme68x_conf       conf;
+static struct bme68x_heatr_conf heatr_conf;
 
 static uint32_t last_read_time = 0;
+
+static uint8_t     sensor_state      = SENSOR_STATE_IDLE;
+static uint32_t    sensor_start_time = 0;
+static uint32_t    last_timer_check  = 0;
+struct bme680_data current_sensor_data;
 
 void bme680_delay_us(uint32_t period, void *intf_ptr) {
     wait_us(period);
@@ -85,6 +96,57 @@ int8_t bme680_init(void) {
     }
 
     return BME68X_OK;
+}
+
+void bme680_update(void) {
+    int8_t             rslt;
+    struct bme68x_data sensor_data[3]; // Array to store up to 3 sets of sensor data
+    uint8_t            n_fields;
+
+    uint32_t current_time = timer_read32();
+
+    // Check if enough time has passed since the last sensor read
+    if (timer_elapsed32(last_timer_check) < SENSOR_UPDATE_INTERVAL) {
+        return;
+    }
+    last_timer_check = current_time;
+
+    switch (sensor_state) {
+        case SENSOR_STATE_IDLE:
+            // Start the measurement
+            rslt = bme68x_set_op_mode(BME68X_PARALLEL_MODE, &gas_sensor);
+            if (rslt == BME68X_OK) {
+                sensor_start_time = timer_read32();
+                sensor_state      = SENSOR_STATE_MEASURING;
+            }
+            break;
+
+        case SENSOR_STATE_MEASURING: {
+            // Wait for the measurement to complete
+            uint32_t del_period = bme68x_get_meas_dur(BME68X_PARALLEL_MODE, &conf, &gas_sensor) + (heatr_conf.shared_heatr_dur * 1000);
+            if (timer_elapsed32(sensor_start_time) >= del_period / 1000) {
+                sensor_state = SENSOR_STATE_READING;
+            }
+            break;
+        }
+
+        case SENSOR_STATE_READING:
+            // Read the sensor data
+            rslt = bme68x_get_data(BME68X_PARALLEL_MODE, sensor_data, &n_fields, &gas_sensor);
+            if (rslt == BME68X_OK && n_fields > 0) {
+                for (uint8_t i = 0; i < n_fields; i++) {
+                    if (sensor_data[i].status & BME68X_VALID_DATA) {
+                        // Process the valid sensor data
+                        current_sensor_data.temperature    = (int)sensor_data[i].temperature;
+                        current_sensor_data.humidity       = (int)sensor_data[i].humidity;
+                        current_sensor_data.pressure       = (int)sensor_data[i].pressure;
+                        current_sensor_data.gas_resistance = sensor_data[i].gas_resistance;
+                    }
+                }
+            }
+            sensor_state = SENSOR_STATE_IDLE;
+            break;
+    }
 }
 
 int calculate_iaq(uint32_t gas_resistance, int humidity) {

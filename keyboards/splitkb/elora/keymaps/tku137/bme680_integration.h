@@ -44,7 +44,7 @@ int8_t bme680_init(void);
  * @param[out] data Pointer to a bme680_data struct to store the sensor data.
  * @return BME68X_OK on success, or an error code on failure.
  */
-int8_t bme680_read_data(struct bme680_data *data);
+int8_t bme680_read_data(struct bme680_data *data, uint32_t update_interval);
 
 /**
  * @brief Calculate the Indoor Air Quality (IAQ) index.

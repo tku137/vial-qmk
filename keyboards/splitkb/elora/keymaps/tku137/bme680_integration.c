@@ -11,6 +11,8 @@ struct bme68x_dev        gas_sensor;
 struct bme68x_conf       conf;
 struct bme68x_heatr_conf heatr_conf;
 
+static uint32_t last_read_time = 0;
+
 void bme680_delay_us(uint32_t period, void *intf_ptr) {
     wait_us(period);
 }
@@ -119,7 +121,13 @@ const char *iaq_to_text(int iaq) {
         return "Good";
 }
 
-int8_t bme680_read_data(struct bme680_data *data) {
+int8_t bme680_read_data(struct bme680_data *data, uint32_t update_interval) {
+    // Check if enough time has passed since the last read
+    uint32_t current_time = timer_read32();
+    if (timer_elapsed32(last_read_time) < update_interval) {
+        return BME68X_OK;
+    }
+
     int8_t             rslt;
     struct bme68x_data sensor_data;
     uint8_t            n_fields;
@@ -147,6 +155,7 @@ int8_t bme680_read_data(struct bme680_data *data) {
         data->humidity       = (int)sensor_data.humidity;
         data->pressure       = (int)sensor_data.pressure;
         data->gas_resistance = sensor_data.gas_resistance;
+        last_read_time       = current_time;
         return BME68X_OK;
     } else {
         uprintf("No new data available\n");

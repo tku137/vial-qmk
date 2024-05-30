@@ -515,7 +515,7 @@ bool oled_task_user(void) {
     if (is_keyboard_master()) {
 
         struct bme680_data sensor_data;
-        int8_t rslt = bme680_read_data(&sensor_data);
+        int8_t rslt = bme680_read_data(&sensor_data, BME680_UPDATE_INTERVAL);
 
         if (rslt == BME68X_OK) {
             char temp_str[8];
@@ -536,6 +536,7 @@ bool oled_task_user(void) {
             snprintf(iaq_text, sizeof(iaq_text), "%s", iaq_text_str);
 
             // Render OLED display with sensor data
+            oled_clear();
             oled_set_cursor(0, 0);
             oled_write(temp_str, false);
             oled_set_cursor(0, 2);

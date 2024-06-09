@@ -29,6 +29,7 @@
 #include "lib/rgb.h"
 #include "lib/visualizations/cyberdeck.h"
 #include "lib/sensors/htu21d.h"
+#include "lib/sensors/ccs811.h"
 
 #define CTL_ESC MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
@@ -395,6 +396,7 @@ void housekeeping_task_user(void) {
 
 void matrix_init_user(void) {
     htu21d_init();
+    ccs811_init();
 }
 
 // This is run at boot
@@ -417,6 +419,7 @@ void keyboard_post_init_user(void) {
 
 void matrix_scan_user(void) {
     htu21d_update();
+    ccs811_update();
 }
 
 // Custom keycode handling
@@ -514,8 +517,13 @@ bool oled_task_user(void) {
 
         // render_master();
 
+        // Get HTU21D sensor data
         float temperature = htu21d_get_temperature();
         float humidity = htu21d_get_humidity();
+
+        // Get CCS811 sensor data
+        uint16_t co2 = ccs811_get_co2();
+        uint16_t tvoc = ccs811_get_tvoc();
 
         int temp_int = (int)(temperature * 100);
         int hum_int = (int)(humidity * 100);
@@ -526,11 +534,23 @@ bool oled_task_user(void) {
         snprintf(temp_str, sizeof(temp_str), "T:%d.%01d", temp_int / 100, temp_int % 10);
         snprintf(hum_str, sizeof(hum_str), "H:%d.%01d", hum_int / 100, hum_int % 10);
 
+        char co2_str[16];
+        char tvoc_str[16];
+        snprintf(co2_str, sizeof(co2_str), "CO2:%dppm", co2);
+        snprintf(tvoc_str, sizeof(tvoc_str), "TVOC:%dppb", tvoc);
+
         // Display sensor data on the OLED
-        oled_set_cursor(0, 4);
+        oled_clear();
+
+        oled_set_cursor(0, 0);
         oled_write(temp_str, false);
-        oled_set_cursor(0, 6);
+        oled_set_cursor(0, 2);
         oled_write(hum_str, false);
+
+        oled_set_cursor(0, 4);
+        oled_write(co2_str, false);
+        oled_set_cursor(0, 6);
+        oled_write(tvoc_str, false);
 
         oled_render();
 

@@ -52,3 +52,4 @@ ENCODER_MAP_ENABLE = yes
 SRC += lib/visualizations/cyberdeck.c
 SRC += lib/rgb.c
 SRC += lib/sensors/htu21d.c
+SRC += lib/sensors/ccs811.c

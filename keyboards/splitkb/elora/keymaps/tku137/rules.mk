@@ -48,9 +48,7 @@ VIALRGB_ENABLE = yes
 ENCODER_MAP_ENABLE = yes
 
 
-# Define custom OLED visuals
-# possibility to change rendering completely
-SRC += cyberdeck.c
-# SRC += terminal.c
-SRC += rgb.c
-SRC += htu21d.c
+# Add custom sources
+SRC += lib/visualizations/cyberdeck.c
+SRC += lib/rgb.c
+SRC += lib/sensors/htu21d.c

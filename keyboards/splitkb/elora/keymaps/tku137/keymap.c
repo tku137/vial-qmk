@@ -26,9 +26,9 @@
 #include "print.h"
 
 #include "layers.h"
-#include "rgb.h"
-#include "cyberdeck.h"
-#include "htu21d.h"
+#include "lib/rgb.h"
+#include "lib/visualizations/cyberdeck.h"
+#include "lib/sensors/htu21d.h"
 
 #define CTL_ESC MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)

@@ -19,14 +19,15 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "transactions.h"
 #include "timer.h"
+#include "print.h"
 
 #include "layers.h"
 #include "rgb.h"
 #include "cyberdeck.h"
-// #include "terminal.h"
 #include "htu21d.h"
 
 #define CTL_ESC MT(MOD_LCTL, KC_ESC)
@@ -392,6 +393,9 @@ void housekeeping_task_user(void) {
     }
 }
 
+void matrix_init_user(void) {
+    htu21d_init();
+}
 
 // This is run at boot
 void keyboard_post_init_user(void) {
@@ -411,6 +415,9 @@ void keyboard_post_init_user(void) {
     transaction_register_rpc(TARGET_WPM_SYNC, target_wpm_sync_slave_handler);
 }
 
+void matrix_scan_user(void) {
+    htu21d_update();
+}
 
 // Custom keycode handling
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -507,30 +514,25 @@ bool oled_task_user(void) {
 
         // render_master();
 
+        float temperature = htu21d_get_temperature();
+        float humidity = htu21d_get_humidity();
 
-        // Read temperature and humidity data from the HTU21D sensor
-        if (read_htu21d_data(HTU21D_UPDATE_INTERVAL)) {
-            float temperature = get_temperature();
-            float humidity = get_humidity();
+        int temp_int = (int)(temperature * 100);
+        int hum_int = (int)(humidity * 100);
 
-            // Convert temperature and humidity to integers with two decimal places
-            int temp_int = (int)(temperature * 100);
-            int hum_int = (int)(humidity * 100);
+        char temp_str[16];
+        char hum_str[16];
 
-            // Convert temperature and humidity to strings
-            char temp_str[8];
-            char hum_str[8];
-            snprintf(temp_str, sizeof(temp_str), "T:%d.%01d", temp_int / 100, temp_int % 10);
-            snprintf(hum_str, sizeof(hum_str), "H:%d.%01d", hum_int / 100, hum_int % 10);
+        snprintf(temp_str, sizeof(temp_str), "T:%d.%01d", temp_int / 100, temp_int % 10);
+        snprintf(hum_str, sizeof(hum_str), "H:%d.%01d", hum_int / 100, hum_int % 10);
 
-            // Display temperature and humidity on the OLED
-            oled_clear();
-            oled_write(temp_str, false);
-            oled_write_P(PSTR(" C\n"), false);
-            oled_write(hum_str, false);
-            oled_write_P(PSTR(" %\n"), false);
-        }
+        // Display sensor data on the OLED
+        oled_set_cursor(0, 4);
+        oled_write(temp_str, false);
+        oled_set_cursor(0, 6);
+        oled_write(hum_str, false);
 
+        oled_render();
 
     } else {
 

@@ -75,10 +75,6 @@ void enviro_sensor_update(void) {
             // Wait for the next read interval
             if (timer_elapsed32(state_start_time) >= 1000) { // 1000 ms interval
                 uprintf("-----------------------------------------------\n");
-                uprintf("                                               \n");
-                uprintf("                                               \n");
-                uprintf("                                               \n");
-                uprintf("-----------------------------------------------\n");
                 current_state    = SENSOR_STATE_HTU21D_READ_TEMP;
                 state_start_time = timer_read32();
                 uprintf("Enviro Sensor: Transitioning to READ_TEMP state\n");

@@ -49,6 +49,20 @@ typedef struct {
 bool enviro_sensor_init(void);
 
 /**
+ * @brief Use HTU21Ds data to set environmental data on the CCS811.
+ *
+ * This function sets the environmental data on the CCS811 sensor using the
+ * temperature and humidity data from the HTU21D sensor.
+ * The CCS811 sensor must be initialized before calling this function.
+ * The HTU21D sensor must be initialized before calling this function.
+ * Setting the environmental data should in theory improve the accuracy of the
+ * CCS811 sensor.
+ *
+ * @return true if setting environmental data was successful, false otherwise.
+ */
+bool ccs811_set_environmental_data(float temperature, float humidity);
+
+/**
  * @brief Update the environmental sensors state machine.
  *
  * This function advances the state machine, performing I2C operations as needed.
@@ -78,23 +92,5 @@ sensor_data_t enviro_sensor_get_data(void);
  * @param tvoc_str Buffer to store the formatted TVOC string.
  */
 void format_sensor_data(sensor_data_t data, char *temp_str, char *hum_str, char *co2_str, char *tvoc_str);
-
-/**
- * @brief Get the current baseline from the sensor.
- *
- * This function retrieves the current baseline value from the CCS811 sensor.
- *
- * @return The baseline value.
- */
-uint16_t ccs811_get_baseline(void);
-
-/**
- * @brief Set the baseline for the sensor.
- *
- * This function sets the baseline value for the CCS811 sensor.
- *
- * @param baseline The baseline value to set.
- */
-void ccs811_set_baseline(uint16_t baseline);
 
 #endif // ENVIRO_SENSOR_H

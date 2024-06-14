@@ -49,11 +49,11 @@ bool ccs811_set_environmental_data(float temperature, float humidity) {
     uint16_t temp = (uint16_t)((temperature + 25) * 512); // Temperature in 1/512 degrees
     uint16_t hum  = (uint16_t)(humidity * 512);           // Humidity in 1/512 %
 
-    env_data[0] = CCS811_ENV_DATA; // Add the register address
-    env_data[1] = (temp >> 8) & 0xFF;
-    env_data[2] = temp & 0xFF;
-    env_data[3] = (hum >> 8) & 0xFF;
-    env_data[4] = hum & 0xFF;
+    env_data[0] = CCS811_ENV_DATA;    // Add the register address
+    env_data[1] = (hum >> 8) & 0xFF;  // humidity high byte
+    env_data[2] = hum & 0xFF;         // humidity low byte
+    env_data[3] = (temp >> 8) & 0xFF; // temperature high byte
+    env_data[4] = temp & 0xFF;        // temperature low byte
 
     uprintf("CCS811: Sending data: %02X %02X %02X %02X %02X\n", env_data[0], env_data[1], env_data[2], env_data[3], env_data[4]);
     if (i2c_transmit(CCS811_ADDRESS << 1, env_data, 5, I2C_TIMEOUT) != I2C_STATUS_SUCCESS) {
@@ -160,21 +160,32 @@ void enviro_sensor_update(void) {
                 uint16_t raw_hum          = (data[0] << 8) | data[1];
                 last_sensor_data.humidity = -6.0 + 125.0 * (raw_hum / 65536.0);
                 uprintf("HTU21D: Humidity = %.2f %%\n", (float)last_sensor_data.humidity);
+                current_state = SENSOR_STATE_CCS811_SET_ENV_DATA;
+                uprintf("HTU21D: Transitioning to CCS811_SET_ENV_DATA state\n");
+            }
+            break;
+
+        case SENSOR_STATE_CCS811_SET_ENV_DATA:
+            // Send environmental data to CCS811
+            ccs811_set_environmental_data(last_sensor_data.temperature, last_sensor_data.humidity);
+            state_start_time = timer_read32();
+            current_state    = SENSOR_STATE_CCS811_WAIT_ENV_DATA; // Wait for the data to be set
+            break;
+
+        case SENSOR_STATE_CCS811_WAIT_ENV_DATA:
+            // Wait for a short period to ensure data is set
+            if (timer_elapsed32(state_start_time) >= 20) { // Wait for 50 ms
                 current_state = SENSOR_STATE_CCS811_START_MEASURE;
-                uprintf("HTU21D: Transitioning to CCS811_START_MEASURE state\n");
             }
             break;
 
         case SENSOR_STATE_CCS811_START_MEASURE:
             // Send CCS811 measurement command
-            // uprintf("CCS811: Sending measurement command\n");
             if (i2c_transmit(CCS811_ADDRESS << 1, &meas_cmd, 1, I2C_TIMEOUT) != I2C_STATUS_SUCCESS) {
                 uprintf("CCS811: Measurement command failed\n");
                 current_state = SENSOR_STATE_WAIT;
             } else {
                 uprintf("CCS811: Measurement command success\n");
-                // Send environmental data to CCS811
-                // ccs811_set_environmental_data(last_sensor_data.temperature, last_sensor_data.humidity);
                 state_start_time = timer_read32();
                 current_state    = SENSOR_STATE_CCS811_WAIT_MEASURE;
                 uprintf("CCS811: Transitioning to WAIT_MEASURE state\n");

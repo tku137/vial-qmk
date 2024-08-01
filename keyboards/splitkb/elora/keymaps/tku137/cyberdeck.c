@@ -4,6 +4,38 @@
 #include "layers.h"
 #include "cyberdeck.h"
 
+// Top decoration, Elora banner
+void render_top_deco(void) {
+    oled_set_cursor(0, 0);
+    switch (get_highest_layer(layer_state | default_layer_state)) {
+        case _QWERTY:
+            oled_write_raw_P(top, sizeof(top));
+            break;
+        case _COLEMAK_DH:
+            oled_write_raw_P(top, sizeof(top));
+            break;
+        case _NAV:
+            oled_write_raw_P(top, sizeof(top));
+            break;
+        case _SYM:
+            oled_write_raw_P(top, sizeof(top));
+            break;
+        case _FUNCTION:
+            oled_write_raw_P(top, sizeof(top));
+            break;
+        case _ADJUST:
+            oled_write_raw_P(top, sizeof(top));
+            break;
+        case _GAMING:
+            oled_write_raw_P(top_gaming, sizeof(top_gaming));
+            break;
+        case _GAMING_EXT:
+            oled_write_raw_P(top_gaming, sizeof(top_gaming));
+            break;
+        default:
+            oled_write_P(PSTR("Undefined "), false);
+    }
+}
 // Host keyboard layer status
 void render_layer_status(uint8_t start_row) {
     oled_set_cursor(0, start_row);
@@ -25,6 +57,12 @@ void render_layer_status(uint8_t start_row) {
             break;
         case _ADJUST:
             oled_write_raw_P(adjust, sizeof(adjust));
+            break;
+        case _GAMING:
+            oled_write_raw_P(gaming_base, sizeof(gaming_base));
+            break;
+        case _GAMING_EXT:
+            oled_write_raw_P(gaming_ext, sizeof(gaming_ext));
             break;
         default:
             oled_write_P(PSTR("Undefined "), false);
@@ -90,7 +128,7 @@ void render_modifiers(uint8_t start_row) {
 // Render OLED display parts
 void render_cyberdeck(void) {
     // Part 1: Top decoration, Elora banner
-    oled_write_raw_P(top, sizeof(top));
+    render_top_deco();
 
     // Part 2: Layer status
     render_layer_status(4);

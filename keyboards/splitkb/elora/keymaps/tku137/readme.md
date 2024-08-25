@@ -2,7 +2,7 @@
 
 ## Typing layers
 
-![typing_layout](https://github.com/user-attachments/assets/53adb938-e17a-4256-b1c1-4468ded1e3a7)
+![Typing Layout](https://github.com/tku137/vial-qmk/raw/elora-tku137/keyboards/splitkb/elora/keymaps/tku137/images/typing_layout.png)
 
 ### Base layer
 
@@ -26,7 +26,7 @@ The adjust layer uses some keyboard specific settings on the right. The right ha
 
 ## Gaming layers
 
-<img src="https://github.com/user-attachments/assets/ba58cb24-6d0e-4fb0-b0da-f4aeb3107d8a" width="500">
+<img src="https://github.com/tku137/vial-qmk/raw/elora-tku137/keyboards/splitkb/elora/keymaps/tku137/images/gaming_layout.png" width="500">
 
 ### Base layer
 

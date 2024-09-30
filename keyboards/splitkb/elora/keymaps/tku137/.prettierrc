@@ -1,0 +1,6 @@
+{
+    "printWidth": 500,
+    "singleQuote": true,
+    "bracketSpacing": true,
+    "proseWrap": "always"
+}

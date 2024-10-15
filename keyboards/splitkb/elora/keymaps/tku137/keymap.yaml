@@ -3,17 +3,17 @@ layout:
     qmk_layout: LAYOUT_split_4x6_5
 layers:
     QWRT:
-        - ['$$mdi:keyboard-esc$$', { t: '1', s: '!' }, { t: '2', s: '@' }, { t: '3', s: '#' }, { t: '4', s: '$' }, { t: '5', s: '%' }, { t: '6', s: '^' }, { t: '7', s: '&' }, { t: '8', s: '*' }, { t: '9', s: '(' }, { t: '0', s: ')' }, { t: '-', s: '_' }]
-        - ['$$mdi:keyboard-tab$$', Q, W, E, R, T, Y, U, I, O, P, { t: '\', s: '|' }]
-        - [{ t: '$$mdi:keyboard-esc$$', h: '$$mdi:apple-keyboard-shift$$' }, A, S, D, F, G, H, J, K, L, { t: ':', s: ';' }, { t: "'", s: '"', h: '$$mdi:apple-keyboard-shift$$' }]
-        - ['$$mdi:apple-keyboard-control$$', Z, X, C, V, B, { t: '[', s: '{' }, '(', ')', { t: ']', s: '}' }, N, M, { t: ',', s: '<' }, { t: '.', s: '>' }, { t: '/', s: '?' }, '$$mdi:apple-keyboard-control$$']
-        - [ADJ, { t: '$$mdi:keyboard-esc$$', h: '$$mdi:apple-keyboard-option$$' }, { t: '$$mdi:keyboard-return$$', h: '$$mdi:apple-keyboard-command$$' }, '$$mdi:keyboard-space$$', NAV, SYM, '$$mdi:keyboard-backspace$$', { t: '$$mdi:keyboard-tab$$', h: '$$mdi:apple-keyboard-command$$' }, '$$mdi:apple-keyboard-option$$', FUNC]
+        - ['~', { t: '1', s: '!' }, { t: '2', s: '@' }, { t: '3', s: '#' }, { t: '4', s: '$' }, { t: '5', s: '%' }, { t: '6', s: '^' }, { t: '7', s: '&' }, { t: '8', s: '*' }, { t: '9', s: '(' }, { t: '0', s: ')' }, { t: '-', s: '_' }]
+        - ['$$mdi:keyboard-esc$$', Q, W, E, R, T, Y, U, I, O, P, { t: '\', s: '|' }]
+        - ['$$mdi:apple-keyboard-shift$$', A, S, D, F, G, H, J, K, L, { t: ':', s: ';' }, '$$mdi:apple-keyboard-shift$$']
+        - ['$$mdi:apple-keyboard-control$$', Z, X, C, V, B, FUNC, ADJ, '$$mdi:magnify$$', '$$mdi:monitor-dashboard$$', N, M, { t: ',', s: '<' }, { t: '.', s: '>' }, { t: '/', s: '?' }, '$$mdi:apple-keyboard-control$$']
+        - ['$$mdi:apple-keyboard-option$$', '$$mdi:apple-keyboard-command$$', '$$mdi:keyboard-return$$', '$$mdi:keyboard-space$$', NAV, SYM, '$$mdi:backspace-outline$$', '$$mdi:keyboard-tab$$', '$$mdi:apple-keyboard-command$$', '$$mdi:apple-keyboard-option$$']
     CLMK:
-        - ['$$mdi:keyboard-esc$$', { t: '1', s: '!' }, { t: '2', s: '@' }, { t: '3', s: '#' }, { t: '4', s: '$' }, { t: '5', s: '%' }, { t: '6', s: '^' }, { t: '7', s: '&' }, { t: '8', s: '*' }, { t: '9', s: '(' }, { t: '0', s: ')' }, { t: '-', s: '_' }]
-        - ['$$mdi:keyboard-tab$$', Q, W, F, P, B, J, L, U, Y, { t: ':', s: ';' }, { t: '\', s: '|' }]
-        - [{ t: '$$mdi:keyboard-esc$$', h: '$$mdi:apple-keyboard-shift$$' }, A, R, S, T, G, M, N, E, I, O, { t: "'", s: '"', h: '$$mdi:apple-keyboard-shift$$' }]
-        - ['$$mdi:apple-keyboard-control$$', Z, X, C, D, V, { t: '[', s: '{' }, '(', ')', { t: ']', s: '}' }, K, H, { t: ',', s: '<' }, { t: '.', s: '>' }, { t: '/', s: '?' }, '$$mdi:apple-keyboard-control$$']
-        - [ADJ, { t: '$$mdi:keyboard-esc$$', h: '$$mdi:apple-keyboard-option$$' }, { t: '$$mdi:keyboard-return$$', h: '$$mdi:apple-keyboard-command$$' }, '$$mdi:keyboard-space$$', NAV, SYM, '$$mdi:keyboard-backspace$$', { t: '$$mdi:keyboard-tab$$', h: '$$mdi:apple-keyboard-command$$' }, '$$mdi:apple-keyboard-option$$', FUNC]
+        - ['~', { t: '1', s: '!' }, { t: '2', s: '@' }, { t: '3', s: '#' }, { t: '4', s: '$' }, { t: '5', s: '%' }, { t: '6', s: '^' }, { t: '7', s: '&' }, { t: '8', s: '*' }, { t: '9', s: '(' }, { t: '0', s: ')' }, { t: '-', s: '_' }]
+        - ['$$mdi:keyboard-esc$$', Q, W, F, P, B, J, L, U, Y, { t: ':', s: ';' }, { t: '\', s: '|' }]
+        - ['$$mdi:apple-keyboard-shift$$', A, R, S, T, G, M, N, E, I, O, '$$mdi:apple-keyboard-shift$$']
+        - ['$$mdi:apple-keyboard-control$$', Z, X, C, D, V, FUNC, ADJ, '$$mdi:magnify$$', '$$mdi:monitor-dashboard$$', K, H, { t: ',', s: '<' }, { t: '.', s: '>' }, { t: '/', s: '?' }, '$$mdi:apple-keyboard-control$$']
+        - ['$$mdi:apple-keyboard-option$$', '$$mdi:apple-keyboard-command$$', '$$mdi:keyboard-return$$', '$$mdi:keyboard-space$$', NAV, SYM, '$$mdi:backspace-outline$$', '$$mdi:keyboard-tab$$', '$$mdi:apple-keyboard-command$$', '$$mdi:apple-keyboard-option$$']
     NAV:
         - ['', '', '', '', '', '', '', '', '', '', '', '']
         - ['', '', '', '', '', '', '', '$$mdi:skip-previous$$', '$$mdi:play-pause$$', '$$mdi:skip-next$$', '$$mdi:volume-plus$$', '$$mdi:backspace-reverse-outline$$']
@@ -30,14 +30,14 @@ layers:
         - ['', '', '', '', '', '', '', '', 'Print Screen', 'Num Lock', 'Caps Lock', 'Scroll Lock']
         - ['', '', '', '', '', '', 'Key Cast', 'F1', 'F2', 'F3', 'F4', '']
         - ['', '$$mdi:apple-keyboard-control$$', '$$mdi:apple-keyboard-option$$', '$$mdi:apple-keyboard-command$$', '$$mdi:apple-keyboard-shift$$', 'Hyper', '', 'F5', 'F6', 'F7', 'F8', '']
-        - ['', '', '', '', '', '', 'L-Pad', 'M-Ctrl', 'M-Ctrl', 'L-Pad', '', 'F9', 'F10', 'F11', 'F12', '']
-        - ['', '', '', '', '', '', '', '', '', { type: held }]
+        - ['', '', '', '', '', '', { type: held }, '', '', '', '', 'F9', 'F10', 'F11', 'F12', '']
+        - ['', '', '', '', '', '', '', '', '', '']
     ADJ:
         - ['', '', '', '', '', 'Clear EEPROM', 'RGB Tgl', 'RGB Save', '', '', '', '']
         - ['', '', '', QWRT, 'Mon Br+', 'WPM Tar+', 'RGB Dflt', 'RGB White', 'RGB Rnbw', '', '', '']
         - ['', '', '', CLMK, 'Mon Br-', 'WPM Tar-', 'RGB Cyc+', 'RGB Hue+', 'RGB Sat+', 'RGB Val+', 'RGB Spd+', 'RGB Mode+']
-        - ['', '', '', GMNG, '', '', '', '', '', '', 'RGB Cyc-', 'RGB Hue-', 'RGB Sat-', 'RGB Val-', 'RGB Spd-', 'RGB Mode-']
-        - [{ type: held }, '', '', '', '', '', '', '', '', '']
+        - ['', '', '', GMNG, '', '', '', { type: held }, '', '', 'RGB Cyc-', 'RGB Hue-', 'RGB Sat-', 'RGB Val-', 'RGB Spd-', 'RGB Mode-']
+        - ['', '', '', '', '', '', '', '', '', '']
     GMNG:
         - ['F5', '1', '2', '3', '4', '5', '', '', '', '', '', '']
         - ['J', '$$mdi:keyboard-esc$$', 'Q', 'X', 'E', 'R', '', '', '', '', '', '']

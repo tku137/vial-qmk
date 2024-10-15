@@ -59,6 +59,7 @@ enum custom_keycodes {
     RGB_UP,              // Custom keycode for cycling RGB mode
     RGB_DWN,             // Custom keycode for cycling RGB mode
     RGB_SAV,             // Custom keycode for setting current color as default
+    CMD_SPC,             // Custom keycode for CMD+Space
 };
 
 // Initialize WPM variables
@@ -83,16 +84,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Base Layer: QWERTY
  *
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
- * |  Esc   |   1  |   2  |   3  |   4  |   5  |      |LShift|  |RShift|      |   6  |   7  |   8  |   9  |   0  |  -  _  |
+ * |   ~    |   1  |   2  |   3  |   4  |   5  |      |LShift|  |RShift|      |   6  |   7  |   8  |   9  |   0  |  -  _  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |  Tab   |   Q  |   W  |   E  |   R  |   T  |      |LCtrl |  | RCtrl|      |   Y  |   U  |   I  |   O  |   P  |  \  |  |
+ * |  Esc   |   Q  |   W  |   E  |   R  |   T  |      |LCtrl |  | RCtrl|      |   Y  |   U  |   I  |   O  |   P  |  \  |  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * | Sft/Esc|   A  |   S  |   D  |   F  |   G  |      | LAlt |  | RAlt |      |   H  |   J  |   K  |   L  | ;  : | Sft/' "|
+ * |  Sft   |   A  |   S  |   D  |   F  |   G  |      | LAlt |  | RAlt |      |   H  |   J  |   K  |   L  | ;  : |  Sft   |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * | LCtrl  |   Z  |   X  |   C  |   V  |   B  | [ {  |  (   |  |   )  |  ] } |   N  |   M  | ,  < | . >  | /  ? | RCtrl  |
+ * | LCtrl  |   Z  |   X  |   C  |   V  |   B  |Adjust|F-Keys|  |Spotl |MCtrl |   N  |   M  | ,  < | . >  | /  ? | RCtrl  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |Adjust| LAlt/| LGUI/| Space| Nav  |  | Sym  | Bksp | RGUI/| RAlt |F-Keys|
- *                        |      | Esc  | Enter|      |      |  |      |      | Tab  |      |      |
+ *                        | LAlt | LGUI | Enter| Space| Nav  |  | Sym  | Bksp | Tab  | RGUI | RAlt |
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
  * ,----------------------------.      ,------.                 ,----------------------------.      ,------.
@@ -100,11 +101,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `----------------------------'      `------'                 `----------------------------'      '------'
  */
     [_QWERTY] = LAYOUT_myr(
-      KC_ESC  ,  KC_1  ,  KC_2  ,  KC_3  ,  KC_4  ,  KC_5  ,          KC_LSFT,     KC_RSFT,           KC_6  ,  KC_7  ,  KC_8  ,  KC_9  ,  KC_0  , KC_MINS,
-      KC_TAB  ,  KC_Q  ,  KC_W  ,  KC_E  ,  KC_R  ,  KC_T  ,          KC_LCTL,     KC_RCTL,           KC_Y  ,  KC_U  ,  KC_I  ,  KC_O  ,  KC_P  , KC_BSLS,
-      SFT_ESC ,  KC_A  ,  KC_S  ,  KC_D  ,  KC_F  ,  KC_G  ,          KC_LALT,     KC_RALT,           KC_H  ,  KC_J  ,  KC_K  ,  KC_L  , KC_SCLN,SFT_QUOT,
-      KC_LCTL ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_V  ,  KC_B  , KC_LBRC, KC_LPRN,     KC_RPRN, KC_RBRC,  KC_N  ,  KC_M  , KC_COMM, KC_DOT , KC_SLSH, KC_RCTL,
-                                  ADJUST , ALT_ESC, GUI_ENT, KC_SPC , NAV    ,      SYM   , KC_BSPC, GUI_TAB, KC_RALT,  FKEYS ,
+      KC_TILD ,  KC_1  ,  KC_2  ,  KC_3  ,  KC_4  ,  KC_5  ,          KC_LSFT,     KC_RSFT,           KC_6  ,  KC_7  ,  KC_8  ,  KC_9  ,  KC_0  , KC_MINS,
+      KC_ESC  ,  KC_Q  ,  KC_W  ,  KC_E  ,  KC_R  ,  KC_T  ,          KC_LCTL,     KC_RCTL,           KC_Y  ,  KC_U  ,  KC_I  ,  KC_O  ,  KC_P  , KC_BSLS,
+      KC_LSFT ,  KC_A  ,  KC_S  ,  KC_D  ,  KC_F  ,  KC_G  ,          KC_LALT,     KC_RALT,           KC_H  ,  KC_J  ,  KC_K  ,  KC_L  , KC_SCLN, KC_RSFT,
+      KC_LCTL ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_V  ,  KC_B  , FKEYS  , ADJUST ,     CMD_SPC, KC_MCTL,  KC_N  ,  KC_M  , KC_COMM, KC_DOT , KC_SLSH, KC_RCTL,
+                                  KC_LALT, KC_LGUI, KC_ENT , KC_SPC , NAV    ,      SYM   , KC_BSPC, KC_TAB , KC_RGUI, KC_RALT,
 
       KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE,                            KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE
     ),
@@ -113,16 +114,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Base Layer: Colemak DH
  *
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
- * |  Esc   |   1  |   2  |   3  |   4  |   5  |      |LShift|  |RShift|      |   6  |   7  |   8  |   9  |   0  |  -  _  |
+ * |   ~    |   1  |   2  |   3  |   4  |   5  |      |LShift|  |RShift|      |   6  |   7  |   8  |   9  |   0  |  -  _  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |  Tab   |   Q  |   W  |   F  |   P  |   B  |      |LCtrl |  | RCtrl|      |   J  |   L  |   U  |   Y  | ;  : |  \  |  |
+ * |  Esc   |   Q  |   W  |   F  |   P  |   B  |      |LCtrl |  | RCtrl|      |   J  |   L  |   U  |   Y  | ;  : |  \  |  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * | Sft/Esc|   A  |   R  |   S  |   T  |   G  |      | LAlt |  | RAlt |      |   M  |   N  |   E  |   I  |   O  | Sft/' "|
+ * |  Sft   |   A  |   R  |   S  |   T  |   G  |      | LAlt |  | RAlt |      |   M  |   N  |   E  |   I  |   O  |  Sft   |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * | LCtrl  |   Z  |   X  |   C  |   D  |   V  | [ {  |  (   |  |   )  |  ] } |   K  |   H  | ,  < | . >  | /  ? | RCtrl |
+ * | LCtrl  |   Z  |   X  |   C  |   D  |   V  |Adjust|F-Keys|  |Spotl |MCtrl |   K  |   H  | ,  < | . >  | /  ? | RCtrl |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |Adjust| LAlt/| LGUI/| Space| Nav  |  | Sym  | Bksp | RGUI/| RAlt |F-Keys|
- *                        |      | Esc  | Enter|      |      |  |      |      | Tab  |      |      |
+ *                        | LAlt | LGUI | Enter| Space| Nav  |  | Sym  | Bksp | Tab  | RGUI | RAlt |
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
  * ,----------------------------.      ,------.                 ,----------------------------.      ,------.
@@ -130,11 +131,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `----------------------------'      `------'                 `----------------------------'      '------'
  */
     [_COLEMAK_DH] = LAYOUT_myr(
-      KC_ESC  ,  KC_1  ,  KC_2  ,  KC_3  ,  KC_4  ,  KC_5  ,          KC_LSFT,     KC_RSFT,           KC_6  ,  KC_7  ,  KC_8  ,  KC_9  ,  KC_0  , KC_MINS,
-      KC_TAB  ,  KC_Q  ,  KC_W  ,  KC_F  ,  KC_P  ,  KC_B  ,          KC_LCTL,     KC_RCTL,           KC_J  ,  KC_L  ,  KC_U  ,  KC_Y  , KC_SCLN, KC_BSLS,
-      SFT_ESC ,  KC_A  ,  KC_R  ,  KC_S  ,  KC_T  ,  KC_G  ,          KC_LALT,     KC_RALT,           KC_M  ,  KC_N  ,  KC_E  ,  KC_I  ,  KC_O  ,SFT_QUOT,
-      KC_LCTL ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_D  ,  KC_V  , KC_LBRC, KC_LPRN,     KC_RPRN, KC_RBRC,  KC_K  ,  KC_H  , KC_COMM, KC_DOT , KC_SLSH, KC_RCTL,
-                                  ADJUST , ALT_ESC, GUI_ENT, KC_SPC , NAV    ,      SYM   , KC_BSPC, GUI_TAB, KC_RALT,  FKEYS ,
+      KC_TILD ,  KC_1  ,  KC_2  ,  KC_3  ,  KC_4  ,  KC_5  ,          KC_LSFT,     KC_RSFT,           KC_6  ,  KC_7  ,  KC_8  ,  KC_9  ,  KC_0  , KC_MINS,
+      KC_ESC  ,  KC_Q  ,  KC_W  ,  KC_F  ,  KC_P  ,  KC_B  ,          KC_LCTL,     KC_RCTL,           KC_J  ,  KC_L  ,  KC_U  ,  KC_Y  , KC_SCLN, KC_BSLS,
+      KC_LSFT ,  KC_A  ,  KC_R  ,  KC_S  ,  KC_T  ,  KC_G  ,          KC_LALT,     KC_RALT,           KC_M  ,  KC_N  ,  KC_E  ,  KC_I  ,  KC_O  , KC_RSFT,
+      KC_LCTL ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_D  ,  KC_V  , FKEYS  , ADJUST ,     CMD_SPC, KC_MCTL,  KC_K  ,  KC_H  , KC_COMM, KC_DOT , KC_SLSH, KC_RCTL,
+                                  KC_LALT, KC_LGUI, KC_ENT , KC_SPC , NAV    ,      SYM   , KC_BSPC, KC_TAB , KC_RGUI, KC_RALT,
 
       KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE,                            KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE
     ),
@@ -506,6 +507,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 set_single_persistent_default_layer(_COLEMAK_DH);
             }
             return false;  // Skip further processing of this key code
+        case CMD_SPC:
+            if (record->event.pressed) {
+                // Press Command and Space
+                register_code(KC_LCMD);
+                register_code(KC_SPC);
+            } else {
+                // Release Command and Space
+                unregister_code(KC_SPC);
+                unregister_code(KC_LCMD);
+            }
+            return false; // Skip further processing of this key
         case RNBW:
             // When the key is pressed, set the RGB matrix to rainbow swirl mode
             if (record->event.pressed) {

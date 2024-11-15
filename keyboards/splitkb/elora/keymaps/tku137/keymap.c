@@ -90,9 +90,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |  Sft   |   A  |   S  |   D  |   F  |   G  |      | LAlt |  | RAlt |      |   H  |   J  |   K  |   L  | ;  : |  Sft   |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * | LCtrl  |   Z  |   X  |   C  |   V  |   B  |Adjust|F-Keys|  |Spotl |MCtrl |   N  |   M  | ,  < | . >  | /  ? | RCtrl  |
+ * | LCtrl  |   Z  |   X  |   C  |   V  |   B  |  [   |Adjust|  |MicMut|   ]  |   N  |   M  | ,  < | . >  | /  ? | RCtrl  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        | LAlt | LGUI | Enter| Space| Nav  |  | Sym  | Bksp | Tab  | RAlt | ESC  |
+ *                        | LAlt | LGUI | Enter| Space| Nav  |  | Sym  | Bksp | Tab  | RAlt |F-Keys|
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
@@ -104,8 +104,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_TILD ,  KC_1  ,  KC_2  ,  KC_3  ,  KC_4  ,  KC_5  ,          KC_LSFT,     KC_RSFT,           KC_6  ,  KC_7  ,  KC_8  ,  KC_9  ,  KC_0  , KC_MINS,
       KC_ESC  ,  KC_Q  ,  KC_W  ,  KC_E  ,  KC_R  ,  KC_T  ,          KC_LCTL,     KC_RCTL,           KC_Y  ,  KC_U  ,  KC_I  ,  KC_O  ,  KC_P  , KC_BSLS,
       KC_LSFT ,  KC_A  ,  KC_S  ,  KC_D  ,  KC_F  ,  KC_G  ,          KC_LALT,     KC_RALT,           KC_H  ,  KC_J  ,  KC_K  ,  KC_L  , KC_SCLN, KC_RSFT,
-      KC_LCTL ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_V  ,  KC_B  , FKEYS  , ADJUST ,     CMD_SPC, KC_MCTL,  KC_N  ,  KC_M  , KC_COMM, KC_DOT , KC_SLSH, KC_RCTL,
-                                  KC_LALT, KC_LGUI, KC_ENT , KC_SPC , NAV    ,      SYM   , KC_BSPC, KC_TAB , KC_RALT, KC_ESC,
+      KC_LCTL ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_V  ,  KC_B  , KC_LBRC, ADJUST ,     MICMUTE, KC_RBRC,  KC_N  ,  KC_M  , KC_COMM, KC_DOT , KC_SLSH, KC_RCTL,
+                                  KC_LALT, KC_LGUI, KC_ENT , KC_SPC , NAV    ,      SYM   , KC_BSPC, KC_TAB , KC_RALT, FKEYS  ,
 
       KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE,                            KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE
     ),
@@ -120,9 +120,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |  Sft   |   A  |   R  |   S  |   T  |   G  |      | LAlt |  | RAlt |      |   M  |   N  |   E  |   I  |   O  |  Sft   |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * | LCtrl  |   Z  |   X  |   C  |   D  |   V  |Adjust|F-Keys|  |Spotl |MCtrl |   K  |   H  | ,  < | . >  | /  ? | RCtrl |
+ * | LCtrl  |   Z  |   X  |   C  |   D  |   V  |  [   |Adjust|  |MicMut|   ]  |   K  |   H  | ,  < | . >  | /  ? | RCtrl  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        | LAlt | LGUI | Enter| Space| Nav  |  | Sym  | Bksp | Tab  | RAlt | Esc  |
+ *                        | LAlt | LGUI | Enter| Space| Nav  |  | Sym  | Bksp | Tab  | RAlt |F-Keys|
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
@@ -134,8 +134,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_TILD ,  KC_1  ,  KC_2  ,  KC_3  ,  KC_4  ,  KC_5  ,          KC_LSFT,     KC_RSFT,           KC_6  ,  KC_7  ,  KC_8  ,  KC_9  ,  KC_0  , KC_MINS,
       KC_ESC  ,  KC_Q  ,  KC_W  ,  KC_F  ,  KC_P  ,  KC_B  ,          KC_LCTL,     KC_RCTL,           KC_J  ,  KC_L  ,  KC_U  ,  KC_Y  , KC_SCLN, KC_BSLS,
       KC_LSFT ,  KC_A  ,  KC_R  ,  KC_S  ,  KC_T  ,  KC_G  ,          KC_LALT,     KC_RALT,           KC_M  ,  KC_N  ,  KC_E  ,  KC_I  ,  KC_O  , KC_RSFT,
-      KC_LCTL ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_D  ,  KC_V  , FKEYS  , ADJUST ,     CMD_SPC, KC_MCTL,  KC_K  ,  KC_H  , KC_COMM, KC_DOT , KC_SLSH, KC_RCTL,
-                                  KC_LALT, KC_LGUI, KC_ENT , KC_SPC , NAV    ,      SYM   , KC_BSPC, KC_TAB , KC_RALT, KC_ESC ,
+      KC_LCTL ,  KC_Z  ,  KC_X  ,  KC_C  ,  KC_D  ,  KC_V  , KC_LBRC, ADJUST ,     MICMUTE, KC_RBRC,  KC_K  ,  KC_H  , KC_COMM, KC_DOT , KC_SLSH, KC_RCTL,
+                                  KC_LALT, KC_LGUI, KC_ENT , KC_SPC , NAV    ,      SYM   , KC_BSPC, KC_TAB , KC_RALT, FKEYS  ,
 
       KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE,                            KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP,    KC_MUTE
     ),

@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "keycodes.h"
 #include QMK_KEYBOARD_H
 
 #include <stdbool.h>
@@ -48,6 +49,8 @@
 #define GREEK RALT(KC_M)
 #define DEG RALT(KC_SCLN)
 #define ESSZ RALT(KC_S)
+#define FTICK RALT(KC_GRV)
+#define BTICK RALT(KC_QUOT)
 
 // Define custom keycodes
 enum custom_keycodes {
@@ -60,6 +63,7 @@ enum custom_keycodes {
     RGB_DWN,             // Custom keycode for cycling RGB mode
     RGB_SAV,             // Custom keycode for setting current color as default
     CMD_SPC,             // Custom keycode for CMD+Space
+    C_CELL,              // Custom keycode for ```
 };
 
 // Initialize WPM variables
@@ -161,10 +165,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `----------------------------'      `------'                 `----------------------------'      '------'
  */
     [_NAV] = LAYOUT_myr(
-      _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, _______, _______,          _______, _______,          _______, KC_MPRV, KC_MPLY, KC_MNXT, KC_VOLU, KC_DEL ,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          _______, _______,          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          _______, _______,          XXXXXXX, KC_MPRV, KC_MPLY, KC_MNXT, KC_VOLU, KC_DEL ,
       _______, KC_LCTL, KC_LALT, KC_LGUI, KC_LSFT, KC_HYPR,          _______, _______,          KC_PGUP, KC_LEFT, KC_UP  , KC_RGHT, KC_VOLD, KC_INS ,
-      _______, _______, _______, _______, _______, _______, MICMUTE, _______, _______, _______, KC_PGDN, KC_HOME, KC_DOWN, KC_END , KC_MUTE, MICMUTE,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, MICMUTE, _______, _______, _______, KC_PGDN, KC_HOME, KC_DOWN, KC_END , KC_MUTE, MICMUTE,
                                  _______, _______, _______, _______, _______, _______, KC_DEL , _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
@@ -174,11 +178,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Sym Layer: Numbers and symbols
  *
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
- * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
+ * |        |      |      |      | ```  |  `   |      |      |  |      |      |      |      |  ~   |  `   |  ´   |  °     |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |  °     |  ^   |  <   |  >   |  "   |  '   |      |      |  |      |      |  &   |  [   |  ]   |  `   |  %   |  €     |
+ * |        |  ^   |  <   |  >   |  "   |  '   |      |      |  |      |      |  |   |  [   |  ]   |  &   |  %   |  €     |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |  |     |  !   |  -   |  +   |  =   |  ,   |      |      |  |      |      |  #   |  (   |  )   |  :   |  ?   |  $     |
+ * |        |  !   |  -   |  +   |  =   |  ,   |      |      |  |      |      |  #   |  (   |  )   |  :   |  ?   |  $     |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * |        |  ~   |  /   |  *   |  \   |  .   |      |      |  |      |      |  _   |  {   |  }   |  ;   |  @   | Greek> |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
@@ -191,9 +195,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------'      `------'                `---------------------------'      '------'
  */
     [_SYM] = LAYOUT_myr(
-      _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-       DEG   , KC_CIRC, KC_LABK, KC_RABK, KC_DQUO, KC_QUOT,          _______, _______,          KC_AMPR, KC_LBRC, KC_RBRC, KC_GRV , KC_PERC, EURO   ,
-      KC_PIPE, KC_EXLM, KC_MINS, KC_PLUS, KC_EQL , KC_COMM,          _______, _______,          KC_HASH, KC_LPRN, KC_RPRN, KC_COLN, KC_AT  , KC_DLR ,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, C_CELL , KC_GRV ,          _______, _______,          XXXXXXX, XXXXXXX, KC_GRV , FTICK  , BTICK  , DEG    ,
+      _______, KC_CIRC, KC_LABK, KC_RABK, KC_DQUO, KC_QUOT,          _______, _______,          KC_PIPE, KC_LBRC, KC_RBRC, KC_AMPR, KC_PERC, EURO   ,
+      _______, KC_EXLM, KC_MINS, KC_PLUS, KC_EQL , KC_COMM,          _______, _______,          KC_HASH, KC_LPRN, KC_RPRN, KC_COLN, KC_AT  , KC_DLR ,
       _______, KC_TILD, KC_SLSH, KC_ASTR, KC_BSLS, KC_DOT , _______, _______, _______, _______, KC_UNDS, KC_LCBR, KC_RCBR, KC_SCLN, KC_QUES, GREEK  ,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
 
@@ -221,10 +225,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------'      `------'                `---------------------------'      '------'
  */
     [_FUNCTION] = LAYOUT_myr(
-      _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, KC_PSCR, KC_NUM , KC_CAPS, KC_SCRL,
-      _______, _______, _______, _______, _______, _______,          _______, _______,          KEYCAST,  KC_F1 ,  KC_F2 ,  KC_F3 ,  KC_F4 , _______,
-      _______, KC_LCTL, KC_LALT, KC_LGUI, KC_LSFT, KC_HYPR,          _______, _______,          _______,  KC_F5 ,  KC_F6 ,  KC_F7 ,  KC_F8 , _______,
-      _______, _______, _______, _______, _______, _______, KC_LPAD, KC_MCTL, KC_MCTL, KC_LPAD, _______,  KC_F9 ,  KC_F10,  KC_F11,  KC_F12, _______,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          _______, _______,          XXXXXXX, XXXXXXX, KC_PSCR, KC_NUM , KC_CAPS, KC_SCRL,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          _______, _______,          KEYCAST,  KC_F1 ,  KC_F2 ,  KC_F3 ,  KC_F4 , XXXXXXX,
+      _______, KC_LCTL, KC_LALT, KC_LGUI, KC_LSFT, KC_HYPR,          _______, _______,          XXXXXXX,  KC_F5 ,  KC_F6 ,  KC_F7 ,  KC_F8 , XXXXXXX,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_LPAD, KC_MCTL, KC_MCTL, KC_LPAD, XXXXXXX,  KC_F9 ,  KC_F10,  KC_F11,  KC_F12, XXXXXXX,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
@@ -251,10 +255,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------'      `------'                `---------------------------'      '------'
  */
     [_ADJUST] = LAYOUT_myr(
-      _______, _______, _______, _______, _______, EE_CLR ,         _______, _______,          RGB_TOG, RGB_SAV, _______, _______, _______, _______,
-      _______, _______, _______, QWERTY , KC_BRIU, WPM_UP ,         _______, _______,           DFLT  ,  WHT   ,  RNBW  , _______, _______, _______,
-      _______, _______, _______, COLEMAK, KC_BRID,WPM_DOWN,         _______, _______,          RGB_UP , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
-      _______, _______, _______, GAMING , _______, _______,_______, _______, _______, _______, RGB_DWN, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD ,RGB_RMOD,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, EE_CLR ,         _______, _______,          RGB_TOG, RGB_SAV, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+      _______, XXXXXXX, XXXXXXX, QWERTY , KC_BRIU, WPM_UP ,         _______, _______,           DFLT  ,  WHT   ,  RNBW  , XXXXXXX, XXXXXXX, XXXXXXX,
+      _______, XXXXXXX, XXXXXXX, COLEMAK, KC_BRID,WPM_DOWN,         _______, _______,          RGB_UP , RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI , RGB_MOD,
+      _______, XXXXXXX, XXXXXXX, GAMING , XXXXXXX, XXXXXXX,_______, _______, _______, _______, RGB_DWN, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD ,RGB_RMOD,
                                  _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
@@ -585,6 +589,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 wpm_display_start_time = timer_read32(); // Capture the start time
             }
             return false;
+        case C_CELL:
+            if (record->event.pressed) {
+                // When the key is pressed, send three backticks
+                send_string("```");
+            }
+            return false; // Skip further processing
         default:
             return true; // Process all other keycodes normally
     }
